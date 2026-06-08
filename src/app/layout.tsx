@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "AgentCoach | Train the world's AI agents",
+  title: "AgentCoach | Agent recipes for data-heavy decisions",
   description:
-    "Expert-built AI agent recipes for every individual, business, and institution.",
+    "Reusable AI agent recipes that turn high-value professional data into repeatable decision workflows.",
   openGraph: {
     title: "AgentCoach",
     description:
-      "A public network and marketplace for expert-built AI agent recipes.",
+      "A marketplace for reusable AI agent recipes that automate data-heavy professional workflows.",
     type: "website",
   },
 };
@@ -24,4 +24,3 @@ export default function RootLayout({
     </html>
   );
 }
-

@@ -1,8 +1,23 @@
 "use client";
 
-import { ArrowRight, BadgeDollarSign, Blocks, ShieldCheck, UserRoundPlus } from "lucide-react";
+import {
+  ArrowRight,
+  BadgeDollarSign,
+  Blocks,
+  CheckCircle2,
+  ShieldCheck,
+  UserRoundPlus,
+} from "lucide-react";
 import { motion } from "framer-motion";
-import { channels, enterpriseCapabilities, pillars } from "@/lib/landing-data";
+import {
+  channels,
+  creatorBullets,
+  enterpriseCapabilities,
+  finalAudiencePaths,
+  pillars,
+  promptComparison,
+  recipeExamples,
+} from "@/lib/landing-data";
 import { OrbitalNetwork } from "./OrbitalNetwork";
 import { SectionReveal } from "./SectionReveal";
 import { TopNavigation } from "./TopNavigation";
@@ -19,14 +34,14 @@ export function LandingPage() {
       >
         <OrbitalNetwork />
         <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-12 py-16 lg:grid-cols-[1fr_0.68fr] lg:items-end">
-          <div className="max-w-4xl">
+          <div className="max-w-5xl">
             <motion.p
               className="mb-6 inline-flex rounded border border-white/[0.14] bg-white/[0.07] px-3 py-1.5 text-sm text-steel shadow-inner-line"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.12 }}
             >
-              Public agent infrastructure for serious work
+              AgentCoach turns high-value decision workflows into reusable AI agent recipes.
             </motion.p>
             <motion.h1
               className="text-balance text-6xl font-semibold leading-none text-platinum sm:text-7xl lg:text-8xl"
@@ -37,27 +52,37 @@ export function LandingPage() {
               AgentCoach
             </motion.h1>
             <motion.p
-              className="mt-6 max-w-3xl text-balance text-3xl font-medium leading-tight text-platinum sm:text-4xl lg:text-5xl"
+              className="mt-6 max-w-4xl text-balance text-3xl font-medium leading-tight text-platinum sm:text-4xl lg:text-6xl"
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.32, ease: [0.22, 1, 0.36, 1] }}
             >
-              Train the world&apos;s AI agents.
+              Agent recipes for data-heavy decisions.
             </motion.p>
             <motion.p
-              className="mt-6 max-w-2xl text-pretty text-lg leading-8 text-steel sm:text-xl"
+              className="mt-6 max-w-3xl text-pretty text-lg leading-8 text-steel sm:text-xl"
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.42, ease: [0.22, 1, 0.36, 1] }}
             >
-              Expert-built workflows for every individual, business, and institution.
+              AgentCoach turns expert decision-making into reusable AI workflows for
+              finance, BD, healthcare, sourcing, contracts, and enterprise operations.
+            </motion.p>
+            <motion.p
+              className="mt-4 max-w-3xl text-pretty text-base leading-7 text-steel"
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            >
+              Not prompts. Repeatable agent systems built around data, workflow,
+              evaluation, and deployment.
             </motion.p>
 
             <motion.div
-              className="mt-10 flex flex-col gap-3 sm:flex-row"
+              className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.54 }}
+              transition={{ duration: 0.7, delay: 0.58 }}
             >
               <a
                 href="#recipes"
@@ -73,6 +98,13 @@ export function LandingPage() {
                 Become a Creator
                 <UserRoundPlus aria-hidden="true" className="size-4" />
               </a>
+              <a
+                href="#enterprise"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded border border-white/[0.16] px-5 text-sm font-semibold text-platinum transition duration-200 hover:border-white/[0.28] hover:bg-white/[0.08] focus:outline-none focus:ring-2 focus:ring-ion/50"
+              >
+                Request Enterprise Access
+                <ShieldCheck aria-hidden="true" className="size-4" />
+              </a>
             </motion.div>
           </div>
 
@@ -80,12 +112,12 @@ export function LandingPage() {
             className="grid gap-3 border-l border-white/10 pl-5 sm:grid-cols-3 lg:grid-cols-1"
             initial={{ opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.62 }}
+            transition={{ duration: 0.8, delay: 0.66 }}
           >
             {[
-              ["Network", "Expert-built recipes"],
-              ["Marketplace", "Rank, share, monetize"],
-              ["Enterprise", "Deploy privately"],
+              ["Marketplace", "Reusable agent recipes"],
+              ["Data", "Fragmented sources to structured decisions"],
+              ["Slogan", "Train the world's AI agents."],
             ].map(([label, value]) => (
               <div key={label} className="py-4">
                 <p className="text-sm text-steel">{label}</p>
@@ -108,9 +140,10 @@ export function LandingPage() {
               business, and institution.
             </h2>
             <p className="mt-8 max-w-3xl text-pretty text-lg leading-8 text-steel">
-              AgentCoach turns hard-won professional expertise into deployable agent
-              systems. The goal is not more noise. It is a trusted network of workflows
-              that can be inspected, improved, ranked, licensed, and deployed.
+              AgentCoach turns fragmented professional data and expert decision logic
+              into deployable agent systems. The goal is not more noise. It is a
+              trusted network of workflows that can be inspected, improved, ranked,
+              licensed, and deployed.
             </p>
           </div>
         </div>
@@ -127,8 +160,47 @@ export function LandingPage() {
               Not prompts. Agent Recipes.
             </h2>
             <p className="mt-6 text-pretty text-lg leading-8 text-steel">
-              A complete instruction system for building useful AI agents.
+              A complete instruction system for automating data-heavy professional
+              workflows with repeatable inputs, evaluation, and deployment patterns.
             </p>
+          </div>
+
+          <div className="mt-14 grid gap-4 lg:grid-cols-[0.72fr_1fr]">
+            <article className="rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-inner-line">
+              <p className="text-sm font-semibold text-steel">{promptComparison.prompt.title}</p>
+              <p className="mt-5 text-2xl font-semibold leading-snug text-platinum">
+                {promptComparison.prompt.example}
+              </p>
+              <p className="mt-6 text-base leading-7 text-steel">
+                {promptComparison.prompt.point}
+              </p>
+            </article>
+
+            <article className="rounded-lg border border-ion/[0.28] bg-ion/[0.055] p-6 shadow-inner-line">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-ion">
+                    {promptComparison.recipe.title}
+                  </p>
+                  <p className="mt-3 max-w-3xl text-base leading-7 text-steel">
+                    {promptComparison.recipe.point}
+                  </p>
+                </div>
+                <span className="inline-flex w-fit rounded border border-white/10 bg-black/25 px-2.5 py-1 text-xs font-medium text-platinum">
+                  Repeatable workflow
+                </span>
+              </div>
+              <ol className="mt-6 grid gap-3 sm:grid-cols-2">
+                {promptComparison.recipe.steps.map((step, index) => (
+                  <li key={step} className="flex gap-3 text-sm leading-6 text-steel">
+                    <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded border border-white/10 bg-black/25 text-xs font-semibold text-platinum">
+                      {index + 1}
+                    </span>
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </article>
           </div>
 
           <div className="mt-14 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -158,6 +230,98 @@ export function LandingPage() {
       </SectionReveal>
 
       <SectionReveal
+        id="data-heavy-work"
+        className="relative border-b border-white/10 px-5 py-24 sm:px-8 lg:py-32"
+      >
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-8 lg:grid-cols-[0.9fr_1fr] lg:items-end">
+            <div>
+              <p className="text-sm font-semibold text-ion">Agent Recipes for Data-Heavy Work</p>
+              <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl">
+                Turn fragmented professional data into repeatable decision workflows.
+              </h2>
+            </div>
+            <p className="max-w-2xl text-pretty text-lg leading-8 text-steel lg:ml-auto">
+              Built for industries where fragmented data, frequent decisions, and manual
+              research slow down execution.
+            </p>
+          </div>
+
+          <div className="mt-14 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {recipeExamples.map((recipe, index) => {
+              const Icon = recipe.icon;
+              return (
+                <motion.article
+                  key={recipe.name}
+                  className="flex min-h-[34rem] flex-col rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-inner-line transition duration-200 hover:border-white/[0.2] hover:bg-white/[0.065]"
+                  initial={{ opacity: 0, y: 22 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.55, delay: (index % 3) * 0.08 }}
+                  viewport={{ once: true, amount: 0.22 }}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="grid size-10 shrink-0 place-items-center rounded border border-white/[0.12] bg-black/30">
+                      <Icon aria-hidden="true" className="size-5 text-ember" />
+                    </div>
+                    <div className="flex flex-wrap justify-end gap-2">
+                      {recipe.badges.slice(0, 2).map((badge) => (
+                        <span
+                          key={badge}
+                          className="rounded border border-white/10 bg-black/25 px-2 py-1 text-xs font-medium text-steel"
+                        >
+                          {badge}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <h3 className="mt-7 text-2xl font-semibold leading-tight text-platinum">
+                    {recipe.name}
+                  </h3>
+                  <p className="mt-4 text-pretty text-base leading-7 text-steel">
+                    {recipe.description}
+                  </p>
+
+                  <div className="mt-7 grid gap-4 text-sm leading-6">
+                    <div>
+                      <p className="font-semibold text-platinum">Data inputs</p>
+                      <p className="mt-1 text-steel">{recipe.data}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-platinum">Workflow</p>
+                      <p className="mt-1 text-steel">{recipe.workflow}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-platinum">Output</p>
+                      <p className="mt-1 text-steel">{recipe.output}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-platinum">Business value</p>
+                      <p className="mt-1 text-steel">{recipe.value}</p>
+                    </div>
+                  </div>
+
+                  {recipe.disclaimer ? (
+                    <p className="mt-5 border-t border-white/10 pt-4 text-xs leading-5 text-steel/80">
+                      {recipe.disclaimer}
+                    </p>
+                  ) : null}
+
+                  <a
+                    href="#waitlist"
+                    className="mt-auto inline-flex h-10 w-fit items-center gap-2 pt-6 text-sm font-semibold text-platinum transition duration-200 hover:text-ion"
+                  >
+                    {index % 2 === 0 ? "View Recipe" : "Preview Recipe"}
+                    <ArrowRight aria-hidden="true" className="size-4" />
+                  </a>
+                </motion.article>
+              );
+            })}
+          </div>
+        </div>
+      </SectionReveal>
+
+      <SectionReveal
         id="channels"
         className="relative border-b border-white/10 px-5 py-24 sm:px-8 lg:py-32"
       >
@@ -166,30 +330,41 @@ export function LandingPage() {
             <div>
               <p className="text-sm font-semibold text-ion">Channels</p>
               <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl">
-                Expert workflows organized by the work they actually perform.
+                Workflow channels organized around data, decisions, and outputs.
               </h2>
             </div>
             <p className="max-w-2xl text-pretty text-lg leading-8 text-steel lg:ml-auto">
-              AgentCoach channels make discovery practical across high-value industries,
-              from research and software to regulated enterprise operations.
+              Each channel makes discovery practical by showing what data the agent uses,
+              what decision it supports, and what deliverable it produces.
             </p>
           </div>
 
-          <div className="mt-14 grid gap-px overflow-hidden rounded-lg border border-white/10 bg-white/10 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-14 grid gap-px overflow-hidden rounded-lg border border-white/10 bg-white/10 md:grid-cols-2 xl:grid-cols-3">
             {channels.map((channel) => {
               const Icon = channel.icon;
               return (
                 <article
                   key={channel.title}
-                  className="min-h-60 bg-ink p-6 transition duration-200 hover:bg-graphite"
+                  className="min-h-80 bg-ink p-6 transition duration-200 hover:bg-graphite"
                 >
                   <Icon aria-hidden="true" className="size-6 text-ember" />
-                  <h3 className="mt-12 text-xl font-semibold text-platinum">
+                  <h3 className="mt-10 text-xl font-semibold text-platinum">
                     {channel.title}
                   </h3>
-                  <p className="mt-4 text-pretty text-base leading-7 text-steel">
-                    {channel.detail}
-                  </p>
+                  <div className="mt-5 grid gap-3 text-sm leading-6 text-steel">
+                    <p>
+                      <span className="font-semibold text-platinum">Data: </span>
+                      {channel.data}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-platinum">Decision: </span>
+                      {channel.decisions}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-platinum">Output: </span>
+                      {channel.output}
+                    </p>
+                  </div>
                 </article>
               );
             })}
@@ -205,29 +380,36 @@ export function LandingPage() {
           <div>
             <p className="text-sm font-semibold text-ember">Creator Network</p>
             <h2 className="mt-5 max-w-4xl text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl lg:text-6xl">
-              Turn expertise into deployable AI workflows.
+              Publish your best professional workflow once.
             </h2>
             <p className="mt-7 max-w-3xl text-pretty text-lg leading-8 text-steel">
-              Share your best agent recipes, build reputation, and monetize through
-              Pro Recipes, paid packs, and enterprise licensing.
+              Earn from recipe access, paid packs, and enterprise adaptation requests.
             </p>
+            <div className="mt-9 grid gap-3">
+              {creatorBullets.map((bullet) => (
+                <p key={bullet} className="flex gap-3 text-base leading-7 text-steel">
+                  <CheckCircle2 aria-hidden="true" className="mt-1 size-5 shrink-0 text-ion" />
+                  <span>{bullet}</span>
+                </p>
+              ))}
+            </div>
           </div>
 
           <div className="grid gap-4">
             {[
               {
                 title: "Reputation",
-                body: "Ranked recipes and public proof of useful professional systems.",
+                body: "Ranked recipes show proof of useful professional systems.",
                 icon: Blocks,
               },
               {
                 title: "Monetization",
-                body: "Paid packs, Pro Recipes, and enterprise licensing paths.",
+                body: "Pro Recipes, paid packs, and enterprise licensing paths for high-value expertise.",
                 icon: BadgeDollarSign,
               },
               {
-                title: "Deployment",
-                body: "Recipes designed to become operational agents, not disposable snippets.",
+                title: "Operationalization",
+                body: "Recipes designed to become dependable team workflows, not disposable snippets.",
                 icon: ShieldCheck,
               },
             ].map((item, index) => {
@@ -273,8 +455,12 @@ export function LandingPage() {
             </div>
             <div>
               <p className="text-pretty text-lg leading-8 text-steel">
-                AgentCoach helps organizations adapt, secure, and deploy proven agent
-                workflows inside their teams.
+                Built for teams that cannot rely on random prompts, screenshots, or
+                undocumented AI usage.
+              </p>
+              <p className="mt-5 text-pretty text-lg leading-8 text-steel">
+                AgentCoach helps organizations adapt, secure, evaluate, and deploy proven
+                agent workflows inside their teams.
               </p>
               <div className="mt-10 grid gap-px overflow-hidden rounded-lg border border-white/10 bg-white/10 sm:grid-cols-2">
                 {enterpriseCapabilities.map((capability) => (
@@ -293,12 +479,27 @@ export function LandingPage() {
           <div>
             <p className="text-sm font-semibold text-ember">Waitlist / Contact</p>
             <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl lg:text-6xl">
-              Build the agent layer with people who know the work.
+              Choose the AgentCoach path for your work.
             </h2>
           </div>
           <div>
-            <p className="max-w-2xl text-pretty text-lg leading-8 text-steel">
-              Join the early network for creator access, recipe channel launches, and
+            <div className="grid gap-3 sm:grid-cols-3">
+              {finalAudiencePaths.map((path) => {
+                const Icon = path.icon;
+                return (
+                  <article
+                    key={path.title}
+                    className="rounded-lg border border-white/10 bg-white/[0.045] p-4 shadow-inner-line"
+                  >
+                    <Icon aria-hidden="true" className="size-5 text-ion" />
+                    <h3 className="mt-5 text-base font-semibold text-platinum">{path.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-steel">{path.body}</p>
+                  </article>
+                );
+              })}
+            </div>
+            <p className="mt-8 max-w-2xl text-pretty text-lg leading-8 text-steel">
+              Join the early network for usable recipes, creator access, and private
               enterprise deployment conversations.
             </p>
             <WaitlistForm />
