@@ -6,7 +6,6 @@ import {
   Blocks,
   CheckCircle2,
   ShieldCheck,
-  UserRoundPlus,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import {
@@ -30,101 +29,87 @@ export function LandingPage() {
 
       <section
         id="hero"
-        className="relative flex min-h-screen items-center border-b border-white/10 px-5 pt-24 sm:px-8"
+        className="relative flex min-h-screen items-center border-b border-white/10 px-5 pt-20 sm:px-8 sm:pt-24"
       >
         <OrbitalNetwork />
-        <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-12 py-16 lg:grid-cols-[1fr_0.68fr] lg:items-end">
-          <div className="max-w-5xl">
+        <div className="relative z-10 mx-auto w-full max-w-7xl py-12 sm:py-20 lg:py-24">
+          <div className="max-w-4xl">
             <motion.p
-              className="mb-6 inline-flex rounded border border-white/[0.14] bg-white/[0.07] px-3 py-1.5 text-sm text-steel shadow-inner-line"
+              className="mb-5 text-base font-semibold text-platinum sm:mb-7 sm:text-lg"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.12 }}
             >
-              AgentCoach turns high-value decision workflows into reusable AI agent recipes.
+              AgentCoach
             </motion.p>
             <motion.h1
-              className="text-balance text-6xl font-semibold leading-none text-platinum sm:text-7xl lg:text-8xl"
+              className="max-w-4xl text-balance text-4xl font-semibold leading-none text-platinum sm:text-6xl lg:text-7xl"
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             >
-              AgentCoach
+              Turn expert workflows into reusable AI agents.
             </motion.h1>
             <motion.p
-              className="mt-6 max-w-4xl text-balance text-3xl font-medium leading-tight text-platinum sm:text-4xl lg:text-6xl"
+              className="mt-6 max-w-3xl text-pretty text-base leading-7 text-steel sm:mt-7 sm:text-xl sm:leading-8"
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.32, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.8, delay: 0.34, ease: [0.22, 1, 0.36, 1] }}
             >
-              Agent recipes for data-heavy decisions.
-            </motion.p>
-            <motion.p
-              className="mt-6 max-w-3xl text-pretty text-lg leading-8 text-steel sm:text-xl"
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.42, ease: [0.22, 1, 0.36, 1] }}
-            >
-              AgentCoach turns expert decision-making into reusable AI workflows for
-              finance, BD, healthcare, sourcing, contracts, and enterprise operations.
-            </motion.p>
-            <motion.p
-              className="mt-4 max-w-3xl text-pretty text-base leading-7 text-steel"
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            >
-              Not prompts. Repeatable agent systems built around data, workflow,
-              evaluation, and deployment.
+              AgentCoach helps experts and teams package repeatable decision workflows
+              into structured AI agents — for research, BD, finance, healthcare,
+              sourcing, and legal review.
             </motion.p>
 
             <motion.div
-              className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
+              className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.58 }}
+              transition={{ duration: 0.7, delay: 0.48 }}
             >
               <a
                 href="#recipes"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded bg-platinum px-5 text-sm font-semibold text-carbon transition duration-200 hover:bg-white focus:outline-none focus:ring-2 focus:ring-ion/50"
               >
-                Explore Agent Recipes
+                Explore Recipes
                 <ArrowRight aria-hidden="true" className="size-4" />
               </a>
               <a
-                href="#creator"
+                href="#enterprise"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded border border-white/[0.16] bg-white/[0.07] px-5 text-sm font-semibold text-platinum shadow-inner-line transition duration-200 hover:border-white/[0.28] hover:bg-white/[0.12] focus:outline-none focus:ring-2 focus:ring-ion/50"
               >
-                Become a Creator
-                <UserRoundPlus aria-hidden="true" className="size-4" />
-              </a>
-              <a
-                href="#enterprise"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded border border-white/[0.16] px-5 text-sm font-semibold text-platinum transition duration-200 hover:border-white/[0.28] hover:bg-white/[0.08] focus:outline-none focus:ring-2 focus:ring-ion/50"
-              >
-                Request Enterprise Access
+                Build a Private Agent
                 <ShieldCheck aria-hidden="true" className="size-4" />
               </a>
             </motion.div>
-          </div>
 
-          <motion.div
-            className="grid gap-3 border-l border-white/10 pl-5 sm:grid-cols-3 lg:grid-cols-1"
-            initial={{ opacity: 0, x: 24 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.66 }}
-          >
-            {[
-              ["Marketplace", "Reusable agent recipes"],
-              ["Data", "Fragmented sources to structured decisions"],
-              ["Slogan", "Train the world's AI agents."],
-            ].map(([label, value]) => (
-              <div key={label} className="py-4">
-                <p className="text-sm text-steel">{label}</p>
-                <p className="mt-2 text-xl font-semibold text-platinum">{value}</p>
-              </div>
-            ))}
-          </motion.div>
+            <motion.div
+              className="mt-8 grid max-w-3xl grid-cols-[1fr_auto_1fr_auto_1fr] items-stretch rounded-lg border border-white/10 bg-white/[0.045] shadow-inner-line sm:mt-12"
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.58 }}
+            >
+              {[
+                ["Input", "Fragmented data"],
+                ["Recipe", "Expert workflow"],
+                ["Output", "Brief · Score · Handoff"],
+              ].map(([label, value], index) => (
+                <div key={label} className="contents">
+                  <div className="min-w-0 px-3 py-3 sm:px-5 sm:py-4">
+                    <p className="text-xs font-semibold text-steel">{label}</p>
+                    <p className="mt-2 text-sm font-semibold leading-5 text-platinum sm:text-base">
+                      {value}
+                    </p>
+                  </div>
+                  {index < 2 ? (
+                    <div className="grid w-7 place-items-center border-x border-white/10 text-steel sm:w-10">
+                      →
+                    </div>
+                  ) : null}
+                </div>
+              ))}
+            </motion.div>
+          </div>
         </div>
       </section>
 
