@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "AgentCoach | Agent recipes for data-heavy decisions",
+  title: "AgentCoach | Professional coaches for better decisions",
   description:
-    "Reusable AI agent recipes that turn high-value professional data into repeatable decision workflows.",
+    "Professional AI coaches built by industry professionals for Biotech & Pharma, Finance, Tax & Accounting, Technology, Legal, and Healthcare.",
   openGraph: {
     title: "AgentCoach",
     description:
-      "A marketplace for reusable AI agent recipes that automate data-heavy professional workflows.",
+      "A platform for professional AI coaches built by real industry professionals.",
     type: "website",
   },
 };

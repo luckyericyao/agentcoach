@@ -1,6 +1,6 @@
 # AgentCoach
 
-AgentCoach is the first public landing page for a premium AI agent workflow company. The page positions AgentCoach as a marketplace for reusable AI agent recipes that transform fragmented professional data into repeatable decision workflows, with a long-term path toward enterprise deployment and local/private AI agent solutions.
+AgentCoach is a premium landing page for professional AI coaches built by real industry professionals. The homepage presents AgentCoach as an industry-first platform, starting with Biotech & Pharma, Finance, Tax & Accounting, and Technology, with a long-term path toward private team deployment and enterprise AI coach solutions.
 
 ## Tech Stack
 
@@ -70,4 +70,4 @@ For Vercel:
 3. Keep the default output settings for Next.js.
 4. Deploy.
 
-The waitlist form is a static UI in version 1. Connect it to a backend, form provider, or CRM when AgentCoach is ready to collect signups.
+The request access form is a static UI in version 1. Connect it to a backend, form provider, or CRM when AgentCoach is ready to collect signups.

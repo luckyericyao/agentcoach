@@ -1,252 +1,246 @@
 import {
-  Activity,
-  Binary,
+  BadgeDollarSign,
+  Beaker,
   BriefcaseBusiness,
+  Building2,
+  CheckCircle2,
   ClipboardCheck,
   Cpu,
-  Database,
-  FileText,
+  FileCheck2,
   HeartPulse,
   Landmark,
-  LineChart,
+  LockKeyhole,
   Scale,
-  Search,
   ShieldCheck,
-  Stethoscope,
-  Truck,
-  WalletCards,
-  Workflow,
 } from "lucide-react";
 
 export const navItems = [
-  { label: "Vision", href: "#vision" },
-  { label: "Recipes", href: "#recipes" },
-  { label: "Channels", href: "#channels" },
-  { label: "Enterprise", href: "#enterprise" },
-  { label: "Contact", href: "#waitlist" },
+  { label: "Industries", href: "#industries" },
+  { label: "Examples", href: "#coach-examples" },
+  { label: "Users", href: "#users" },
+  { label: "Coaches", href: "#coaches" },
+  { label: "Trust", href: "#trust" },
 ];
 
-export const pillars = [
-  {
-    title: "Instruction",
-    description:
-      "Roles, data sources, constraints, tools, review rules, and decision criteria in one reusable system.",
-    icon: Binary,
-  },
-  {
-    title: "Workflow",
-    description:
-      "Repeatable steps for gathering fragmented data, scoring options, escalating risk, and producing deliverables.",
-    icon: Workflow,
-  },
-  {
-    title: "Evaluation",
-    description:
-      "Source checks, hallucination review, acceptance criteria, and human-review gates before decisions move forward.",
-    icon: Activity,
-  },
-  {
-    title: "Deployment",
-    description:
-      "Packaging patterns for teams, private data, CRM notes, task creation, and enterprise controls.",
-    icon: Cpu,
-  },
+export const heroIndustryTags = [
+  "Biotech & Pharma",
+  "Finance",
+  "Tax & Accounting",
+  "Technology",
 ];
 
-export const promptComparison = {
-  prompt: {
-    title: "Prompt",
-    example: "\"Research Bayer and write a BD email.\"",
-    point: "A prompt asks for an answer.",
-  },
-  recipe: {
-    title: "Agent Recipe",
-    point:
-      "An Agent Recipe runs a repeatable professional workflow with data, scoring, review, and handoff steps.",
-    steps: [
-      "Identify business unit and strategic context",
-      "Pull recent news, pipeline, deals, filings, and internal CRM history",
-      "Match company needs against internal capabilities",
-      "Score collaboration fit, urgency, budget, and decision-maker access",
-      "Generate outreach email",
-      "Generate meeting brief",
-      "Run source-check and hallucination review",
-      "Create CRM note and follow-up task",
+export const industries = [
+  {
+    name: "Biotech & Pharma",
+    description:
+      "Professional AI coaches for biotech teams navigating scientific, commercial, clinical, and regulated work.",
+    coachTypes: [
+      "BD Coach",
+      "R&D Coach",
+      "Deal Intelligence Coach",
+      "Clinical Trial Coach",
+      "Conference Meeting Coach",
+      "Regulatory / CMC Coach",
     ],
+    examples: [
+      {
+        name: "BD Coach",
+        focus: "Company fit, partnership angle, outreach preparation, and meeting context.",
+      },
+      {
+        name: "Clinical Trial Coach",
+        focus: "Trial landscape, enrollment context, endpoint review, and study comparison.",
+      },
+      {
+        name: "Regulatory / CMC Coach",
+        focus: "Submission preparation, manufacturing context, and review checklists.",
+      },
+    ],
+    icon: Beaker,
   },
-};
-
-export const recipeExamples = [
   {
-    name: "Stock Signal Intelligence Agent",
+    name: "Finance",
     description:
-      "Turn fragmented market data into structured investment briefs, risk alerts, and watchlist updates.",
-    data:
-      "Filings, earnings calls, news, analyst updates, insider activity, options activity, social sentiment, macro events.",
-    workflow: "Monitor -> summarize -> score -> alert -> brief.",
-    output: "Daily watchlist, bullish/bearish signals, risk events, thesis update.",
-    value:
-      "Faster market research, fewer missed events, more disciplined decision-making.",
-    disclaimer: "Research and decision support only. Not financial advice.",
-    badges: ["Research", "Decision Support", "Human Review Required"],
-    icon: LineChart,
-  },
-  {
-    name: "Personal CFO Agent",
-    description:
-      "Analyze income, spending, debt, insurance, and investment options to support smarter personal financial decisions.",
-    data:
-      "Bank statements, credit card bills, income, debt, insurance policies, tax status, financial goals.",
-    workflow: "Classify -> detect waste -> compare options -> generate plan -> track progress.",
-    output:
-      "Monthly cash-flow report, debt strategy, savings plan, insurance review, decision checklist.",
-    value:
-      "Better financial visibility, less manual budgeting, clearer tradeoff analysis.",
-    badges: ["Decision Support", "Research", "Human Review Required"],
-    icon: WalletCards,
-  },
-  {
-    name: "BD Deal Scout Agent",
-    description:
-      "Find high-fit accounts, map partnership angles, draft outreach, and prepare meeting briefs from public and internal data.",
-    data:
-      "Company websites, pipeline pages, press releases, conference lists, CRM notes, funding news, clinical trials, LinkedIn signals.",
-    workflow: "Research -> match -> score -> draft -> brief -> follow up.",
-    output: "Account brief, collaboration angle, outreach email, meeting prep, CRM note.",
-    value:
-      "Higher BD productivity, faster account research, better-targeted outreach.",
-    badges: ["Workflow Automation", "Decision Support", "Enterprise Ready"],
-    icon: BriefcaseBusiness,
-  },
-  {
-    name: "Medication Navigator Agent",
-    description:
-      "Organize medications, summarize labels, flag potential risks, and prepare doctor-ready questions.",
-    data:
-      "Medication lists, drug labels, allergy history, side-effect notes, lab reports, visit summaries.",
-    workflow: "Organize -> check -> summarize -> prepare questions -> track.",
-    output:
-      "Medication summary, possible interaction flags, doctor discussion list, care timeline.",
-    value:
-      "Better patient preparation, safer medication conversations, reduced confusion.",
-    disclaimer:
-      "Supports patient education and care navigation only. Not diagnosis or medical treatment.",
-    badges: ["Review Preparation", "Human Review Required", "Decision Support"],
-    icon: HeartPulse,
-  },
-  {
-    name: "Sourcing Intelligence Agent",
-    description:
-      "Compare suppliers, pricing, MOQ, lead time, certifications, and product specs to support faster sourcing decisions.",
-    data:
-      "Supplier quotes, catalogs, product specs, MOQ, lead time, certifications, historical orders, competitor pricing.",
-    workflow: "Normalize -> compare -> score -> flag risk -> recommend.",
-    output:
-      "Supplier comparison table, cost breakdown, sourcing recommendation, risk checklist.",
-    value:
-      "Faster procurement decisions, better supplier comparison, fewer sourcing mistakes.",
-    badges: ["Decision Support", "Workflow Automation", "Enterprise Ready"],
-    icon: Truck,
-  },
-  {
-    name: "Contract Risk Agent",
-    description:
-      "Review contracts against internal playbooks and flag negotiation risks before legal review.",
-    data:
-      "Contract PDFs, internal templates, redlines, negotiation playbooks, approval rules.",
-    workflow: "Extract -> compare -> flag -> summarize -> suggest negotiation points.",
-    output: "Risk summary, clause-level flags, negotiation checklist, approval notes.",
-    value:
-      "Faster contract review, better risk visibility, more consistent commercial decisions.",
-    disclaimer: "Supports review preparation only. Does not replace legal counsel.",
-    badges: ["Review Preparation", "Human Review Required", "Enterprise Ready"],
-    icon: Scale,
-  },
-];
-
-export const channels = [
-  {
-    title: "Market Intelligence",
-    data: "Filings, earnings calls, news, analyst notes, options activity, macro events.",
-    decisions: "Position monitoring, watchlist prioritization, risk escalation.",
-    output: "Signals, briefs, risk alerts, thesis updates.",
+      "Professional AI coaches for personal and market-facing financial decisions that need structure and review.",
+    coachTypes: [
+      "Personal Finance Coach",
+      "Stock Research Coach",
+      "Portfolio Review Coach",
+      "Retirement Planning Coach",
+      "Insurance Review Coach",
+    ],
+    examples: [
+      {
+        name: "Personal Finance Coach",
+        focus: "Cash-flow visibility, tradeoff review, and monthly planning support.",
+      },
+      {
+        name: "Portfolio Review Coach",
+        focus: "Holdings context, concentration review, risk discussion, and decision checklist.",
+      },
+      {
+        name: "Insurance Review Coach",
+        focus: "Policy comparison, coverage gaps, renewal questions, and advisor-ready notes.",
+      },
+    ],
     icon: Landmark,
   },
   {
-    title: "Personal Finance",
-    data: "Statements, bills, debts, policies, goals, tax context.",
-    decisions: "Cash-flow planning, debt tradeoffs, insurance review.",
-    output: "Monthly reports, checklists, plans, progress tracking.",
-    icon: WalletCards,
+    name: "Tax & Accounting",
+    description:
+      "Professional AI coaches for preparing cleaner records, clearer questions, and more consistent reviews.",
+    coachTypes: [
+      "Tax Prep Coach",
+      "Deduction Checklist Coach",
+      "Expense Review Coach",
+      "Small Business Accounting Coach",
+    ],
+    examples: [
+      {
+        name: "Tax Prep Coach",
+        focus: "Document readiness, filing context, missing items, and preparer handoff.",
+      },
+      {
+        name: "Expense Review Coach",
+        focus: "Expense categorization, anomaly review, and month-end cleanup.",
+      },
+      {
+        name: "Small Business Accounting Coach",
+        focus: "Bookkeeping cadence, cash context, owner questions, and reporting prep.",
+      },
+    ],
+    icon: FileCheck2,
   },
   {
-    title: "Business Development",
-    data: "Company data, pipelines, CRM notes, events, funding and partnership signals.",
-    decisions: "Account fit, outreach priority, collaboration angle.",
-    output: "Account briefs, outreach drafts, meeting prep, CRM notes.",
+    name: "Technology",
+    description:
+      "Professional AI coaches for teams making product, tooling, startup, and diligence decisions.",
+    coachTypes: [
+      "Product Strategy Coach",
+      "AI Tooling Coach",
+      "Startup Operations Coach",
+      "Technical Due Diligence Coach",
+    ],
+    examples: [
+      {
+        name: "Product Strategy Coach",
+        focus: "Market context, roadmap tradeoffs, customer signals, and launch decisions.",
+      },
+      {
+        name: "AI Tooling Coach",
+        focus: "Tool selection, workflow fit, adoption risk, and implementation planning.",
+      },
+      {
+        name: "Technical Due Diligence Coach",
+        focus: "Architecture review, team questions, risk summary, and diligence notes.",
+      },
+    ],
+    icon: Cpu,
+  },
+  {
+    name: "Legal & Compliance",
+    description:
+      "Professional AI coaches for review preparation, policy alignment, and decision records.",
+    coachTypes: [
+      "Contract Review Coach",
+      "Policy Compliance Coach",
+      "Privacy Review Coach",
+      "Approval Workflow Coach",
+    ],
+    examples: [
+      {
+        name: "Contract Review Coach",
+        focus: "Clause flags, commercial risk, negotiation questions, and counsel-ready notes.",
+      },
+      {
+        name: "Privacy Review Coach",
+        focus: "Data handling questions, review packets, and policy alignment checks.",
+      },
+      {
+        name: "Approval Workflow Coach",
+        focus: "Decision history, stakeholder routing, and approval documentation.",
+      },
+    ],
+    icon: Scale,
+  },
+  {
+    name: "Healthcare",
+    description:
+      "Professional AI coaches for education, preparation, navigation, and care conversations.",
+    coachTypes: [
+      "Medication Navigation Coach",
+      "Care Visit Prep Coach",
+      "Insurance Navigation Coach",
+      "Patient Timeline Coach",
+    ],
+    examples: [
+      {
+        name: "Medication Navigation Coach",
+        focus: "Medication lists, label summaries, possible questions, and visit preparation.",
+      },
+      {
+        name: "Care Visit Prep Coach",
+        focus: "Symptoms, timeline, lab context, and doctor-ready discussion points.",
+      },
+      {
+        name: "Insurance Navigation Coach",
+        focus: "Benefits context, claims questions, and coverage conversation prep.",
+      },
+    ],
+    icon: HeartPulse,
+  },
+];
+
+export const userBenefits = [
+  {
+    title: "Start with your industry",
+    body: "Find professional AI coaches organized by the decisions and context your field already understands.",
+    icon: Building2,
+  },
+  {
+    title: "Get structured guidance",
+    body: "Use coach-led checklists, briefs, scoring rubrics, and handoffs instead of ad hoc AI conversations.",
+    icon: ClipboardCheck,
+  },
+  {
+    title: "Stay in control",
+    body: "AI coaches support preparation and decision clarity while keeping expert and human review in the loop.",
+    icon: CheckCircle2,
+  },
+];
+
+export const coachBenefits = [
+  {
+    title: "Package expertise",
+    body: "Turn your professional judgment into a reusable AI coach for a specific industry audience.",
     icon: BriefcaseBusiness,
   },
   {
-    title: "Healthcare Navigation",
-    data: "Medication lists, labels, visit notes, labs, symptom logs.",
-    decisions: "Care preparation, question planning, risk discussion prompts.",
-    output: "Summaries, timelines, possible flags, doctor-ready questions.",
-    icon: Stethoscope,
+    title: "Build reputation",
+    body: "Publish clear coach types, improve them with feedback, and become discoverable by teams.",
+    icon: BadgeDollarSign,
   },
   {
-    title: "Sourcing & Supply Chain",
-    data: "Quotes, catalogs, specs, MOQ, certifications, lead times, order history.",
-    decisions: "Supplier comparison, risk review, procurement recommendation.",
-    output: "Comparison tables, cost breakdowns, risk checklists.",
-    icon: Truck,
-  },
-  {
-    title: "Contract & Risk Review",
-    data: "Contracts, templates, redlines, playbooks, approval rules.",
-    decisions: "Clause risk, negotiation position, review readiness.",
-    output: "Risk summaries, clause flags, negotiation checklists.",
-    icon: FileText,
-  },
-  {
-    title: "Enterprise Operations",
-    data: "Internal knowledge, process docs, tickets, approvals, team systems.",
-    decisions: "Workflow routing, escalation, compliance review, operational action.",
-    output: "Standardized notes, checklists, tasks, review packets.",
+    title: "Support private deployments",
+    body: "Help organizations adapt industry coaches to internal policies, data, and review processes.",
     icon: ShieldCheck,
   },
 ];
 
-export const creatorBullets = [
-  "Turn expertise into reusable agent systems",
-  "Build reputation through ranked recipes",
-  "Monetize with Pro Recipes and enterprise licensing",
-  "Help companies operationalize expert workflows",
-];
-
-export const enterpriseCapabilities = [
-  "Standardized workflows",
-  "Private recipe adaptation",
-  "Security and compliance review",
-  "Team deployment patterns",
-  "Evaluation checklists",
-  "Local model and private AI options",
-  "Internal knowledge integration",
-];
-
-export const finalAudiencePaths = [
+export const trustPrinciples = [
   {
-    title: "For Users",
-    body: "Explore usable Agent Recipes.",
-    icon: Search,
+    title: "Privacy first",
+    body: "Private deployments can keep sensitive data inside team-approved environments.",
+    icon: LockKeyhole,
   },
   {
-    title: "For Experts",
-    body: "Publish and monetize your workflows.",
-    icon: ClipboardCheck,
+    title: "Professional boundaries",
+    body: "Coaches are built for preparation and decision support, not replacing licensed professionals.",
+    icon: ShieldCheck,
   },
   {
-    title: "For Companies",
-    body: "Deploy private agent systems for your team.",
-    icon: Database,
+    title: "Human review",
+    body: "High-stakes decisions should keep source review, audit trails, and accountable owners.",
+    icon: CheckCircle2,
   },
 ];
