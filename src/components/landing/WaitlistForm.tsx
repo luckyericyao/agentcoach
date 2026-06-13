@@ -7,7 +7,7 @@ export function WaitlistForm() {
   return (
     <motion.form
       onSubmit={(event) => event.preventDefault()}
-      className="mt-9 grid gap-3 sm:grid-cols-[1fr_auto]"
+      className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-[1fr_auto]"
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -29,7 +29,7 @@ export function WaitlistForm() {
       </div>
       <button
         type="submit"
-        className="inline-flex h-[3.25rem] items-center justify-center gap-2 rounded border border-platinum bg-platinum px-5 text-sm font-semibold text-carbon transition duration-200 hover:bg-white focus:outline-none focus:ring-2 focus:ring-ion/50"
+        className="inline-flex h-[3.25rem] w-full items-center justify-center gap-2 rounded border border-platinum bg-platinum px-5 text-sm font-semibold text-carbon transition duration-200 hover:bg-white focus:outline-none focus:ring-2 focus:ring-ion/50 sm:w-auto"
       >
         Request Access
         <ArrowRight aria-hidden="true" className="size-4" />
