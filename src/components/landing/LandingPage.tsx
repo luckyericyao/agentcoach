@@ -2,17 +2,21 @@
 
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import {
   channels,
+  conversionPaths,
   enterpriseCapabilities,
   enterpriseFlow,
   featuredRecipes,
   finalAudiencePaths,
   heroSignals,
   recipeParts,
+  useCaseHighlights,
 } from "@/lib/landing-data";
 import { OrbitalNetwork } from "./OrbitalNetwork";
 import { SectionReveal } from "./SectionReveal";
+import { SiteFooter } from "./SiteFooter";
 import { TopNavigation } from "./TopNavigation";
 import { WaitlistForm } from "./WaitlistForm";
 
@@ -69,20 +73,20 @@ export function LandingPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.54 }}
             >
-              <a
-                href="#recipes"
+              <Link
+                href="/become-a-client"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded bg-platinum px-5 text-sm font-semibold text-carbon transition duration-200 hover:bg-white focus:outline-none focus:ring-2 focus:ring-ion/50"
               >
-                Explore Agent Recipes
+                Become a Client
                 <ArrowRight aria-hidden="true" className="size-4" />
-              </a>
-              <a
-                href="#enterprise"
+              </Link>
+              <Link
+                href="/become-a-coach"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded border border-white/[0.16] bg-white/[0.07] px-5 text-sm font-semibold text-platinum shadow-inner-line transition duration-200 hover:border-white/[0.28] hover:bg-white/[0.12] focus:outline-none focus:ring-2 focus:ring-ion/50"
               >
-                Request Enterprise Access
+                Become a Coach
                 <ArrowRight aria-hidden="true" className="size-4" />
-              </a>
+              </Link>
             </motion.div>
 
             <motion.div
@@ -152,6 +156,71 @@ export function LandingPage() {
       </SectionReveal>
 
       <SectionReveal
+        id="paths"
+        className="relative border-b border-white/10 px-5 py-24 sm:px-8 lg:py-36"
+      >
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-10 lg:grid-cols-[0.8fr_1fr] lg:items-end">
+            <div>
+              <p className="text-sm font-semibold text-ember">Two Paths</p>
+              <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl lg:text-6xl">
+                Build the network from both sides.
+              </h2>
+            </div>
+            <p className="max-w-2xl text-pretty text-lg leading-8 text-steel lg:ml-auto">
+              AgentCoach connects clients who need better AI workflows with experts who
+              know how high-value work should actually be done.
+            </p>
+          </div>
+
+          <div className="mt-14 grid gap-4 lg:grid-cols-2">
+            {conversionPaths.map((path, index) => {
+              const Icon = path.icon;
+              return (
+                <motion.article
+                  key={path.title}
+                  className="rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-inner-line transition duration-200 hover:border-white/[0.22] hover:bg-white/[0.065] sm:p-8"
+                  initial={{ opacity: 0, y: 22 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.55, delay: index * 0.08 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                >
+                  <div className="grid size-11 place-items-center rounded border border-white/[0.12] bg-black/30">
+                    <Icon aria-hidden="true" className="size-5 text-ember" />
+                  </div>
+                  <p className="mt-9 text-sm font-semibold text-steel">{path.eyebrow}</p>
+                  <h3 className="mt-3 text-3xl font-semibold leading-tight text-platinum">
+                    {path.title}
+                  </h3>
+                  <p className="mt-5 text-pretty text-base leading-7 text-steel">
+                    {path.description}
+                  </p>
+                  <div className="mt-7 grid gap-3">
+                    {path.points.map((point) => (
+                      <p key={point} className="flex gap-3 text-sm leading-6 text-steel">
+                        <CheckCircle2
+                          aria-hidden="true"
+                          className="mt-0.5 size-4 shrink-0 text-ion"
+                        />
+                        <span>{point}</span>
+                      </p>
+                    ))}
+                  </div>
+                  <Link
+                    href={path.href}
+                    className="mt-8 inline-flex h-11 items-center justify-center gap-2 rounded border border-white/[0.16] bg-white/[0.07] px-4 text-sm font-semibold text-platinum transition duration-200 hover:border-white/[0.28] hover:bg-white/[0.12] focus:outline-none focus:ring-2 focus:ring-ion/50"
+                  >
+                    {path.cta}
+                    <ArrowRight aria-hidden="true" className="size-4" />
+                  </Link>
+                </motion.article>
+              );
+            })}
+          </div>
+        </div>
+      </SectionReveal>
+
+      <SectionReveal
         id="channels"
         className="relative border-b border-white/10 px-5 py-24 sm:px-8 lg:py-36"
       >
@@ -174,40 +243,52 @@ export function LandingPage() {
             {channels.map((channel, index) => {
               const Icon = channel.icon;
               return (
-                <motion.article
+                <Link
+                  href={`/industries/${channel.slug}`}
                   key={channel.name}
-                  className="flex min-h-[31rem] flex-col rounded-lg border border-white/10 bg-carbon/80 p-6 shadow-inner-line backdrop-blur transition duration-200 hover:border-white/[0.22] hover:bg-ink"
-                  initial={{ opacity: 0, y: 22 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.55, delay: (index % 3) * 0.08 }}
-                  viewport={{ once: true, amount: 0.22 }}
+                  className="block"
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="grid size-10 shrink-0 place-items-center rounded border border-white/[0.12] bg-black/30">
-                      <Icon aria-hidden="true" className="size-5 text-ember" />
+                  <motion.article
+                    className="flex min-h-[31rem] flex-col rounded-lg border border-white/10 bg-carbon/80 p-6 shadow-inner-line backdrop-blur transition duration-200 hover:border-white/[0.22] hover:bg-ink"
+                    initial={{ opacity: 0, y: 22 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.55, delay: (index % 3) * 0.08 }}
+                    viewport={{ once: true, amount: 0.22 }}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="grid size-10 shrink-0 place-items-center rounded border border-white/[0.12] bg-black/30">
+                        <Icon aria-hidden="true" className="size-5 text-ember" />
+                      </div>
+                      <span className="rounded border border-white/10 bg-white/[0.06] px-2.5 py-1 text-xs font-medium text-steel">
+                        Channel
+                      </span>
                     </div>
-                    <span className="rounded border border-white/10 bg-white/[0.06] px-2.5 py-1 text-xs font-medium text-steel">
-                      Channel
+                    <h3 className="mt-10 text-2xl font-semibold leading-tight text-platinum">
+                      {channel.name}
+                    </h3>
+                    <p className="mt-3 text-pretty text-sm leading-6 text-steel">
+                      {channel.tagline}
+                    </p>
+                    <div className="mt-7 grid gap-5 text-sm leading-6">
+                      <div>
+                        <p className="font-semibold text-platinum">Decisions</p>
+                        <p className="mt-1 text-steel">{channel.decisions}</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-platinum">Data</p>
+                        <p className="mt-1 text-steel">{channel.data}</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-platinum">Recipes produce</p>
+                        <p className="mt-1 text-steel">{channel.produces}</p>
+                      </div>
+                    </div>
+                    <span className="mt-auto inline-flex items-center gap-2 pt-8 text-sm font-semibold text-platinum">
+                      Explore industry
+                      <ArrowRight aria-hidden="true" className="size-4" />
                     </span>
-                  </div>
-                  <h3 className="mt-10 text-2xl font-semibold leading-tight text-platinum">
-                    {channel.name}
-                  </h3>
-                  <div className="mt-7 grid gap-5 text-sm leading-6">
-                    <div>
-                      <p className="font-semibold text-platinum">Decisions</p>
-                      <p className="mt-1 text-steel">{channel.decisions}</p>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-platinum">Data</p>
-                      <p className="mt-1 text-steel">{channel.data}</p>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-platinum">Recipes produce</p>
-                      <p className="mt-1 text-steel">{channel.produces}</p>
-                    </div>
-                  </div>
-                </motion.article>
+                  </motion.article>
+                </Link>
               );
             })}
           </div>
@@ -293,6 +374,58 @@ export function LandingPage() {
       </SectionReveal>
 
       <SectionReveal
+        id="use-cases"
+        className="relative border-b border-white/10 px-5 py-24 sm:px-8 lg:py-36"
+      >
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-10 lg:grid-cols-[0.86fr_1fr] lg:items-end">
+            <div>
+              <p className="text-sm font-semibold text-ember">Efficiency Examples</p>
+              <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl lg:text-6xl">
+                Repeated work becomes a reusable system.
+              </h2>
+            </div>
+            <p className="max-w-2xl text-pretty text-lg leading-8 text-steel lg:ml-auto">
+              Use cases show where Agent Recipes reduce manual research, improve output
+              consistency, and keep risk boundaries visible.
+            </p>
+          </div>
+
+          <div className="mt-14 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {useCaseHighlights.map((useCase, index) => (
+              <motion.article
+                key={useCase.slug}
+                className="rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-inner-line"
+                initial={{ opacity: 0, y: 22 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: (index % 3) * 0.08 }}
+                viewport={{ once: true, amount: 0.24 }}
+              >
+                <p className="text-sm font-semibold text-ion">{useCase.industry}</p>
+                <h3 className="mt-4 text-2xl font-semibold leading-tight text-platinum">
+                  {useCase.title}
+                </h3>
+                <div className="mt-7 grid gap-5 text-sm leading-6 text-steel">
+                  <p>
+                    <span className="font-semibold text-platinum">Problem: </span>
+                    {useCase.problem}
+                  </p>
+                  <p>
+                    <span className="font-semibold text-platinum">Agent workflow: </span>
+                    {useCase.agentWorkflow}
+                  </p>
+                  <p>
+                    <span className="font-semibold text-platinum">Efficiency gain: </span>
+                    {useCase.efficiencyGain}
+                  </p>
+                </div>
+              </motion.article>
+            ))}
+          </div>
+        </div>
+      </SectionReveal>
+
+      <SectionReveal
         id="enterprise"
         className="relative border-b border-white/10 px-5 py-24 sm:px-8 lg:py-36"
       >
@@ -358,16 +491,17 @@ export function LandingPage() {
                 {finalAudiencePaths.map((path) => {
                   const Icon = path.icon;
                   return (
-                    <article
+                    <Link
+                      href={path.href}
                       key={path.title}
-                      className="rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-inner-line"
+                      className="rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-inner-line transition duration-200 hover:border-white/[0.22] hover:bg-white/[0.065]"
                     >
                       <Icon aria-hidden="true" className="size-5 text-ember" />
                       <h3 className="mt-5 text-base font-semibold text-platinum">
                         {path.title}
                       </h3>
                       <p className="mt-2 text-sm leading-6 text-steel">{path.body}</p>
-                    </article>
+                    </Link>
                   );
                 })}
               </div>
@@ -389,12 +523,7 @@ export function LandingPage() {
         </div>
       </SectionReveal>
 
-      <footer className="border-t border-white/10 px-5 py-8 sm:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 text-sm text-steel sm:flex-row sm:items-center sm:justify-between">
-          <p>AgentCoach</p>
-          <p>Train the world&apos;s AI agents.</p>
-        </div>
-      </footer>
+      <SiteFooter />
     </main>
   );
 }
