@@ -21,7 +21,6 @@ const problems = [
   "Repeated manual research",
   "Unstructured AI usage",
   "Inconsistent outputs",
-  "Weak prompt quality",
   "Poor workflow standardization",
   "Lack of evaluation",
   "Lack of risk boundaries",
@@ -29,13 +28,12 @@ const problems = [
 ];
 
 const benefits = [
-  "Faster research",
-  "Better meeting prep",
-  "Standardized analysis",
-  "Repeatable workflows",
-  "Higher-quality outputs",
-  "Team-level knowledge reuse",
-  "Safer AI usage with risk boundaries",
+  "Use expert-built AI coaches",
+  "Improve high-value workflows",
+  "Standardize repeated research and decision prep",
+  "Deploy private AI coaches for teams",
+  "Turn messy knowledge work into reusable systems",
+  "Keep evaluation and risk boundaries visible",
 ];
 
 export default function BecomeAClientPage() {
@@ -59,7 +57,7 @@ export default function BecomeAClientPage() {
           </h1>
           <p className="mt-7 max-w-3xl text-pretty text-lg leading-8 text-steel sm:text-xl">
             AgentCoach helps individuals, teams, and organizations turn repeated
-            knowledge work into structured AI-assisted workflows.
+            knowledge work into structured AI coach systems.
           </p>
         </div>
       </section>

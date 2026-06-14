@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { insertLead } from "@/lib/supabase";
+import { submitLead } from "@/lib/lead-submission";
 import {
   LeadFormShell,
   LeadTextArea,
@@ -54,13 +54,15 @@ export function CoachLeadForm() {
     }
 
     setStatus("loading");
-    const result = await insertLead("coach_leads", {
+    const result = await submitLead({
+      lead_type: "coach",
       name: values.name.trim(),
       email: values.email.trim(),
       linkedin_or_website: values.linkedin_or_website.trim(),
       expertise_area: values.expertise_area.trim(),
       recipe_interest: values.recipe_interest.trim(),
-      notes: values.notes.trim(),
+      message: values.notes.trim(),
+      source: "become-a-coach",
     });
 
     if (result.ok) {
@@ -70,12 +72,12 @@ export function CoachLeadForm() {
 
     if (result.reason === "missing-config") {
       setStatus("config");
-      setMessage("This form is ready, but Supabase is not configured in this environment.");
+      setMessage(result.message);
       return;
     }
 
     setStatus("error");
-    setMessage("Something went wrong. Please try again.");
+    setMessage(result.message);
   }
 
   return (

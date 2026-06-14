@@ -22,11 +22,11 @@ import { featuredAgentRecipes } from "./recipes-data";
 import { useCases } from "./use-cases-data";
 
 export const navItems = [
-  { label: "Industries", href: "/#channels" },
+  { label: "Explore", href: "/#channels" },
   { label: "Agent Recipes", href: "/recipes" },
-  { label: "Become a Coach", href: "/become-a-coach" },
   { label: "Become a Client", href: "/become-a-client" },
-  { label: "Enterprise", href: "/#enterprise" },
+  { label: "Become a Coach", href: "/become-a-coach" },
+  { label: "Login", href: "/login" },
 ];
 
 export const heroSignals = [

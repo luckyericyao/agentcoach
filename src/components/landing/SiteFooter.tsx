@@ -3,8 +3,10 @@ import { industries } from "@/lib/industries-data";
 
 const productLinks = [
   { label: "Agent Recipes", href: "/recipes" },
-  { label: "Become a Coach", href: "/become-a-coach" },
   { label: "Become a Client", href: "/become-a-client" },
+  { label: "Become a Coach", href: "/become-a-coach" },
+  { label: "Login", href: "/login" },
+  { label: "Account", href: "/account" },
   { label: "Enterprise", href: "/#enterprise" },
   { label: "Waitlist", href: "/#waitlist" },
 ];

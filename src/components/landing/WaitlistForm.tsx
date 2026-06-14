@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { ArrowRight, Loader2, Send } from "lucide-react";
 import { motion } from "framer-motion";
-import { insertLead } from "@/lib/supabase";
+import { submitLead } from "@/lib/lead-submission";
 
 export function WaitlistForm() {
   const [email, setEmail] = useState("");
@@ -26,7 +26,8 @@ export function WaitlistForm() {
     }
 
     setStatus("loading");
-    const result = await insertLead("waitlist", {
+    const result = await submitLead({
+      lead_type: "waitlist",
       email: email.trim(),
       source: "homepage",
     });
@@ -39,12 +40,12 @@ export function WaitlistForm() {
 
     if (result.reason === "missing-config") {
       setStatus("config");
-      setMessage("This form is ready, but Supabase is not configured in this environment.");
+      setMessage(result.message);
       return;
     }
 
     setStatus("error");
-    setMessage("Something went wrong. Please try again.");
+    setMessage(result.message);
   }
 
   return (

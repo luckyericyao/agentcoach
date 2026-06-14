@@ -20,13 +20,12 @@ const coachAudiences = [
 
 const creationTypes = [
   "Agent Recipes",
+  "AI coach systems",
   "Workflow playbooks",
   "System instructions",
   "Research agents",
   "Meeting prep agents",
   "Review agents",
-  "Automation agents",
-  "Enterprise deployment templates",
 ];
 
 const whyItMatters = [
@@ -63,10 +62,10 @@ export default function BecomeACoachPage() {
           <h1 className="mt-6 max-w-5xl text-balance text-5xl font-semibold leading-none text-platinum sm:text-7xl">
             Turn your expertise into reusable Agent Recipes.
           </h1>
-          <p className="mt-7 max-w-3xl text-pretty text-lg leading-8 text-steel sm:text-xl">
-            Package your workflows, judgment, and domain knowledge into AI agent
-            systems that others can discover, reuse, and eventually deploy.
-          </p>
+            <p className="mt-7 max-w-3xl text-pretty text-lg leading-8 text-steel sm:text-xl">
+              Package your workflows, judgment, and domain knowledge into AI agent
+              systems that others can discover, reuse, and eventually deploy.
+            </p>
         </div>
       </section>
 
