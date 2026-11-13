@@ -14,22 +14,57 @@ import {
   ShieldCheck,
   Stethoscope,
   Truck,
+  Users,
   Workflow,
 } from "lucide-react";
+import { industries } from "./industries-data";
+import { featuredAgentRecipes, recipeSummaryModules } from "./recipes-data";
+import { useCases } from "./use-cases-data";
 
 export const navItems = [
-  { label: "Recipes", href: "#recipes" },
-  { label: "Channels", href: "#channels" },
-  { label: "Featured", href: "#featured-recipes" },
-  { label: "Enterprise", href: "#enterprise" },
-  { label: "Access", href: "#waitlist" },
+  { label: "Explore", href: "/#channels" },
+  { label: "Agent Recipes", href: "/recipes" },
+  { label: "Become a Client", href: "/become-a-client" },
+  { label: "Become a Coach", href: "/become-a-coach" },
+  { label: "Login", href: "/login" },
 ];
 
 export const heroSignals = [
-  "Expert-built",
-  "Rankable",
-  "Deployable",
-  "Enterprise-ready",
+  "8-part systems",
+  "Source discipline",
+  "Human review",
+  "Deployment plans",
+];
+
+export const conversionPaths = [
+  {
+    title: "Become a Client",
+    eyebrow: "For individuals, teams, and enterprises",
+    description:
+      "Explore structured sample recipes and tell us which repeated decisions your team needs to support next.",
+    href: "/become-a-client",
+    cta: "Become a Client",
+    points: [
+      "Inspect complete sample workflows",
+      "Define your inputs and desired outputs",
+      "Request a private adaptation",
+    ],
+    icon: Users,
+  },
+  {
+    title: "Become a Coach",
+    eyebrow: "For experts and operators",
+    description:
+      "Join the early coach network to help shape reusable Agent Recipes around your workflows, judgment, and domain knowledge.",
+    href: "/become-a-coach",
+    cta: "Become a Coach",
+    points: [
+      "Propose a complete Agent Recipe",
+      "Define evidence and review standards",
+      "Help shape future publishing and licensing",
+    ],
+    icon: Workflow,
+  },
 ];
 
 export const recipeParts = [
@@ -75,107 +110,52 @@ export const recipeParts = [
   },
 ];
 
-export const channels = [
-  {
-    name: "Biotech & Pharma",
-    decisions:
-      "Partnering, pipeline strategy, clinical context, conference planning, regulatory preparation.",
-    data:
-      "Pipelines, filings, trials, publications, deal history, press releases, internal notes.",
-    produces:
-      "BD briefs, trial maps, target lists, meeting packs, diligence summaries, review checklists.",
-    icon: Stethoscope,
-  },
-  {
-    name: "Finance & Market Research",
-    decisions:
-      "Market monitoring, company analysis, earnings review, risk signals, portfolio questions.",
-    data:
-      "Filings, earnings calls, news, analyst updates, macro events, transcripts, price context.",
-    produces:
-      "Signal briefs, thesis updates, watchlists, risk alerts, comparison tables, source packs.",
-    icon: LineChart,
-  },
-  {
-    name: "Coding & Automation",
-    decisions:
-      "Build planning, repo analysis, implementation strategy, testing, automation design.",
-    data:
-      "Codebases, issues, docs, logs, designs, tickets, APIs, product requirements.",
-    produces:
-      "Implementation plans, code changes, test plans, PR notes, automation runbooks.",
-    icon: Cpu,
-  },
-  {
-    name: "Sales & Business Development",
-    decisions:
-      "Account fit, prospecting priority, partnership angle, outreach sequencing, meeting prep.",
-    data:
-      "Company sites, CRM notes, funding signals, product pages, events, LinkedIn context.",
-    produces:
-      "Account briefs, opportunity scores, outreach drafts, call plans, follow-up tasks.",
-    icon: BriefcaseBusiness,
-  },
-  {
-    name: "Healthcare Research",
-    decisions:
-      "Evidence review, care preparation, literature scan, study comparison, patient education support.",
-    data:
-      "Guidelines, papers, labels, visit notes, lab context, care timelines, public evidence.",
-    produces:
-      "Evidence summaries, question lists, study grids, source reviews, clinician-ready notes.",
-    icon: HeartPulse,
-  },
-  {
-    name: "Enterprise Operations",
-    decisions:
-      "Process routing, internal knowledge use, policy alignment, approvals, operational handoffs.",
-    data:
-      "Policies, tickets, knowledge bases, SOPs, approvals, team systems, audit requirements.",
-    produces:
-      "Decision records, playbooks, task packets, escalation notes, governed team workflows.",
-    icon: Truck,
-  },
-];
+const industryIcons = {
+  "biotech-pharma": Stethoscope,
+  "finance-market-research": LineChart,
+  "coding-automation": Cpu,
+  "sales-business-development": BriefcaseBusiness,
+  "healthcare-research": HeartPulse,
+  "enterprise-operations": Truck,
+};
 
-export const featuredRecipes = [
-  {
-    name: "Biotech BD Meeting Prep Agent",
-    domain: "Biotech & Pharma",
-    useCase:
-      "Prepare a partnership meeting with company context, scientific fit, deal signals, and next-step questions.",
-    modules: ["Instruction", "Workflow", "Evaluation", "Deployment"],
-    output: "Company brief, collaboration angle, meeting agenda, risk flags, CRM-ready follow-up.",
-    icon: Stethoscope,
-  },
-  {
-    name: "Finance Earnings Call Analyst",
-    domain: "Finance & Market Research",
-    useCase:
-      "Turn transcripts, filings, guidance, and news into an analyst-style earnings review.",
-    modules: ["Instruction", "Workflow", "Evaluation", "Deployment"],
-    output: "Earnings brief, key deltas, management tone, watchlist signals, source-linked notes.",
-    icon: Landmark,
-  },
-  {
-    name: "Codex Full-Stack Builder Agent",
-    domain: "Coding & Automation",
-    useCase:
-      "Translate a product request into implementation steps, code edits, validation, and PR-ready notes.",
-    modules: ["Instruction", "Workflow", "Evaluation", "Deployment"],
-    output: "Build plan, scoped code changes, test results, deployment notes, PR summary.",
-    icon: Cpu,
-  },
-  {
-    name: "Healthcare Evidence Review Agent",
-    domain: "Healthcare Research",
-    useCase:
-      "Review a focused medical question against papers, guidelines, and source quality boundaries.",
-    modules: ["Instruction", "Workflow", "Evaluation", "Deployment"],
-    output: "Evidence table, summary brief, uncertainty notes, source checks, discussion questions.",
-    icon: HeartPulse,
-  },
-];
+export const channels = industries.map((industry) => ({
+  ...industry,
+  decisions: industry.decisionsSupported.slice(0, 3).join(", "),
+  data: industry.dataUsed.slice(0, 5).join(", "),
+  produces: industry.agentOutputs.slice(0, 5).join(", "),
+  icon: industryIcons[industry.slug as keyof typeof industryIcons],
+}));
+
+const recipeIcons = {
+  "biotech-bd-meeting-prep-agent": Stethoscope,
+  "finance-earnings-call-analyst": Landmark,
+  "codex-full-stack-builder-agent": Cpu,
+  "healthcare-evidence-review-agent": HeartPulse,
+};
+
+export const featuredRecipes = featuredAgentRecipes.map((recipe) => ({
+  ...recipe,
+  summaryModules: recipeSummaryModules,
+  output: recipe.outputExamples.join(", "),
+  icon: recipeIcons[recipe.slug as keyof typeof recipeIcons],
+}));
+
+export const useCaseHighlights = useCases
+  .filter((useCase) =>
+    [
+      "biotech-bd-meeting-preparation",
+      "earnings-call-analysis",
+      "codex-task-generation",
+      "lead-research",
+      "healthcare-literature-review",
+      "sop-transformation",
+    ].includes(useCase.slug),
+  )
+  .map((useCase) => ({
+    ...useCase,
+    industry: industries.find((industry) => industry.slug === useCase.industrySlug)?.name ?? "",
+  }));
 
 export const enterpriseCapabilities = [
   "Private Agent Recipe adaptation",
@@ -197,18 +177,21 @@ export const enterpriseFlow = [
 
 export const finalAudiencePaths = [
   {
-    title: "Creators",
-    body: "Publish expert workflows as complete Agent Recipes.",
+    title: "Become a Client",
+    body: "Explore samples and request a workflow adaptation.",
+    href: "/become-a-client",
+    icon: Users,
+  },
+  {
+    title: "Become a Coach",
+    body: "Apply to contribute your professional workflows.",
+    href: "/become-a-coach",
     icon: Workflow,
   },
   {
-    title: "Teams",
-    body: "Find reusable systems for high-value professional work.",
-    icon: BriefcaseBusiness,
-  },
-  {
-    title: "Enterprises",
-    body: "Convert proven public recipes into private agents.",
+    title: "Enterprise",
+    body: "Plan a private workflow for your team.",
+    href: "/#enterprise",
     icon: LockKeyhole,
   },
 ];

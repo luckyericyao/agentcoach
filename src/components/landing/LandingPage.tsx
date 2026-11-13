@@ -1,24 +1,32 @@
 "use client";
 
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { useState } from "react";
+import { ArrowRight, ArrowUpRight, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
+import Link from "next/link";
+import type { AgentRecipe } from "@/lib/recipes-data";
+import { RecipePreview } from "@/components/recipes/RecipePreview";
 import {
   channels,
+  conversionPaths,
   enterpriseCapabilities,
   enterpriseFlow,
   featuredRecipes,
   finalAudiencePaths,
   heroSignals,
   recipeParts,
+  useCaseHighlights,
 } from "@/lib/landing-data";
 import { OrbitalNetwork } from "./OrbitalNetwork";
 import { SectionReveal } from "./SectionReveal";
+import { SiteFooter } from "./SiteFooter";
 import { TopNavigation } from "./TopNavigation";
 import { WaitlistForm } from "./WaitlistForm";
 
 export function LandingPage() {
+  const [selectedRecipe, setSelectedRecipe] = useState<AgentRecipe | null>(null);
   return (
-    <main className="min-h-screen overflow-hidden bg-carbon text-platinum">
+    <main id="main-content" tabIndex={-1} className="min-h-screen overflow-hidden bg-carbon text-platinum">
       <TopNavigation />
 
       <section
@@ -69,20 +77,20 @@ export function LandingPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.54 }}
             >
-              <a
-                href="#recipes"
+              <Link
+                href="/recipes"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded bg-platinum px-5 text-sm font-semibold text-carbon transition duration-200 hover:bg-white focus:outline-none focus:ring-2 focus:ring-ion/50"
               >
-                Explore Agent Recipes
+                Explore Recipes
                 <ArrowRight aria-hidden="true" className="size-4" />
-              </a>
-              <a
-                href="#enterprise"
+              </Link>
+              <Link
+                href="/become-a-coach"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded border border-white/[0.16] bg-white/[0.07] px-5 text-sm font-semibold text-platinum shadow-inner-line transition duration-200 hover:border-white/[0.28] hover:bg-white/[0.12] focus:outline-none focus:ring-2 focus:ring-ion/50"
               >
-                Request Enterprise Access
+                Become a Coach
                 <ArrowRight aria-hidden="true" className="size-4" />
-              </a>
+              </Link>
             </motion.div>
 
             <motion.div
@@ -152,6 +160,71 @@ export function LandingPage() {
       </SectionReveal>
 
       <SectionReveal
+        id="paths"
+        className="relative border-b border-white/10 px-5 py-24 sm:px-8 lg:py-36"
+      >
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-10 lg:grid-cols-[0.8fr_1fr] lg:items-end">
+            <div>
+              <p className="text-sm font-semibold text-ember">Two Paths</p>
+              <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl lg:text-6xl">
+                Build the network from both sides.
+              </h2>
+            </div>
+            <p className="max-w-2xl text-pretty text-lg leading-8 text-steel lg:ml-auto">
+              AgentCoach connects clients who need better AI workflows with experts who
+              know how high-value work should actually be done.
+            </p>
+          </div>
+
+          <div className="mt-14 grid gap-4 lg:grid-cols-2">
+            {conversionPaths.map((path, index) => {
+              const Icon = path.icon;
+              return (
+                <motion.article
+                  key={path.title}
+                  className="rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-inner-line transition duration-200 hover:border-white/[0.22] hover:bg-white/[0.065] sm:p-8"
+                  initial={{ opacity: 0, y: 22 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.55, delay: index * 0.08 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                >
+                  <div className="grid size-11 place-items-center rounded border border-white/[0.12] bg-black/30">
+                    <Icon aria-hidden="true" className="size-5 text-ember" />
+                  </div>
+                  <p className="mt-9 text-sm font-semibold text-steel">{path.eyebrow}</p>
+                  <h3 className="mt-3 text-3xl font-semibold leading-tight text-platinum">
+                    {path.title}
+                  </h3>
+                  <p className="mt-5 text-pretty text-base leading-7 text-steel">
+                    {path.description}
+                  </p>
+                  <div className="mt-7 grid gap-3">
+                    {path.points.map((point) => (
+                      <p key={point} className="flex gap-3 text-sm leading-6 text-steel">
+                        <CheckCircle2
+                          aria-hidden="true"
+                          className="mt-0.5 size-4 shrink-0 text-ion"
+                        />
+                        <span>{point}</span>
+                      </p>
+                    ))}
+                  </div>
+                  <Link
+                    href={path.href}
+                    className="mt-8 inline-flex h-11 items-center justify-center gap-2 rounded border border-white/[0.16] bg-white/[0.07] px-4 text-sm font-semibold text-platinum transition duration-200 hover:border-white/[0.28] hover:bg-white/[0.12] focus:outline-none focus:ring-2 focus:ring-ion/50"
+                  >
+                    {path.cta}
+                    <ArrowRight aria-hidden="true" className="size-4" />
+                  </Link>
+                </motion.article>
+              );
+            })}
+          </div>
+        </div>
+      </SectionReveal>
+
+      <SectionReveal
         id="channels"
         className="relative border-b border-white/10 px-5 py-24 sm:px-8 lg:py-36"
       >
@@ -174,40 +247,52 @@ export function LandingPage() {
             {channels.map((channel, index) => {
               const Icon = channel.icon;
               return (
-                <motion.article
+                <Link
+                  href={`/industries/${channel.slug}`}
                   key={channel.name}
-                  className="flex min-h-[31rem] flex-col rounded-lg border border-white/10 bg-carbon/80 p-6 shadow-inner-line backdrop-blur transition duration-200 hover:border-white/[0.22] hover:bg-ink"
-                  initial={{ opacity: 0, y: 22 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.55, delay: (index % 3) * 0.08 }}
-                  viewport={{ once: true, amount: 0.22 }}
+                  className="block"
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="grid size-10 shrink-0 place-items-center rounded border border-white/[0.12] bg-black/30">
-                      <Icon aria-hidden="true" className="size-5 text-ember" />
+                  <motion.article
+                    className="flex min-h-[31rem] flex-col rounded-lg border border-white/10 bg-carbon/80 p-6 shadow-inner-line backdrop-blur transition duration-200 hover:border-white/[0.22] hover:bg-ink"
+                    initial={{ opacity: 0, y: 22 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.55, delay: (index % 3) * 0.08 }}
+                    viewport={{ once: true, amount: 0.22 }}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="grid size-10 shrink-0 place-items-center rounded border border-white/[0.12] bg-black/30">
+                        <Icon aria-hidden="true" className="size-5 text-ember" />
+                      </div>
+                      <span className="rounded border border-white/10 bg-white/[0.06] px-2.5 py-1 text-xs font-medium text-steel">
+                        Channel
+                      </span>
                     </div>
-                    <span className="rounded border border-white/10 bg-white/[0.06] px-2.5 py-1 text-xs font-medium text-steel">
-                      Channel
+                    <h3 className="mt-10 text-2xl font-semibold leading-tight text-platinum">
+                      {channel.name}
+                    </h3>
+                    <p className="mt-3 text-pretty text-sm leading-6 text-steel">
+                      {channel.tagline}
+                    </p>
+                    <div className="mt-7 grid gap-5 text-sm leading-6">
+                      <div>
+                        <p className="font-semibold text-platinum">Decisions</p>
+                        <p className="mt-1 text-steel">{channel.decisions}</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-platinum">Data</p>
+                        <p className="mt-1 text-steel">{channel.data}</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-platinum">Recipes produce</p>
+                        <p className="mt-1 text-steel">{channel.produces}</p>
+                      </div>
+                    </div>
+                    <span className="mt-auto inline-flex items-center gap-2 pt-8 text-sm font-semibold text-platinum">
+                      Explore industry
+                      <ArrowRight aria-hidden="true" className="size-4" />
                     </span>
-                  </div>
-                  <h3 className="mt-10 text-2xl font-semibold leading-tight text-platinum">
-                    {channel.name}
-                  </h3>
-                  <div className="mt-7 grid gap-5 text-sm leading-6">
-                    <div>
-                      <p className="font-semibold text-platinum">Decisions</p>
-                      <p className="mt-1 text-steel">{channel.decisions}</p>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-platinum">Data</p>
-                      <p className="mt-1 text-steel">{channel.data}</p>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-platinum">Recipes produce</p>
-                      <p className="mt-1 text-steel">{channel.produces}</p>
-                    </div>
-                  </div>
-                </motion.article>
+                  </motion.article>
+                </Link>
               );
             })}
           </div>
@@ -225,8 +310,8 @@ export function LandingPage() {
               Preview expert systems before they become deployable agents.
             </h2>
             <p className="mt-6 max-w-3xl text-pretty text-lg leading-8 text-steel">
-              These are homepage previews only: examples of how AgentCoach will package
-              domain expertise into reusable agent systems.
+              Illustrative, unverified examples of how domain expertise becomes a
+              structured agent system. Human review is part of every workflow.
             </p>
           </div>
 
@@ -268,7 +353,7 @@ export function LandingPage() {
                     <div>
                       <p className="text-sm font-semibold text-platinum">Included modules</p>
                       <div className="mt-3 flex flex-wrap gap-2">
-                        {recipe.modules.map((module) => (
+                        {recipe.summaryModules.map((module) => (
                           <span
                             key={module}
                             className="rounded border border-white/10 bg-black/25 px-2.5 py-1 text-xs font-medium text-platinum"
@@ -285,9 +370,65 @@ export function LandingPage() {
                       {recipe.output}
                     </p>
                   </div>
+                  <button type="button" onClick={() => setSelectedRecipe(recipe)} aria-label={`Preview ${recipe.name}`}
+                    className="mt-7 inline-flex min-h-11 items-center justify-center gap-2 rounded border border-white/20 bg-white/[0.05] px-4 text-sm font-semibold text-platinum transition hover:border-ion/50 hover:bg-white/10">
+                    Preview recipe<ArrowUpRight aria-hidden="true" className="size-4" />
+                  </button>
                 </motion.article>
               );
             })}
+          </div>
+        </div>
+      </SectionReveal>
+
+      <SectionReveal
+        id="use-cases"
+        className="relative border-b border-white/10 px-5 py-24 sm:px-8 lg:py-36"
+      >
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-10 lg:grid-cols-[0.86fr_1fr] lg:items-end">
+            <div>
+              <p className="text-sm font-semibold text-ember">Efficiency Examples</p>
+              <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl lg:text-6xl">
+                Repeated work becomes a reusable system.
+              </h2>
+            </div>
+            <p className="max-w-2xl text-pretty text-lg leading-8 text-steel lg:ml-auto">
+              Use cases show where Agent Recipes reduce manual research, improve output
+              consistency, and keep risk boundaries visible.
+            </p>
+          </div>
+
+          <div className="mt-14 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {useCaseHighlights.map((useCase, index) => (
+              <motion.article
+                key={useCase.slug}
+                className="rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-inner-line"
+                initial={{ opacity: 0, y: 22 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: (index % 3) * 0.08 }}
+                viewport={{ once: true, amount: 0.24 }}
+              >
+                <p className="text-sm font-semibold text-ion">{useCase.industry}</p>
+                <h3 className="mt-4 text-2xl font-semibold leading-tight text-platinum">
+                  {useCase.title}
+                </h3>
+                <div className="mt-7 grid gap-5 text-sm leading-6 text-steel">
+                  <p>
+                    <span className="font-semibold text-platinum">Problem: </span>
+                    {useCase.problem}
+                  </p>
+                  <p>
+                    <span className="font-semibold text-platinum">Agent workflow: </span>
+                    {useCase.agentWorkflow}
+                  </p>
+                  <p>
+                    <span className="font-semibold text-platinum">Efficiency gain: </span>
+                    {useCase.efficiencyGain}
+                  </p>
+                </div>
+              </motion.article>
+            ))}
           </div>
         </div>
       </SectionReveal>
@@ -302,13 +443,22 @@ export function LandingPage() {
             <div>
               <p className="text-sm font-semibold text-ember">Enterprise Deployment</p>
               <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl lg:text-6xl">
-                Convert proven public recipes into private enterprise agents.
+                From public recipes to private enterprise agents.
               </h2>
               <p className="mt-7 max-w-3xl text-pretty text-lg leading-8 text-steel">
-                AgentCoach is built for organizations that need secure team workflows,
+                AgentCoach is being built for organizations that need secure team workflows,
                 governance, evaluation, local AI options, and controlled access before
                 agent systems touch internal work.
               </p>
+              <p className="mt-6 max-w-3xl border-l border-ion/40 pl-4 text-sm leading-6 text-steel">
+                Planned capabilities, not a live deployment service. Early access
+                currently offers sample recipes and workflow requests; private runtime,
+                role-based access, and internal integrations are not available yet.
+              </p>
+              <Link href="/become-a-client#client-access"
+                className="mt-7 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-platinum transition hover:text-ion">
+                Discuss a private workflow<ArrowRight aria-hidden="true" className="size-4" />
+              </Link>
             </div>
 
             <div className="grid gap-8">
@@ -348,8 +498,8 @@ export function LandingPage() {
                 Join the Agent Recipe network.
               </h2>
               <p className="mt-7 max-w-3xl text-pretty text-lg leading-8 text-steel">
-                Early access is for creators publishing expert systems, teams searching
-                for reusable workflows, and enterprises preparing private agent
+                Early access is for experts proposing workflow systems, teams exploring
+                reusable workflows, and enterprises preparing private agent
                 deployment.
               </p>
             </div>
@@ -358,16 +508,17 @@ export function LandingPage() {
                 {finalAudiencePaths.map((path) => {
                   const Icon = path.icon;
                   return (
-                    <article
+                    <Link
+                      href={path.href}
                       key={path.title}
-                      className="rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-inner-line"
+                      className="rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-inner-line transition duration-200 hover:border-white/[0.22] hover:bg-white/[0.065]"
                     >
                       <Icon aria-hidden="true" className="size-5 text-ember" />
                       <h3 className="mt-5 text-base font-semibold text-platinum">
                         {path.title}
                       </h3>
                       <p className="mt-2 text-sm leading-6 text-steel">{path.body}</p>
-                    </article>
+                    </Link>
                   );
                 })}
               </div>
@@ -378,8 +529,8 @@ export function LandingPage() {
                     className="mt-0.5 size-5 shrink-0 text-ion"
                   />
                   <p>
-                    Version 1 is a static access form. Enterprise integrations and
-                    account workflows can be connected after launch.
+                    Request early access for your work or your team. We will follow
+                    up as AgentCoach opens.
                   </p>
                 </div>
                 <WaitlistForm />
@@ -389,12 +540,8 @@ export function LandingPage() {
         </div>
       </SectionReveal>
 
-      <footer className="border-t border-white/10 px-5 py-8 sm:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 text-sm text-steel sm:flex-row sm:items-center sm:justify-between">
-          <p>AgentCoach</p>
-          <p>Train the world&apos;s AI agents.</p>
-        </div>
-      </footer>
+      <SiteFooter />
+      <RecipePreview recipe={selectedRecipe} onClose={() => setSelectedRecipe(null)} />
     </main>
   );
 }
