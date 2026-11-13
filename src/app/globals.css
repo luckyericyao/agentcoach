@@ -16,6 +16,16 @@
 html {
   background: var(--background);
   scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+}
+
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+
+.recipe-preview::backdrop {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(6px);
 }
 
 body {
@@ -31,8 +41,34 @@ body {
 }
 
 button,
-input {
+input,
+textarea {
   font: inherit;
+}
+
+:where(a, button, input, textarea, select, summary):focus-visible {
+  outline: 2px solid #7fd4ff;
+  outline-offset: 4px;
+}
+
+[id] {
+  scroll-margin-top: 5rem;
+}
+
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 1rem;
+  z-index: 100;
+  transform: translateY(-200%);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  background: #f5f3ef;
+  color: #050505;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
 }
 
 ::selection {
@@ -53,6 +89,12 @@ input {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  [data-reveal],
+  [data-reveal] [style*="opacity"] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
   *,
   *::before,
   *::after {

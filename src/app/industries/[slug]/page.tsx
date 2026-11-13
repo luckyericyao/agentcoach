@@ -47,7 +47,7 @@ export default async function IndustryPage({ params }: IndustryPageProps) {
   const recipes = getRecipesByIndustrySlug(industry.slug);
 
   return (
-    <main className="min-h-screen overflow-hidden bg-carbon text-platinum">
+    <main id="main-content" tabIndex={-1} className="min-h-screen overflow-hidden bg-carbon text-platinum">
       <TopNavigation />
 
       <section className="relative border-b border-white/10 px-5 pb-20 pt-32 sm:px-8 lg:pb-28 lg:pt-40">

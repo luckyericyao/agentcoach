@@ -1,26 +1,15 @@
 import "server-only";
 
 import { Resend } from "resend";
+import type { ValidatedLead } from "@/lib/leads/schema";
 
-export type LeadNotificationPayload = {
-  lead_type: "waitlist" | "client" | "coach";
-  name?: string | null;
-  email: string;
-  company?: string | null;
-  role?: string | null;
-  industry?: string | null;
-  expertise_area?: string | null;
-  linkedin_or_website?: string | null;
-  improvement_goal?: string | null;
-  recipe_interest?: string | null;
-  team_size?: string | null;
-  message?: string | null;
-  source?: string | null;
-  created_at?: string | null;
+export type LeadNotificationPayload = ValidatedLead & {
+  id: string;
+  created_at: string;
 };
 
 type SendLeadNotificationResult =
-  | { ok: true }
+  | { ok: true; id: string }
   | { ok: false; reason: "missing-config" | "send-failed" };
 
 const subjects = {
@@ -45,10 +34,10 @@ export async function sendLeadNotification(
   }
 
   const resend = new Resend(apiKey);
-  const submittedAt = lead.created_at ?? new Date().toISOString();
   const text = [
     "New AgentCoach lead received.",
     "",
+    formatLine("Lead ID", lead.id),
     formatLine("Lead type", lead.lead_type),
     formatLine("Name", lead.name),
     formatLine("Email", lead.email),
@@ -62,22 +51,26 @@ export async function sendLeadNotification(
     formatLine("Team size", lead.team_size),
     formatLine("Message / notes", lead.message),
     formatLine("Submitted page/source", lead.source),
-    formatLine("Timestamp", submittedAt),
+    formatLine("Timestamp", lead.created_at),
   ].join("\n");
 
   try {
-    const { error } = await resend.emails.send({
+    const options = {
+      idempotencyKey: `lead/${lead.id}`,
+      signal: AbortSignal.timeout(8_000),
+    };
+    const { data, error } = await resend.emails.send({
       from,
       to,
       subject: subjects[lead.lead_type],
       text,
-    });
+    }, options);
 
-    if (error) {
+    if (error || !data?.id) {
       return { ok: false, reason: "send-failed" };
     }
 
-    return { ok: true };
+    return { ok: true, id: data.id };
   } catch {
     return { ok: false, reason: "send-failed" };
   }

@@ -21,6 +21,14 @@ export function createSupabaseAdminClient() {
         autoRefreshToken: false,
         persistSession: false,
       },
+      global: {
+        fetch: (input, init) => fetch(input, {
+          ...init,
+          signal: init?.signal
+            ? AbortSignal.any([init.signal, AbortSignal.timeout(8_000)])
+            : AbortSignal.timeout(8_000),
+        }),
+      },
     },
   );
 }

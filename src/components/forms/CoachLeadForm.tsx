@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { submitLead } from "@/lib/lead-submission";
+import { useLeadSubmission } from "./useLeadSubmission";
 import {
   LeadFormShell,
   LeadTextArea,
   LeadTextField,
-  type LeadFormStatus,
 } from "./LeadFormShell";
 
 const initialValues = {
@@ -18,43 +17,19 @@ const initialValues = {
   notes: "",
 };
 
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 export function CoachLeadForm() {
   const [values, setValues] = useState(initialValues);
-  const [status, setStatus] = useState<LeadFormStatus>("idle");
-  const [message, setMessage] = useState("");
+  const { status, message, warning, submit, clearError } = useLeadSubmission();
 
   function updateField(field: keyof typeof initialValues, value: string) {
     setValues((current) => ({ ...current, [field]: value }));
-    if (status !== "loading") {
-      setStatus("idle");
-      setMessage("");
-    }
+    clearError();
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (status === "loading" || status === "success") {
-      return;
-    }
-
-    const requiredValues = [
-      values.name,
-      values.email,
-      values.expertise_area,
-      values.recipe_interest,
-    ];
-
-    if (requiredValues.some((value) => !value.trim()) || !emailPattern.test(values.email)) {
-      setStatus("error");
-      setMessage("Please complete the required fields with a valid email.");
-      return;
-    }
-
-    setStatus("loading");
-    const result = await submitLead({
+    await submit({
       lead_type: "coach",
       name: values.name.trim(),
       email: values.email.trim(),
@@ -65,19 +40,6 @@ export function CoachLeadForm() {
       source: "become-a-coach",
     });
 
-    if (result.ok) {
-      setStatus("success");
-      return;
-    }
-
-    if (result.reason === "missing-config") {
-      setStatus("config");
-      setMessage(result.message);
-      return;
-    }
-
-    setStatus("error");
-    setMessage(result.message);
   }
 
   return (
@@ -87,11 +49,13 @@ export function CoachLeadForm() {
       submitLabel="Apply as a Coach"
       successMessage="Thanks. We received your coach application and will reach out when AgentCoach opens early access."
       errorMessage={message}
+      warning={warning}
     >
       <div className="grid gap-4 sm:grid-cols-2">
         <LeadTextField
           label="Name"
           name="coach-name"
+          autoComplete="name"
           required
           value={values.name}
           onChange={(value) => updateField("name", value)}
@@ -110,6 +74,9 @@ export function CoachLeadForm() {
       <LeadTextField
         label="LinkedIn or website"
         name="coach-linkedin"
+        type="url"
+        autoComplete="url"
+        maxLength={400}
         value={values.linkedin_or_website}
         onChange={(value) => updateField("linkedin_or_website", value)}
         placeholder="https://..."
@@ -117,6 +84,7 @@ export function CoachLeadForm() {
       <LeadTextField
         label="Area of expertise"
         name="coach-expertise"
+        maxLength={240}
         required
         value={values.expertise_area}
         onChange={(value) => updateField("expertise_area", value)}
@@ -133,6 +101,7 @@ export function CoachLeadForm() {
       <LeadTextArea
         label="Optional notes"
         name="coach-notes"
+        maxLength={2000}
         value={values.notes}
         onChange={(value) => updateField("notes", value)}
         placeholder="Anything else we should know?"

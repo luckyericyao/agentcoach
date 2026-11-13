@@ -18,7 +18,7 @@ import {
   Workflow,
 } from "lucide-react";
 import { industries } from "./industries-data";
-import { featuredAgentRecipes } from "./recipes-data";
+import { featuredAgentRecipes, recipeSummaryModules } from "./recipes-data";
 import { useCases } from "./use-cases-data";
 
 export const navItems = [
@@ -30,10 +30,10 @@ export const navItems = [
 ];
 
 export const heroSignals = [
-  "Expert-built",
-  "Rankable",
-  "Deployable",
-  "Enterprise-ready",
+  "8-part systems",
+  "Source discipline",
+  "Human review",
+  "Deployment plans",
 ];
 
 export const conversionPaths = [
@@ -41,13 +41,13 @@ export const conversionPaths = [
     title: "Become a Client",
     eyebrow: "For individuals, teams, and enterprises",
     description:
-      "Use expert-built Agent Recipes to improve decision speed, standardize repeated work, and deploy private AI agents for teams.",
+      "Explore structured sample recipes and tell us which repeated decisions your team needs to support next.",
     href: "/become-a-client",
     cta: "Become a Client",
     points: [
-      "Use expert-built workflows",
-      "Improve decision speed",
-      "Deploy private team agents",
+      "Inspect complete sample workflows",
+      "Define your inputs and desired outputs",
+      "Request a private adaptation",
     ],
     icon: Users,
   },
@@ -55,13 +55,13 @@ export const conversionPaths = [
     title: "Become a Coach",
     eyebrow: "For experts and operators",
     description:
-      "Package your workflows, judgment, and domain knowledge into reusable Agent Recipes others can discover and deploy.",
+      "Join the early coach network to help shape reusable Agent Recipes around your workflows, judgment, and domain knowledge.",
     href: "/become-a-coach",
     cta: "Become a Coach",
     points: [
-      "Publish complete Agent Recipes",
-      "Build reputation through verified workflows",
-      "Prepare for future monetization",
+      "Propose a complete Agent Recipe",
+      "Define evidence and review standards",
+      "Help shape future publishing and licensing",
     ],
     icon: Workflow,
   },
@@ -136,7 +136,7 @@ const recipeIcons = {
 
 export const featuredRecipes = featuredAgentRecipes.map((recipe) => ({
   ...recipe,
-  modules: ["Instruction", "Workflow", "Evaluation", "Deployment"],
+  summaryModules: recipeSummaryModules,
   output: recipe.outputExamples.join(", "),
   icon: recipeIcons[recipe.slug as keyof typeof recipeIcons],
 }));
@@ -178,19 +178,19 @@ export const enterpriseFlow = [
 export const finalAudiencePaths = [
   {
     title: "Become a Client",
-    body: "Use expert Agent Recipes for repeated high-value work.",
+    body: "Explore samples and request a workflow adaptation.",
     href: "/become-a-client",
     icon: Users,
   },
   {
     title: "Become a Coach",
-    body: "Publish workflows as reusable Agent Recipes.",
+    body: "Apply to contribute your professional workflows.",
     href: "/become-a-coach",
     icon: Workflow,
   },
   {
     title: "Enterprise",
-    body: "Convert proven recipes into private agents.",
+    body: "Plan a private workflow for your team.",
     href: "/#enterprise",
     icon: LockKeyhole,
   },

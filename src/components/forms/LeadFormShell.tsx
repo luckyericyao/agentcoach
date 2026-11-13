@@ -2,9 +2,8 @@
 
 import { ArrowRight, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
-import type { FormEvent, ReactNode } from "react";
-
-export type LeadFormStatus = "idle" | "loading" | "success" | "error" | "config";
+import { useEffect, useId, useRef, type FormEvent, type ReactNode } from "react";
+import type { LeadFormStatus } from "./useLeadSubmission";
 
 type LeadFormShellProps = {
   children: ReactNode;
@@ -14,6 +13,7 @@ type LeadFormShellProps = {
   status: LeadFormStatus;
   submitLabel: string;
   successMessage: string;
+  warning?: string;
 };
 
 export function LeadFormShell({
@@ -24,18 +24,35 @@ export function LeadFormShell({
   status,
   submitLabel,
   successMessage,
+  warning,
 }: LeadFormShellProps) {
   const isLoading = status === "loading";
+  const feedbackId = useId();
+  const dataNoticeId = useId();
+  const feedback = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (status === "success") feedback.current?.focus({ preventScroll: true });
+  }, [status]);
 
   return (
     <motion.form
       onSubmit={onSubmit}
+      method="post"
+      aria-busy={isLoading}
+      aria-describedby={`${dataNoticeId} ${feedbackId}`}
       className="rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-inner-line sm:p-6"
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
     >
-      <div className="grid gap-4">{children}</div>
+      <p id={dataNoticeId} className="mb-6 border-b border-white/10 pb-5 text-sm leading-6 text-steel">
+        Describe the workflow at a high level. Do not include patient records,
+        financial account details, passwords, or confidential documents.
+      </p>
+      <fieldset disabled={disabled || isLoading || status === "success"} className="grid min-w-0 gap-4">
+        <legend className="sr-only">Contact details</legend>
+        {children}
+      </fieldset>
 
       <button
         type="submit"
@@ -49,12 +66,17 @@ export function LeadFormShell({
         ) : null}
       </button>
 
-      {status === "success" ? (
-        <p className="mt-4 text-sm leading-6 text-ion">{successMessage}</p>
-      ) : null}
-      {status === "error" || status === "config" ? (
-        <p className="mt-4 text-sm leading-6 text-ember">{errorMessage}</p>
-      ) : null}
+      <div id={feedbackId} ref={feedback} tabIndex={-1} aria-live="polite" aria-atomic="true">
+        {status === "success" ? (
+          <p className="mt-4 text-sm leading-6 text-ion">{successMessage}</p>
+        ) : null}
+        {status === "success" && warning ? (
+          <p className="mt-3 text-sm leading-6 text-ember">{warning}</p>
+        ) : null}
+        {status === "error" ? (
+          <p role="alert" className="mt-4 text-sm leading-6 text-ember">{errorMessage}</p>
+        ) : null}
+      </div>
     </motion.form>
   );
 }
@@ -65,7 +87,9 @@ type FieldProps = {
   onChange: (value: string) => void;
   placeholder?: string;
   required?: boolean;
-  type?: "email" | "text";
+  type?: "email" | "text" | "url";
+  maxLength?: number;
+  autoComplete?: string;
   value: string;
 };
 
@@ -77,21 +101,25 @@ export function LeadTextField({
   required,
   type = "text",
   value,
+  maxLength = type === "email" ? 254 : 180,
+  autoComplete,
 }: FieldProps) {
   return (
-    <label className="grid gap-2 text-sm font-medium text-platinum" htmlFor={name}>
-      {label}
+    <div className="grid gap-2 text-sm font-medium text-platinum">
+      <label htmlFor={name}>{label}</label>
       <input
         id={name}
         name={name}
         type={type}
         required={required}
+        maxLength={maxLength}
+        autoComplete={autoComplete ?? (type === "email" ? "email" : undefined)}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        className="h-12 rounded border border-white/[0.14] bg-white/[0.06] px-4 text-base font-normal text-platinum outline-none transition duration-200 placeholder:text-steel/60 focus:border-ion/[0.55] focus:bg-white/[0.09]"
+        className="h-12 min-w-0 w-full rounded border border-white/[0.14] bg-white/[0.06] px-4 text-base font-normal text-platinum outline-none transition duration-200 placeholder:text-steel/60 focus:border-ion/[0.55] focus:bg-white/[0.09] disabled:opacity-70"
       />
-    </label>
+    </div>
   );
 }
 
@@ -107,20 +135,22 @@ export function LeadTextArea({
   required,
   rows = 4,
   value,
+  maxLength = 1500,
 }: TextAreaProps) {
   return (
-    <label className="grid gap-2 text-sm font-medium text-platinum" htmlFor={name}>
-      {label}
+    <div className="grid gap-2 text-sm font-medium text-platinum">
+      <label htmlFor={name}>{label}</label>
       <textarea
         id={name}
         name={name}
         required={required}
+        maxLength={maxLength}
         rows={rows}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        className="resize-none rounded border border-white/[0.14] bg-white/[0.06] px-4 py-3 text-base font-normal leading-7 text-platinum outline-none transition duration-200 placeholder:text-steel/60 focus:border-ion/[0.55] focus:bg-white/[0.09]"
+        className="min-w-0 w-full resize-y rounded border border-white/[0.14] bg-white/[0.06] px-4 py-3 text-base font-normal leading-7 text-platinum outline-none transition duration-200 placeholder:text-steel/60 focus:border-ion/[0.55] focus:bg-white/[0.09] disabled:opacity-70"
       />
-    </label>
+    </div>
   );
 }

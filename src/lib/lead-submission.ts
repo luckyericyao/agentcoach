@@ -1,62 +1,34 @@
-"use client";
-
-export type LeadType = "waitlist" | "client" | "coach";
-
-export type LeadSubmissionPayload = {
-  lead_type: LeadType;
-  email: string;
-  name?: string;
-  company?: string;
-  role?: string;
-  industry?: string;
-  expertise_area?: string;
-  linkedin_or_website?: string;
-  improvement_goal?: string;
-  recipe_interest?: string;
-  team_size?: string;
-  message?: string;
-  source?: string;
-};
+import type { LeadPayload, NotificationStatus } from "./leads/schema";
 
 export type LeadSubmissionResult =
-  | { ok: true; notification?: "sent" | "failed" | "not-configured" }
-  | { ok: false; reason: "missing-config" | "validation" | "rate-limited" | "request-failed"; message: string };
+  | { ok: true; notification: NotificationStatus; warning?: string }
+  | { ok: false; reason: string; message: string };
 
-export async function submitLead(payload: LeadSubmissionPayload): Promise<LeadSubmissionResult> {
+export async function submitLead(payload: LeadPayload, requestId: string): Promise<LeadSubmissionResult> {
   try {
     const response = await fetch("/api/leads", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json", "Idempotency-Key": requestId },
       body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(25_000),
     });
-
-    const data = (await response.json().catch(() => ({}))) as {
-      code?: string;
-      message?: string;
-      notification?: "sent" | "failed" | "not-configured";
-    };
-
-    if (!response.ok) {
+    const data: unknown = await response.json();
+    if (!data || typeof data !== "object" || Array.isArray(data)) throw new Error("invalid-response");
+    const result = data as Record<string, unknown>;
+    if (response.ok && result.ok === true &&
+      ["pending", "sent", "failed", "not-configured"].includes(String(result.notification))) {
       return {
-        ok: false,
-        reason:
-          data.code === "missing-config" ||
-          data.code === "validation" ||
-          data.code === "rate-limited"
-            ? data.code
-            : "request-failed",
-        message: data.message ?? "Something went wrong. Please try again.",
+        ok: true,
+        notification: result.notification as NotificationStatus,
+        warning: typeof result.warning === "string" ? result.warning : undefined,
       };
     }
-
-    return { ok: true, notification: data.notification };
-  } catch {
     return {
       ok: false,
-      reason: "request-failed",
-      message: "Something went wrong. Please try again.",
+      reason: typeof result.code === "string" ? result.code : "request-failed",
+      message: typeof result.message === "string" ? result.message : "We could not confirm your submission. Please try again.",
     };
+  } catch {
+    return { ok: false, reason: "request-failed", message: "We could not confirm your submission. Please retry; your request will not be duplicated." };
   }
 }

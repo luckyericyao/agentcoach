@@ -1,10 +1,11 @@
-import { ArrowLeft, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { ClientLeadForm } from "@/components/forms/ClientLeadForm";
 import { SectionReveal } from "@/components/landing/SectionReveal";
 import { SiteFooter } from "@/components/landing/SiteFooter";
 import { TopNavigation } from "@/components/landing/TopNavigation";
 import { clientPersonas } from "@/lib/personas-data";
+import { getRecipeBySlug } from "@/lib/recipes-data";
 
 const clientAudiences = [
   "Individuals improving AI workflows",
@@ -36,9 +37,13 @@ const benefits = [
   "Keep evaluation and risk boundaries visible",
 ];
 
-export default function BecomeAClientPage() {
+export default async function BecomeAClientPage({ searchParams }: {
+  searchParams: Promise<{ recipe?: string | string[] }>;
+}) {
+  const { recipe: slug } = await searchParams;
+  const recipe = typeof slug === "string" ? getRecipeBySlug(slug) : undefined;
   return (
-    <main className="min-h-screen overflow-hidden bg-carbon text-platinum">
+    <main id="main-content" tabIndex={-1} className="min-h-screen overflow-hidden bg-carbon text-platinum">
       <TopNavigation />
 
       <section className="relative border-b border-white/10 px-5 pb-20 pt-32 sm:px-8 lg:pb-28 lg:pt-40">
@@ -59,6 +64,10 @@ export default function BecomeAClientPage() {
             AgentCoach helps individuals, teams, and organizations turn repeated
             knowledge work into structured AI coach systems.
           </p>
+          <Link href="#client-access"
+            className="mt-8 inline-flex min-h-12 items-center justify-center gap-2 rounded bg-platinum px-5 text-sm font-semibold text-carbon transition hover:bg-white">
+            Request Client Access<ArrowRight aria-hidden="true" className="size-4" />
+          </Link>
         </div>
       </section>
 
@@ -129,7 +138,7 @@ export default function BecomeAClientPage() {
         </div>
       </SectionReveal>
 
-      <SectionReveal className="px-5 py-20 sm:px-8 lg:py-28">
+      <SectionReveal id="client-access" className="px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.82fr_1fr] lg:items-start">
           <div>
             <p className="text-sm font-semibold text-ion">Client Access</p>
@@ -140,8 +149,14 @@ export default function BecomeAClientPage() {
               Early client access is for people and teams with repeated research,
               decision, operations, or implementation workflows that need structure.
             </p>
+            <p className="mt-5 text-sm leading-6 text-steel">
+              This form requests early access. It does not provision a private agent
+              or grant access to internal integrations.
+            </p>
           </div>
-          <ClientLeadForm />
+          <ClientLeadForm key={recipe?.slug ?? "general"} recipe={recipe ? {
+            slug: recipe.slug, name: recipe.name, domain: recipe.domain, useCase: recipe.useCase,
+          } : undefined} />
         </div>
       </SectionReveal>
 

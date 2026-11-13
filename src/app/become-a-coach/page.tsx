@@ -45,7 +45,7 @@ const futureMonetization = [
 
 export default function BecomeACoachPage() {
   return (
-    <main className="min-h-screen overflow-hidden bg-carbon text-platinum">
+    <main id="main-content" tabIndex={-1} className="min-h-screen overflow-hidden bg-carbon text-platinum">
       <TopNavigation />
 
       <section className="relative border-b border-white/10 px-5 pb-20 pt-32 sm:px-8 lg:pb-28 lg:pt-40">
@@ -170,6 +170,10 @@ export default function BecomeACoachPage() {
             <p className="mt-6 text-pretty text-lg leading-8 text-steel">
               Early coach access is for people who can turn real professional judgment
               into complete Agent Recipes with workflow, evaluation, and risk boundaries.
+            </p>
+            <p className="mt-5 text-sm leading-6 text-steel">
+              This is an early access application. Publishing, rankings, paid access,
+              and enterprise licensing are planned, not live services.
             </p>
           </div>
           <CoachLeadForm />

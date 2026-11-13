@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { submitLead } from "@/lib/lead-submission";
+import type { AgentRecipe } from "@/lib/recipes-data";
+import { useLeadSubmission } from "./useLeadSubmission";
 import {
   LeadFormShell,
   LeadTextArea,
   LeadTextField,
-  type LeadFormStatus,
 } from "./LeadFormShell";
 
 const initialValues = {
@@ -20,43 +20,23 @@ const initialValues = {
   notes: "",
 };
 
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-export function ClientLeadForm() {
-  const [values, setValues] = useState(initialValues);
-  const [status, setStatus] = useState<LeadFormStatus>("idle");
-  const [message, setMessage] = useState("");
+export function ClientLeadForm({ recipe }: { recipe?: Pick<AgentRecipe, "slug" | "name" | "domain" | "useCase"> }) {
+  const [values, setValues] = useState(() => ({
+    ...initialValues,
+    industry: recipe?.domain ?? "",
+    improvement_goal: recipe ? `I would like to adapt the ${recipe.name} workflow for my team.` : "",
+  }));
+  const { status, message, warning, submit, clearError } = useLeadSubmission();
 
   function updateField(field: keyof typeof initialValues, value: string) {
     setValues((current) => ({ ...current, [field]: value }));
-    if (status !== "loading") {
-      setStatus("idle");
-      setMessage("");
-    }
+    clearError();
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (status === "loading" || status === "success") {
-      return;
-    }
-
-    const requiredValues = [
-      values.name,
-      values.email,
-      values.industry,
-      values.improvement_goal,
-    ];
-
-    if (requiredValues.some((value) => !value.trim()) || !emailPattern.test(values.email)) {
-      setStatus("error");
-      setMessage("Please complete the required fields with a valid email.");
-      return;
-    }
-
-    setStatus("loading");
-    const result = await submitLead({
+    await submit({
       lead_type: "client",
       name: values.name.trim(),
       email: values.email.trim(),
@@ -67,21 +47,9 @@ export function ClientLeadForm() {
       team_size: values.team_size.trim(),
       message: values.notes.trim(),
       source: "become-a-client",
+      recipe_interest: recipe?.name,
     });
 
-    if (result.ok) {
-      setStatus("success");
-      return;
-    }
-
-    if (result.reason === "missing-config") {
-      setStatus("config");
-      setMessage(result.message);
-      return;
-    }
-
-    setStatus("error");
-    setMessage(result.message);
   }
 
   return (
@@ -91,11 +59,20 @@ export function ClientLeadForm() {
       submitLabel="Request Client Access"
       successMessage="Thanks. We received your request and will reach out when AgentCoach opens early access."
       errorMessage={message}
+      warning={warning}
     >
+      {recipe ? (
+        <div className="border-b border-white/10 pb-5">
+          <p className="text-xs font-semibold uppercase text-ion">Selected sample recipe</p>
+          <p className="mt-2 text-lg font-semibold leading-7 text-platinum">{recipe.name}</p>
+          <p className="mt-2 text-sm leading-6 text-steel">{recipe.useCase}</p>
+        </div>
+      ) : null}
       <div className="grid gap-4 sm:grid-cols-2">
         <LeadTextField
           label="Name"
           name="client-name"
+          autoComplete="name"
           required
           value={values.name}
           onChange={(value) => updateField("name", value)}
@@ -115,6 +92,7 @@ export function ClientLeadForm() {
         <LeadTextField
           label="Company"
           name="client-company"
+          autoComplete="organization"
           value={values.company}
           onChange={(value) => updateField("company", value)}
           placeholder="Company or organization"
@@ -122,6 +100,7 @@ export function ClientLeadForm() {
         <LeadTextField
           label="Role"
           name="client-role"
+          autoComplete="organization-title"
           value={values.role}
           onChange={(value) => updateField("role", value)}
           placeholder="Founder, researcher, operator..."
@@ -139,6 +118,7 @@ export function ClientLeadForm() {
         <LeadTextField
           label="Team size"
           name="client-team-size"
+          maxLength={120}
           value={values.team_size}
           onChange={(value) => updateField("team_size", value)}
           placeholder="1, 2-10, 10-50, 50+"
@@ -155,6 +135,7 @@ export function ClientLeadForm() {
       <LeadTextArea
         label="Optional notes"
         name="client-notes"
+        maxLength={2000}
         value={values.notes}
         onChange={(value) => updateField("notes", value)}
         placeholder="Anything else we should know?"

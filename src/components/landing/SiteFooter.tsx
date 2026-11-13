@@ -19,7 +19,8 @@ export function SiteFooter() {
           <p className="text-base font-semibold text-platinum">AgentCoach</p>
           <p className="mt-4 max-w-md text-sm leading-6 text-steel">
             A public network and future marketplace for expert-built Agent Recipes,
-            plus private deployment paths for enterprise AI agents.
+            with private enterprise deployment planned. Explore sample previews
+            or request early access.
           </p>
         </div>
         <div>

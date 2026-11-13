@@ -1,8 +1,11 @@
 "use client";
 
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { useState } from "react";
+import { ArrowRight, ArrowUpRight, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import type { AgentRecipe } from "@/lib/recipes-data";
+import { RecipePreview } from "@/components/recipes/RecipePreview";
 import {
   channels,
   conversionPaths,
@@ -21,8 +24,9 @@ import { TopNavigation } from "./TopNavigation";
 import { WaitlistForm } from "./WaitlistForm";
 
 export function LandingPage() {
+  const [selectedRecipe, setSelectedRecipe] = useState<AgentRecipe | null>(null);
   return (
-    <main className="min-h-screen overflow-hidden bg-carbon text-platinum">
+    <main id="main-content" tabIndex={-1} className="min-h-screen overflow-hidden bg-carbon text-platinum">
       <TopNavigation />
 
       <section
@@ -74,10 +78,10 @@ export function LandingPage() {
               transition={{ duration: 0.7, delay: 0.54 }}
             >
               <Link
-                href="/become-a-client"
+                href="/recipes"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded bg-platinum px-5 text-sm font-semibold text-carbon transition duration-200 hover:bg-white focus:outline-none focus:ring-2 focus:ring-ion/50"
               >
-                Become a Client
+                Explore Recipes
                 <ArrowRight aria-hidden="true" className="size-4" />
               </Link>
               <Link
@@ -306,8 +310,8 @@ export function LandingPage() {
               Preview expert systems before they become deployable agents.
             </h2>
             <p className="mt-6 max-w-3xl text-pretty text-lg leading-8 text-steel">
-              These are homepage previews only: examples of how AgentCoach will package
-              domain expertise into reusable agent systems.
+              Illustrative, unverified examples of how domain expertise becomes a
+              structured agent system. Human review is part of every workflow.
             </p>
           </div>
 
@@ -349,7 +353,7 @@ export function LandingPage() {
                     <div>
                       <p className="text-sm font-semibold text-platinum">Included modules</p>
                       <div className="mt-3 flex flex-wrap gap-2">
-                        {recipe.modules.map((module) => (
+                        {recipe.summaryModules.map((module) => (
                           <span
                             key={module}
                             className="rounded border border-white/10 bg-black/25 px-2.5 py-1 text-xs font-medium text-platinum"
@@ -366,6 +370,10 @@ export function LandingPage() {
                       {recipe.output}
                     </p>
                   </div>
+                  <button type="button" onClick={() => setSelectedRecipe(recipe)} aria-label={`Preview ${recipe.name}`}
+                    className="mt-7 inline-flex min-h-11 items-center justify-center gap-2 rounded border border-white/20 bg-white/[0.05] px-4 text-sm font-semibold text-platinum transition hover:border-ion/50 hover:bg-white/10">
+                    Preview recipe<ArrowUpRight aria-hidden="true" className="size-4" />
+                  </button>
                 </motion.article>
               );
             })}
@@ -435,13 +443,22 @@ export function LandingPage() {
             <div>
               <p className="text-sm font-semibold text-ember">Enterprise Deployment</p>
               <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl lg:text-6xl">
-                Convert proven public recipes into private enterprise agents.
+                From public recipes to private enterprise agents.
               </h2>
               <p className="mt-7 max-w-3xl text-pretty text-lg leading-8 text-steel">
-                AgentCoach is built for organizations that need secure team workflows,
+                AgentCoach is being built for organizations that need secure team workflows,
                 governance, evaluation, local AI options, and controlled access before
                 agent systems touch internal work.
               </p>
+              <p className="mt-6 max-w-3xl border-l border-ion/40 pl-4 text-sm leading-6 text-steel">
+                Planned capabilities, not a live deployment service. Early access
+                currently offers sample recipes and workflow requests; private runtime,
+                role-based access, and internal integrations are not available yet.
+              </p>
+              <Link href="/become-a-client#client-access"
+                className="mt-7 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-platinum transition hover:text-ion">
+                Discuss a private workflow<ArrowRight aria-hidden="true" className="size-4" />
+              </Link>
             </div>
 
             <div className="grid gap-8">
@@ -481,8 +498,8 @@ export function LandingPage() {
                 Join the Agent Recipe network.
               </h2>
               <p className="mt-7 max-w-3xl text-pretty text-lg leading-8 text-steel">
-                Early access is for creators publishing expert systems, teams searching
-                for reusable workflows, and enterprises preparing private agent
+                Early access is for experts proposing workflow systems, teams exploring
+                reusable workflows, and enterprises preparing private agent
                 deployment.
               </p>
             </div>
@@ -512,8 +529,8 @@ export function LandingPage() {
                     className="mt-0.5 size-5 shrink-0 text-ion"
                   />
                   <p>
-                    Version 1 is a static access form. Enterprise integrations and
-                    account workflows can be connected after launch.
+                    Request early access for your work or your team. We will follow
+                    up as AgentCoach opens.
                   </p>
                 </div>
                 <WaitlistForm />
@@ -524,6 +541,7 @@ export function LandingPage() {
       </SectionReveal>
 
       <SiteFooter />
+      <RecipePreview recipe={selectedRecipe} onClose={() => setSelectedRecipe(null)} />
     </main>
   );
 }

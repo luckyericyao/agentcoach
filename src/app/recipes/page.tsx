@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { RecipeCatalog } from "@/components/recipes/RecipeCatalog";
 import { SiteFooter } from "@/components/landing/SiteFooter";
 import { TopNavigation } from "@/components/landing/TopNavigation";
@@ -11,9 +12,10 @@ export const metadata: Metadata = {
     "Browse reusable expert workflows that combine instruction, workflow, evaluation, risk boundaries, and deployment logic.",
 };
 
-export default function RecipesPage() {
+export default async function RecipesPage() {
+  await connection();
   return (
-    <main className="min-h-screen overflow-hidden bg-carbon text-platinum">
+    <main id="main-content" tabIndex={-1} className="min-h-screen overflow-hidden bg-carbon text-platinum">
       <TopNavigation />
 
       <section className="relative border-b border-white/10 px-5 pb-20 pt-32 sm:px-8 lg:pb-28 lg:pt-40">
@@ -24,9 +26,8 @@ export default function RecipesPage() {
             Reusable expert workflows for building useful AI agents.
           </h1>
           <p className="mt-7 max-w-3xl text-pretty text-lg leading-8 text-steel sm:text-xl">
-            Browse instruction systems that combine workflow, evaluation, risk
-            boundaries, and deployment logic. This early catalog is static while the
-            network forms.
+            Explore sample instruction systems, inspect their workflows and risk
+            boundaries, and find a starting point for your team.
           </p>
         </div>
       </section>
