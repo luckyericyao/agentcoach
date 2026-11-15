@@ -2,7 +2,9 @@
 
 AgentCoach is an early-stage product website for a public network and future marketplace of expert-built AI Agent Recipes. Agent Recipes are complete expert workflow systems, not simple prompts: they combine instruction, workflow, input templates, output formats, tools, evaluation, risk boundaries, and deployment logic.
 
-The site supports two primary paths:
+The default public site is a browsable recipe library. It does not collect
+applications, waitlist emails, or login addresses. The early-access paths below
+are implemented for local testing and a future approved pilot:
 
 - Become a Coach: experts package professional workflows into reusable Agent Recipes.
 - Become a Client: individuals, teams, and enterprises use Agent Recipes or deploy private AI coaches.
@@ -64,26 +66,7 @@ and `verified=1`. They survive refresh and browser back/forward navigation; the
 server also renders filtered results before JavaScript runs. The verified filter
 currently has an explicit empty state because no sample is independently verified.
 
-A recipe-specific link opens the same preview, without a separate detail page:
-
-```text
-/recipes?recipe=biotech-bd-meeting-prep-agent
-```
-
-Only one known slug opens a preview. Refresh and browser back/forward preserve
-selection; closing returns to the catalog and keeps its filters. The copy action
-shares the recipe-only URL, not search terms or filter state. If clipboard access
-is unavailable, the preview exposes a selectable read-only link instead.
-
-The download action produces a JSON sample using `schemaVersion: 1`, containing
-all eight modules, unverified status, human-review requirements, and explicit
-proposed/not-live deployment status. It exports only public blueprint fields;
-form inputs, authentication state, presentation fields, and URL searches are not
-included. It does not execute an agent or grant access to integrations. `v1`
-identifies the package schema, not a verified content revision. Links resolve the
-current catalog content; a downloaded file is a snapshot of that sample.
-
-The preview's request link leads to:
+When early access is explicitly enabled, the preview's request link leads to:
 
 ```text
 /become-a-client?recipe=biotech-bd-meeting-prep-agent#client-access
@@ -95,6 +78,16 @@ lead field carries the selected recipe name. Unknown or repeated values fall bac
 to the general client form. No additional table or account is required.
 
 ## Environment Variables
+
+Leave `AGENTCOACH_EARLY_ACCESS` unset for the public catalog. The app renders
+no application, waitlist, or login form, and the server rejects lead writes
+and auth exchanges without contacting providers. No provider configuration
+is needed to browse or download public samples.
+
+Use `AGENTCOACH_EARLY_ACCESS=1` only in local fixtures or an approved pilot.
+Set it consistently for build and runtime; statically rendered pages are
+generated at build time, so an approved mode change requires a fresh build.
+This flag controls AgentCoach routes, not the provider project's own settings.
 
 Public variables can be exposed to the browser:
 
@@ -114,12 +107,12 @@ NOTIFICATION_FROM_EMAIL=AgentCoach <notifications@your-verified-domain.com>
 
 Use `.env.example` as the variable inventory; put actual local values in the ignored `.env.local`. Server secrets must remain unprefixed. Never commit credentials.
 
-Without Supabase server configuration, lead forms show a temporary-unavailability message. Without Resend configuration, the lead is still saved and the visitor sees a notification-delay notice. Login reports unavailability gracefully. These states do not certify a live provider connection.
+In enabled mode, without Supabase server configuration lead forms show a temporary-unavailability message. Without Resend configuration, the lead is still saved and the visitor sees a notification-delay notice. Login reports unavailability gracefully. These states do not certify a live provider connection.
 
 ## Supabase Setup
 
-Review and apply the migrations in order in an owner-approved staging project
-before releasing the updated app:
+For an approved pilot that accepts real submissions, review and apply the
+migrations in order in its staging project before enabling early access:
 
 1. [`202611060001_leads.sql`](supabase/migrations/202611060001_leads.sql) creates
    `public.leads` or upgrades the previous README table without deleting records.
@@ -285,7 +278,7 @@ PLAYWRIGHT_BROWSERS_PATH=0 npm run verify
 ```
 
 It runs lint, unit/integration tests, a full dependency audit, production-browser
-journeys, and a normal production build with the client-bundle guard. The fixture
+journeys in both modes, and a normal production build with the client-bundle guard. The fixture
 app uses a separate `.next-e2e` build directory, leaving ordinary `.next` client
 assets separate. The final build also refreshes Next's generated type references,
 even when a browser assertion fails. It does not push or deploy anything.
@@ -415,15 +408,18 @@ scripts/
 
 ## Deployment
 
-This project uses the standard Next.js hosting model supported by Vercel and other compatible platforms.
+This project uses the standard Next.js hosting model supported by Vercel and
+other compatible platforms. The catalog-only release requires no database
+migrations, email configuration, or production variable changes.
 
-For Vercel:
+For an owner-approved early access pilot on Vercel:
 
 1. Import the GitHub repository.
 2. Add all public and server-only environment variables.
 3. Apply all reviewed Supabase migrations in order before deploying the app update. Run the read-only preflight and configure the deployed `/auth/callback` allowlist and email template.
 4. Confirm Resend sender verification is complete.
-5. Keep the default build command: `npm run build`.
-6. Redeploy after setting or changing environment variables.
+5. Complete approved company/contact and privacy/retention review and verify
+   actual delivery and authentication. Only then enable early access in that
+   environment and run a fresh `npm run build`.
 
 These are owner-operated deployment instructions; no deployment or production configuration is performed by the local checks. Before public lead collection, the owner must provide the actual company/contact identity and privacy/data-retention decisions. No legal policy is generated by this repository change. See the [admission verification record](docs/local-admission-verification-2026-11-07.md) and [product-readiness follow-up](docs/product-readiness-2026-11-07.md) for acceptance criteria and remaining owner-dependent verification.

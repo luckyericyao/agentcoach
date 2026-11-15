@@ -232,8 +232,8 @@ export default async function IndustryPage({ params }: IndustryPageProps) {
                 Build industry-grade AI workflows with AgentCoach.
               </h2>
               <p className="mt-5 max-w-3xl text-pretty text-lg leading-8 text-steel">
-                Become a client to deploy expert Agent Recipes, or become a coach to
-                package your professional workflow for this industry.
+                Explore how teams can reuse structured Agent Recipes and how experts
+                can package their professional workflows for this industry.
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
@@ -241,14 +241,14 @@ export default async function IndustryPage({ params }: IndustryPageProps) {
                 href="/become-a-client"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded bg-platinum px-5 text-sm font-semibold text-carbon transition duration-200 hover:bg-white focus:outline-none focus:ring-2 focus:ring-ion/50"
               >
-                Become a Client
+                For Clients
                 <ArrowRight aria-hidden="true" className="size-4" />
               </Link>
               <Link
                 href="/become-a-coach"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded border border-white/[0.16] bg-white/[0.07] px-5 text-sm font-semibold text-platinum transition duration-200 hover:border-white/[0.28] hover:bg-white/[0.12] focus:outline-none focus:ring-2 focus:ring-ion/50"
               >
-                Become a Coach
+                For Coaches
                 <ArrowRight aria-hidden="true" className="size-4" />
               </Link>
             </div>

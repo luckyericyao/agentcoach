@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { ArrowRight, Copy, Download, X } from "lucide-react";
 import Link from "next/link";
+import { useEarlyAccessMode } from "@/components/landing/EarlyAccessMode";
 import type { AgentRecipe } from "@/lib/recipes-data";
 import { createRecipeSample, recipePreviewPath, recipeSampleFilename } from "@/lib/recipe-sample";
 
@@ -12,6 +13,7 @@ type RecipePreviewProps = {
 };
 
 export function RecipePreview({ recipe, onClose }: RecipePreviewProps) {
+  const earlyAccessOpen = useEarlyAccessMode();
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const descriptionId = useId();
@@ -139,13 +141,13 @@ export function RecipePreview({ recipe, onClose }: RecipePreviewProps) {
             </div>
           </div>
 
-          <footer className="flex flex-col gap-4 border-t border-white/10 bg-carbon px-5 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+          {earlyAccessOpen ? <footer className="flex flex-col gap-4 border-t border-white/10 bg-carbon px-5 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-8">
             <p className="text-sm text-steel">Interested in adapting this workflow?</p>
             <Link href={`/become-a-client?recipe=${encodeURIComponent(recipe.slug)}#client-access`}
               className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded bg-platinum px-5 text-sm font-semibold text-carbon transition hover:bg-white">
               Request this workflow<ArrowRight aria-hidden="true" className="size-4" />
             </Link>
-          </footer>
+          </footer> : null}
         </div>
       ) : null}
     </dialog>

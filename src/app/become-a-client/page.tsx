@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/landing/SiteFooter";
 import { TopNavigation } from "@/components/landing/TopNavigation";
 import { clientPersonas } from "@/lib/personas-data";
 import { getRecipeBySlug } from "@/lib/recipes-data";
+import { isEarlyAccessOpen } from "@/lib/server/early-access";
 
 const clientAudiences = [
   "Individuals improving AI workflows",
@@ -42,6 +43,8 @@ export default async function BecomeAClientPage({ searchParams }: {
 }) {
   const { recipe: slug } = await searchParams;
   const recipe = typeof slug === "string" ? getRecipeBySlug(slug) : undefined;
+  const earlyAccessOpen = isEarlyAccessOpen();
+  const recipePath = recipe ? `/recipes?recipe=${encodeURIComponent(recipe.slug)}` : "/recipes";
   return (
     <main id="main-content" tabIndex={-1} className="min-h-screen overflow-hidden bg-carbon text-platinum">
       <TopNavigation />
@@ -56,7 +59,7 @@ export default async function BecomeAClientPage({ searchParams }: {
             <ArrowLeft aria-hidden="true" className="size-4" />
             Back to AgentCoach
           </Link>
-          <p className="mt-16 text-sm font-semibold uppercase text-ion">Become a Client</p>
+          <p className="mt-16 text-sm font-semibold uppercase text-ion">{earlyAccessOpen ? "Become a Client" : "For Clients"}</p>
           <h1 className="mt-6 max-w-5xl text-balance text-5xl font-semibold leading-none text-platinum sm:text-7xl">
             Use expert-built Agent Recipes to improve high-value work.
           </h1>
@@ -64,9 +67,9 @@ export default async function BecomeAClientPage({ searchParams }: {
             AgentCoach helps individuals, teams, and organizations turn repeated
             knowledge work into structured AI coach systems.
           </p>
-          <Link href="#client-access"
+          <Link href={earlyAccessOpen ? "#client-access" : recipePath}
             className="mt-8 inline-flex min-h-12 items-center justify-center gap-2 rounded bg-platinum px-5 text-sm font-semibold text-carbon transition hover:bg-white">
-            Request Client Access<ArrowRight aria-hidden="true" className="size-4" />
+            {earlyAccessOpen ? "Request Client Access" : "Explore Recipes"}<ArrowRight aria-hidden="true" className="size-4" />
           </Link>
         </div>
       </section>
@@ -139,24 +142,24 @@ export default async function BecomeAClientPage({ searchParams }: {
       </SectionReveal>
 
       <SectionReveal id="client-access" className="px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.82fr_1fr] lg:items-start">
+        <div className={earlyAccessOpen ? "mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.82fr_1fr] lg:items-start" : "mx-auto max-w-7xl"}>
           <div>
             <p className="text-sm font-semibold text-ion">Client Access</p>
             <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl">
-              Tell us which workflow should become an agent.
+              {earlyAccessOpen ? "Tell us which workflow should become an agent." : "Early access requests are not open yet."}
             </h2>
             <p className="mt-6 text-pretty text-lg leading-8 text-steel">
               Early client access is for people and teams with repeated research,
               decision, operations, or implementation workflows that need structure.
             </p>
-            <p className="mt-5 text-sm leading-6 text-steel">
+            {earlyAccessOpen ? <p className="mt-5 text-sm leading-6 text-steel">
               This form requests early access. It does not provision a private agent
               or grant access to internal integrations.
-            </p>
+            </p> : null}
           </div>
-          <ClientLeadForm key={recipe?.slug ?? "general"} recipe={recipe ? {
+          {earlyAccessOpen ? <ClientLeadForm key={recipe?.slug ?? "general"} recipe={recipe ? {
             slug: recipe.slug, name: recipe.name, domain: recipe.domain, useCase: recipe.useCase,
-          } : undefined} />
+          } : undefined} /> : null}
         </div>
       </SectionReveal>
 

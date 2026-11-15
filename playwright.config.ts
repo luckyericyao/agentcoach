@@ -1,7 +1,10 @@
 import { defineConfig } from "@playwright/test";
 
+const publicPreview = process.env.AGENTCOACH_TEST_PUBLIC_PREVIEW === "1";
+
 export default defineConfig({
   testDir: "./tests/e2e",
+  ...(publicPreview ? { testMatch: "**/public-preview.spec.ts" } : { testIgnore: "**/public-preview.spec.ts" }),
   fullyParallel: false,
   workers: 1,
   reporter: "list",
@@ -16,6 +19,7 @@ export default defineConfig({
       command: "node scripts/start-test-app.mjs",
       url: "http://127.0.0.1:3100", reuseExistingServer: false, timeout: 120_000,
       env: {
+        AGENTCOACH_EARLY_ACCESS: publicPreview ? "" : "1",
         NEXT_PUBLIC_SUPABASE_URL: "http://127.0.0.1:4319", NEXT_PUBLIC_SUPABASE_ANON_KEY: "fixture-anon",
         SUPABASE_SERVICE_ROLE_KEY: "fixture-service-role", RESEND_API_KEY: "re_fixture_only",
         RESEND_BASE_URL: "http://127.0.0.1:4319/resend",

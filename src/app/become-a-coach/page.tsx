@@ -4,6 +4,7 @@ import { CoachLeadForm } from "@/components/forms/CoachLeadForm";
 import { SectionReveal } from "@/components/landing/SectionReveal";
 import { SiteFooter } from "@/components/landing/SiteFooter";
 import { TopNavigation } from "@/components/landing/TopNavigation";
+import { isEarlyAccessOpen } from "@/lib/server/early-access";
 import { coachPersonas } from "@/lib/personas-data";
 
 const coachAudiences = [
@@ -44,6 +45,7 @@ const futureMonetization = [
 ];
 
 export default function BecomeACoachPage() {
+  const earlyAccessOpen = isEarlyAccessOpen();
   return (
     <main id="main-content" tabIndex={-1} className="min-h-screen overflow-hidden bg-carbon text-platinum">
       <TopNavigation />
@@ -58,7 +60,7 @@ export default function BecomeACoachPage() {
             <ArrowLeft aria-hidden="true" className="size-4" />
             Back to AgentCoach
           </Link>
-          <p className="mt-16 text-sm font-semibold uppercase text-ion">Become a Coach</p>
+          <p className="mt-16 text-sm font-semibold uppercase text-ion">{earlyAccessOpen ? "Become a Coach" : "For Coaches"}</p>
           <h1 className="mt-6 max-w-5xl text-balance text-5xl font-semibold leading-none text-platinum sm:text-7xl">
             Turn your expertise into reusable Agent Recipes.
           </h1>
@@ -161,22 +163,21 @@ export default function BecomeACoachPage() {
       </SectionReveal>
 
       <SectionReveal className="px-5 py-20 sm:px-8 lg:py-28">
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.82fr_1fr] lg:items-start">
+        <div className={earlyAccessOpen ? "mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.82fr_1fr] lg:items-start" : "mx-auto max-w-7xl"}>
           <div>
-            <p className="text-sm font-semibold text-ion">Coach Application</p>
+            <p className="text-sm font-semibold text-ion">Coach Applications</p>
             <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl">
-              Tell us what expert workflow you want to package.
+              {earlyAccessOpen ? "Tell us what expert workflow you want to package." : "Coach applications are not open yet."}
             </h2>
             <p className="mt-6 text-pretty text-lg leading-8 text-steel">
               Early coach access is for people who can turn real professional judgment
               into complete Agent Recipes with workflow, evaluation, and risk boundaries.
             </p>
             <p className="mt-5 text-sm leading-6 text-steel">
-              This is an early access application. Publishing, rankings, paid access,
-              and enterprise licensing are planned, not live services.
+              Publishing, rankings, paid access, and enterprise licensing are planned, not live services.
             </p>
           </div>
-          <CoachLeadForm />
+          {earlyAccessOpen ? <CoachLeadForm /> : null}
         </div>
       </SectionReveal>
 

@@ -20,6 +20,7 @@ beforeAll(async () => {
 });
 beforeEach(() => {
   fixture.reset();
+  vi.stubEnv("AGENTCOACH_EARLY_ACCESS", "1");
   vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", providerUrl);
   vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "fixture-service-role");
   vi.stubEnv("RESEND_API_KEY", "re_fixture_only");
@@ -101,6 +102,15 @@ describe("request guards", () => {
 });
 
 describe("lead API using local HTTP providers", () => {
+  it.each([undefined, "", "true", "0"])("rejects submissions before reading input when access flag is %s", async (flag) => {
+    vi.stubEnv("AGENTCOACH_EARLY_ACCESS", flag);
+    const submission = request();
+    const response = await POST(submission);
+    expect(response.status).toBe(503);
+    expect(await response.json()).toMatchObject({ ok: false, code: "early-access-closed" });
+    expect(submission.bodyUsed).toBe(false);
+    expect(fixture.state.leads.size).toBe(0);
+  });
   it.each([
     waitlist,
     { ...waitlist, lead_type: "client", name: "Client", industry: "Biotech", improvement_goal: "Meeting prep" },

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { SiteFooter } from "@/components/landing/SiteFooter";
 import { TopNavigation } from "@/components/landing/TopNavigation";
+import { isEarlyAccessOpen } from "@/lib/server/early-access";
 import { isEmailConfirmationId } from "@/lib/supabase/email-confirmation";
 
 export const metadata: Metadata = {
@@ -16,7 +17,8 @@ export default async function LoginPage({ searchParams }: {
   searchParams: Promise<{ error?: string | string[]; notice?: string; confirm?: string | string[] }>;
 }) {
   const { error, notice, confirm } = await searchParams;
-  const confirmation = !error && isEmailConfirmationId(confirm) ? confirm : null;
+  const earlyAccessOpen = isEarlyAccessOpen();
+  const confirmation = earlyAccessOpen && !error && isEmailConfirmationId(confirm) ? confirm : null;
   const initialError = error === "invalid-link"
     ? "This login link is invalid or has expired. Request a new link below."
     : error === "unavailable" ? "Sign-in is temporarily unavailable. Please try again later." : "";
@@ -30,13 +32,19 @@ export default async function LoginPage({ searchParams }: {
           <div>
             <p className="text-sm font-semibold uppercase text-ion">AgentCoach Login</p>
             <h1 className="mt-6 max-w-4xl text-balance text-5xl font-semibold leading-none text-platinum sm:text-7xl">
-              {confirmation ? "Confirm your sign-in." : "Early access for clients and coaches."}
+              {!earlyAccessOpen ? "Sign-in is not open yet." :
+                confirmation ? "Confirm your sign-in." : "Early access for clients and coaches."}
             </h1>
             <p className="mt-7 max-w-2xl text-pretty text-lg leading-8 text-steel sm:text-xl">
-              {confirmation ? "Continue with the email link you opened." : "Sign in with a secure email link to access your early access account."}
+              {!earlyAccessOpen ? "The public recipe catalog does not require an account." :
+                confirmation ? "Continue with the email link you opened." : "Sign in with a secure email link to access your early access account."}
             </p>
           </div>
-          {confirmation ? (
+          {!earlyAccessOpen ? (
+            <Link href="/recipes" className="inline-flex min-h-12 w-fit items-center justify-center gap-2 rounded bg-platinum px-5 text-sm font-semibold text-carbon transition hover:bg-white">
+              Explore Recipes<ArrowRight aria-hidden="true" className="size-4" />
+            </Link>
+          ) : confirmation ? (
             <form action={`/auth/callback?confirm=${confirmation}`} method="post"
               className="rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-inner-line sm:p-6">
               <button type="submit" className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded bg-platinum px-5 text-sm font-semibold text-carbon transition hover:bg-white">
@@ -51,7 +59,7 @@ export default async function LoginPage({ searchParams }: {
         </div>
       </section>
 
-      <section className="px-5 py-14 sm:px-8 lg:py-20">
+      {earlyAccessOpen ? <section className="px-5 py-14 sm:px-8 lg:py-20">
         <div className="mx-auto flex max-w-7xl flex-col gap-5 text-sm sm:flex-row sm:items-center sm:justify-between">
           <p className="text-steel">New to AgentCoach? Tell us how you would like to take part.</p>
           <div className="flex flex-wrap gap-x-7 gap-y-4">
@@ -59,7 +67,7 @@ export default async function LoginPage({ searchParams }: {
             <Link className="font-semibold text-platinum hover:text-ion" href="/become-a-coach">Become a Coach</Link>
           </div>
         </div>
-      </section>
+      </section> : null}
 
       <SiteFooter />
     </main>

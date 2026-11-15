@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
+import { isEarlyAccessOpen } from "@/lib/server/early-access";
 import { requestOrigin } from "@/lib/server/requests";
 import { emailConfirmationCookie, isEmailConfirmationId } from "@/lib/supabase/email-confirmation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -35,6 +36,7 @@ export function HEAD() {
 }
 
 export async function GET(request: NextRequest) {
+  if (!isEarlyAccessOpen()) return destination("/login");
   const params = request.nextUrl.searchParams;
   if (params.has("error") || params.getAll("code").length + params.getAll("token_hash").length !== 1) {
     return destination(invalidLink);
@@ -59,6 +61,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  if (!isEarlyAccessOpen()) return destination("/login");
   const origin = request.headers.get("origin");
   const site = request.headers.get("sec-fetch-site");
   // A privacy-restricted form may send a null Origin; require same-origin Fetch Metadata in that case.

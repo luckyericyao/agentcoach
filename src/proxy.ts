@@ -1,10 +1,12 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isEarlyAccessOpen } from "@/lib/server/early-access";
 import { getSupabasePublicConfig } from "@/lib/supabase/config";
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
   response.headers.set("Cache-Control", "private, no-store");
+  if (!isEarlyAccessOpen()) return response;
   const config = getSupabasePublicConfig();
   if (!config) return response;
 

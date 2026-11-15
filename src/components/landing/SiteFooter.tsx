@@ -1,17 +1,21 @@
+"use client";
+
 import Link from "next/link";
 import { industries } from "@/lib/industries-data";
+import { useEarlyAccessMode } from "./EarlyAccessMode";
 
 const productLinks = [
   { label: "Agent Recipes", href: "/recipes" },
-  { label: "Become a Client", href: "/become-a-client" },
-  { label: "Become a Coach", href: "/become-a-coach" },
-  { label: "Login", href: "/login" },
-  { label: "Account", href: "/account" },
+  { label: "Become a Client", previewLabel: "For Clients", href: "/become-a-client" },
+  { label: "Become a Coach", previewLabel: "For Coaches", href: "/become-a-coach" },
+  { label: "Login", href: "/login", accessOnly: true },
+  { label: "Account", href: "/account", accessOnly: true },
   { label: "Enterprise", href: "/#enterprise" },
-  { label: "Waitlist", href: "/#waitlist" },
+  { label: "Waitlist", href: "/#waitlist", accessOnly: true },
 ];
 
 export function SiteFooter() {
+  const earlyAccessOpen = useEarlyAccessMode();
   return (
     <footer className="border-t border-white/10 px-5 py-12 sm:px-8">
       <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_0.9fr_0.7fr]">
@@ -19,8 +23,7 @@ export function SiteFooter() {
           <p className="text-base font-semibold text-platinum">AgentCoach</p>
           <p className="mt-4 max-w-md text-sm leading-6 text-steel">
             A public network and future marketplace for expert-built Agent Recipes,
-            with private enterprise deployment planned. Explore sample previews
-            or request early access.
+            with private enterprise deployment planned. Explore sample previews{earlyAccessOpen ? " or request early access." : "."}
           </p>
         </div>
         <div>
@@ -40,13 +43,13 @@ export function SiteFooter() {
         <div>
           <p className="text-sm font-semibold text-platinum">Product</p>
           <div className="mt-4 grid gap-2">
-            {productLinks.map((link) => (
+            {productLinks.filter(({ accessOnly }) => earlyAccessOpen || !accessOnly).map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 className="text-sm text-steel transition duration-200 hover:text-platinum"
               >
-                {link.label}
+                {earlyAccessOpen ? link.label : link.previewLabel ?? link.label}
               </Link>
             ))}
           </div>

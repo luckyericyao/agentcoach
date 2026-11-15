@@ -5,8 +5,13 @@ import { ArrowRight, Menu, X } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { navItems } from "@/lib/landing-data";
+import { useEarlyAccessMode } from "./EarlyAccessMode";
 
 export function TopNavigation() {
+  const earlyAccessOpen = useEarlyAccessMode();
+  const items = navItems.filter(({ href }) => earlyAccessOpen || href !== "/login").map((item) => ({
+    ...item, label: earlyAccessOpen ? item.label : item.previewLabel ?? item.label,
+  }));
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
   const header = useRef<HTMLElement>(null);
@@ -51,7 +56,7 @@ export function TopNavigation() {
         </Link>
 
         <div className="hidden items-center gap-6 lg:flex">
-          {navItems.map((item) => (
+          {items.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -63,13 +68,13 @@ export function TopNavigation() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Link
-          href="/#waitlist"
-          className="inline-flex h-9 items-center gap-2 rounded border border-white/[0.16] bg-white/[0.08] px-3 text-sm font-medium text-platinum transition duration-200 hover:border-white/[0.28] hover:bg-white/[0.12] focus:outline-none focus:ring-2 focus:ring-ion/50"
-        >
-          Join
-          <ArrowRight aria-hidden="true" className="size-4" />
-          </Link>
+          {earlyAccessOpen ? (
+            <Link href="/#waitlist"
+              className="inline-flex h-9 items-center gap-2 rounded border border-white/[0.16] bg-white/[0.08] px-3 text-sm font-medium text-platinum transition duration-200 hover:border-white/[0.28] hover:bg-white/[0.12] focus:outline-none focus:ring-2 focus:ring-ion/50">
+              Join
+              <ArrowRight aria-hidden="true" className="size-4" />
+            </Link>
+          ) : null}
           <button ref={menuButton} type="button" onClick={() => setMenuOpen((open) => !open)}
             aria-label={menuOpen ? "Close navigation" : "Open navigation"}
             aria-expanded={menuOpen} aria-controls="mobile-navigation"
@@ -80,7 +85,7 @@ export function TopNavigation() {
       </nav>
       <nav id="mobile-navigation" aria-label="Mobile navigation" hidden={!menuOpen}
         className="max-h-[calc(100svh-4rem)] overflow-y-auto border-t border-white/10 bg-carbon px-5 py-3 sm:px-8 lg:hidden">
-        {[{ label: "Home", href: "/" }, ...navItems].map((item) => (
+        {[{ label: "Home", href: "/" }, ...items].map((item) => (
           <Link key={item.href} href={item.href} onClick={() => setMenuOpen(false)}
             className="flex min-h-12 items-center justify-between border-b border-white/[0.06] py-3 text-sm font-medium text-platinum transition hover:text-ion">
             {item.label}<ArrowRight aria-hidden="true" className="size-4 text-steel" />

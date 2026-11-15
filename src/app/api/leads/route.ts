@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { sendLeadNotification } from "@/lib/email/send-lead-notification";
 import { validateLead, type NotificationStatus, type ValidatedLead } from "@/lib/leads/schema";
+import { isEarlyAccessOpen } from "@/lib/server/early-access";
 import { assertSameOrigin, createRateLimiter, readJsonBody, RequestError } from "@/lib/server/requests";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
@@ -38,6 +39,9 @@ function received(notification: NotificationStatus, trackingFailed = false) {
 }
 
 export async function POST(request: NextRequest) {
+  if (!isEarlyAccessOpen()) return json({
+    ok: false, code: "early-access-closed", message: "Early access requests are not open yet.",
+  }, 503);
   try {
     assertSameOrigin(request);
     const clientKey = (request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||

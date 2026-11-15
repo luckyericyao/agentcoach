@@ -7,6 +7,7 @@ import { proxy } from "@/proxy";
 
 beforeEach(() => {
   vi.clearAllMocks();
+  vi.stubEnv("AGENTCOACH_EARLY_ACCESS", "1");
   vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://example.test");
   vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "fixture-anon");
 });
@@ -30,5 +31,12 @@ it("preserves refreshed cookies and cache headers in the response", async () => 
 it("does not crash a request without configuration", async () => {
   vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "");
   expect((await proxy(new NextRequest("http://localhost/account"))).status).toBe(200);
+  expect(mocks.create).not.toHaveBeenCalled();
+});
+
+it("never initializes the provider while early access is closed", async () => {
+  vi.stubEnv("AGENTCOACH_EARLY_ACCESS", undefined);
+  const result = await proxy(new NextRequest("http://localhost/account", { headers: { cookie: "sb-session=old" } }));
+  expect(result.headers.get("cache-control")).toBe("private, no-store");
   expect(mocks.create).not.toHaveBeenCalled();
 });

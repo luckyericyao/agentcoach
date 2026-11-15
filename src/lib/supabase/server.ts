@@ -2,9 +2,11 @@ import "server-only";
 
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { isEarlyAccessOpen } from "@/lib/server/early-access";
 import { getSupabasePublicConfig } from "./config";
 
 export async function createSupabaseServerClient() {
+  if (!isEarlyAccessOpen()) return null;
   const config = getSupabasePublicConfig();
   if (!config) return null;
   const cookieStore = await cookies();

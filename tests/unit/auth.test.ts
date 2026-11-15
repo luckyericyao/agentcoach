@@ -15,6 +15,7 @@ import { emailConfirmationCookie } from "@/lib/supabase/email-confirmation";
 
 beforeEach(() => {
   vi.clearAllMocks();
+  vi.stubEnv("AGENTCOACH_EARLY_ACCESS", "1");
   mocks.client.mockResolvedValue({ auth: { exchangeCodeForSession: mocks.exchange, verifyOtp: mocks.verify, getUser: mocks.getUser } });
   mocks.exchange.mockResolvedValue({ error: null });
   mocks.verify.mockResolvedValue({ error: null });
@@ -33,6 +34,17 @@ function confirmationPost(action: string, cookie: string, headers: Record<string
 }
 
 describe("auth callback", () => {
+  it("does not stage or exchange credentials when early access is closed", async () => {
+    vi.stubEnv("AGENTCOACH_EARLY_ACCESS", undefined);
+    for (const query of ["?code=local-code", "?token_hash=local-hash&type=email"]) {
+      const response = await GET(new NextRequest(`http://localhost/auth/callback${query}`));
+      expect(response.headers.get("location")).toBe("/login");
+      expect(response.headers.has("set-cookie")).toBe(false);
+    }
+    const response = await confirmationPost("/auth/callback", "", { origin: "http://localhost" });
+    expect(response.headers.get("location")).toBe("/login");
+    expect(mocks.client).not.toHaveBeenCalled();
+  });
   it.each(["", "?error=private-provider-error", "?token_hash=hash&type=recovery", "?code=code&token_hash=hash&type=email",
     "?code=one&code=two", "?token_hash=hash&type=email&type=email", "?token_hash=hash&token_hash=other&type=email",
     "?token_hash=hash%3Aother&type=email"])(

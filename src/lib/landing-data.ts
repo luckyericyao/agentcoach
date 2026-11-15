@@ -24,8 +24,8 @@ import { useCases } from "./use-cases-data";
 export const navItems = [
   { label: "Explore", href: "/#channels" },
   { label: "Agent Recipes", href: "/recipes" },
-  { label: "Become a Client", href: "/become-a-client" },
-  { label: "Become a Coach", href: "/become-a-coach" },
+  { label: "Become a Client", previewLabel: "For Clients", href: "/become-a-client" },
+  { label: "Become a Coach", previewLabel: "For Coaches", href: "/become-a-coach" },
   { label: "Login", href: "/login" },
 ];
 
@@ -39,9 +39,12 @@ export const heroSignals = [
 export const conversionPaths = [
   {
     title: "Become a Client",
+    previewTitle: "For Clients",
     eyebrow: "For individuals, teams, and enterprises",
     description:
       "Explore structured sample recipes and tell us which repeated decisions your team needs to support next.",
+    previewDescription:
+      "Inspect how structured recipes turn repeated decisions into workflows a team can review and adapt.",
     href: "/become-a-client",
     cta: "Become a Client",
     points: [
@@ -53,9 +56,12 @@ export const conversionPaths = [
   },
   {
     title: "Become a Coach",
+    previewTitle: "For Coaches",
     eyebrow: "For experts and operators",
     description:
       "Join the early coach network to help shape reusable Agent Recipes around your workflows, judgment, and domain knowledge.",
+    previewDescription:
+      "See how professional judgment can become a reusable workflow with evidence and review standards.",
     href: "/become-a-coach",
     cta: "Become a Coach",
     points: [

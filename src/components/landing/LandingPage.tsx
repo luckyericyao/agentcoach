@@ -18,12 +18,14 @@ import {
   useCaseHighlights,
 } from "@/lib/landing-data";
 import { OrbitalNetwork } from "./OrbitalNetwork";
+import { useEarlyAccessMode } from "./EarlyAccessMode";
 import { SectionReveal } from "./SectionReveal";
 import { SiteFooter } from "./SiteFooter";
 import { TopNavigation } from "./TopNavigation";
 import { WaitlistForm } from "./WaitlistForm";
 
 export function LandingPage() {
+  const earlyAccessOpen = useEarlyAccessMode();
   const [selectedRecipe, setSelectedRecipe] = useState<AgentRecipe | null>(null);
   return (
     <main id="main-content" tabIndex={-1} className="min-h-screen overflow-hidden bg-carbon text-platinum">
@@ -88,7 +90,7 @@ export function LandingPage() {
                 href="/become-a-coach"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded border border-white/[0.16] bg-white/[0.07] px-5 text-sm font-semibold text-platinum shadow-inner-line transition duration-200 hover:border-white/[0.28] hover:bg-white/[0.12] focus:outline-none focus:ring-2 focus:ring-ion/50"
               >
-                Become a Coach
+                {earlyAccessOpen ? "Become a Coach" : "For Coaches"}
                 <ArrowRight aria-hidden="true" className="size-4" />
               </Link>
             </motion.div>
@@ -194,13 +196,13 @@ export function LandingPage() {
                   </div>
                   <p className="mt-9 text-sm font-semibold text-steel">{path.eyebrow}</p>
                   <h3 className="mt-3 text-3xl font-semibold leading-tight text-platinum">
-                    {path.title}
+                    {earlyAccessOpen ? path.title : path.previewTitle}
                   </h3>
                   <p className="mt-5 text-pretty text-base leading-7 text-steel">
-                    {path.description}
+                    {earlyAccessOpen ? path.description : path.previewDescription}
                   </p>
                   <div className="mt-7 grid gap-3">
-                    {path.points.map((point) => (
+                    {path.points.filter((point) => earlyAccessOpen || point !== "Request a private adaptation").map((point) => (
                       <p key={point} className="flex gap-3 text-sm leading-6 text-steel">
                         <CheckCircle2
                           aria-hidden="true"
@@ -214,7 +216,7 @@ export function LandingPage() {
                     href={path.href}
                     className="mt-8 inline-flex h-11 items-center justify-center gap-2 rounded border border-white/[0.16] bg-white/[0.07] px-4 text-sm font-semibold text-platinum transition duration-200 hover:border-white/[0.28] hover:bg-white/[0.12] focus:outline-none focus:ring-2 focus:ring-ion/50"
                   >
-                    {path.cta}
+                    {earlyAccessOpen ? path.cta : path.previewTitle}
                     <ArrowRight aria-hidden="true" className="size-4" />
                   </Link>
                 </motion.article>
@@ -451,13 +453,12 @@ export function LandingPage() {
                 agent systems touch internal work.
               </p>
               <p className="mt-6 max-w-3xl border-l border-ion/40 pl-4 text-sm leading-6 text-steel">
-                Planned capabilities, not a live deployment service. Early access
-                currently offers sample recipes and workflow requests; private runtime,
+                Planned capabilities, not a live deployment service. Private runtime,
                 role-based access, and internal integrations are not available yet.
               </p>
-              <Link href="/become-a-client#client-access"
+              <Link href={earlyAccessOpen ? "/become-a-client#client-access" : "/recipes"}
                 className="mt-7 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-platinum transition hover:text-ion">
-                Discuss a private workflow<ArrowRight aria-hidden="true" className="size-4" />
+                {earlyAccessOpen ? "Discuss a private workflow" : "Explore sample workflows"}<ArrowRight aria-hidden="true" className="size-4" />
               </Link>
             </div>
 
@@ -489,7 +490,7 @@ export function LandingPage() {
         </div>
       </SectionReveal>
 
-      <SectionReveal id="waitlist" className="relative px-5 py-20 sm:px-8 lg:py-32">
+      {earlyAccessOpen ? <SectionReveal id="waitlist" className="relative px-5 py-20 sm:px-8 lg:py-32">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-12 lg:grid-cols-[0.86fr_1fr] lg:items-end">
             <div>
@@ -538,7 +539,21 @@ export function LandingPage() {
             </div>
           </div>
         </div>
-      </SectionReveal>
+      </SectionReveal> : (
+        <SectionReveal id="waitlist" className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:py-32">
+          <p className="text-sm font-semibold text-ion">Recipe Library</p>
+          <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl">
+            Start with a sample workflow.
+          </h2>
+          <p className="mt-5 max-w-xl text-base leading-7 text-steel">
+            Explore the public library without an account. Early access requests are not open yet.
+          </p>
+          <Link href="/recipes"
+            className="mt-8 inline-flex min-h-12 items-center gap-2 rounded bg-platinum px-5 text-sm font-semibold text-carbon transition hover:bg-white">
+            Explore Recipes<ArrowRight aria-hidden="true" className="size-4" />
+          </Link>
+        </SectionReveal>
+      )}
 
       <SiteFooter />
       <RecipePreview recipe={selectedRecipe} onClose={() => setSelectedRecipe(null)} />

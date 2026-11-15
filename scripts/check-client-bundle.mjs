@@ -11,7 +11,7 @@ if (testBuild && process.argv.includes("--normal-build")) {
 const directory = resolve(root, testBuild ? ".next-e2e/static" : ".next/static");
 const forbidden = [
   "SUPABASE_SERVICE_ROLE_KEY", "RESEND_API_KEY", "NOTIFICATION_TO_EMAIL", "NOTIFICATION_FROM_EMAIL",
-  "fixture-service-role", "re_fixture_only",
+  "fixture-service-role", "re_fixture_only", "AGENTCOACH_EARLY_ACCESS",
 ];
 if (process.argv.includes("--normal-build")) forbidden.push("fixture-anon", "http://127.0.0.1:4319");
 const matches = [];
