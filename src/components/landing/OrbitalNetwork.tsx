@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 const nodes = [
   { x: 310, y: 82, r: 3 },
@@ -36,6 +36,7 @@ const links = [
 ];
 
 export function OrbitalNetwork() {
+  const reducedMotion = useReducedMotion();
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
       <div className="absolute right-[-12rem] top-20 h-[46rem] w-[46rem] opacity-80 sm:right-[-7rem] lg:right-0 lg:top-8">
@@ -91,8 +92,9 @@ export function OrbitalNetwork() {
           </g>
 
           <motion.g
-            animate={{ rotate: 360 }}
-            transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+            initial={{ rotate: 0 }}
+            animate={reducedMotion ? { rotate: 0 } : { rotate: 360 }}
+            transition={{ duration: reducedMotion ? 0 : 60, repeat: reducedMotion ? 0 : Infinity, ease: "linear" }}
             style={{ transformOrigin: "305px 305px" }}
           >
             <ellipse
@@ -108,8 +110,9 @@ export function OrbitalNetwork() {
           </motion.g>
 
           <motion.g
-            animate={{ rotate: -360 }}
-            transition={{ duration: 88, repeat: Infinity, ease: "linear" }}
+            initial={{ rotate: 0 }}
+            animate={reducedMotion ? { rotate: 0 } : { rotate: -360 }}
+            transition={{ duration: reducedMotion ? 0 : 88, repeat: reducedMotion ? 0 : Infinity, ease: "linear" }}
             style={{ transformOrigin: "305px 305px" }}
           >
             <ellipse
@@ -156,14 +159,14 @@ export function OrbitalNetwork() {
                 r={node.r}
                 fill={index === 8 ? "#f5f3ef" : index % 3 === 0 ? "#d7b46a" : "#7fd4ff"}
                 initial={{ opacity: 0, scale: 0.2 }}
-                animate={{
+                animate={reducedMotion ? { opacity: 1, scale: 1 } : {
                   opacity: [0.55, 1, 0.55],
                   scale: [0.86, 1.18, 0.86],
                 }}
                 transition={{
-                  duration: 4 + (index % 4),
-                  delay: index * 0.08,
-                  repeat: Infinity,
+                  duration: reducedMotion ? 0 : 4 + (index % 4),
+                  delay: reducedMotion ? 0 : index * 0.08,
+                  repeat: reducedMotion ? 0 : Infinity,
                   ease: "easeInOut",
                 }}
               />

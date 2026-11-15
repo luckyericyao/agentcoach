@@ -1,246 +1,203 @@
 import {
-  BadgeDollarSign,
-  Beaker,
+  Activity,
+  Binary,
   BriefcaseBusiness,
-  Building2,
-  CheckCircle2,
   ClipboardCheck,
   Cpu,
-  FileCheck2,
+  Database,
+  FileText,
   HeartPulse,
   Landmark,
+  LineChart,
   LockKeyhole,
-  Scale,
+  Search,
   ShieldCheck,
+  Stethoscope,
+  Truck,
+  Users,
+  Workflow,
 } from "lucide-react";
+import { industries } from "./industries-data";
+import { featuredAgentRecipes, recipeSummaryModules } from "./recipes-data";
+import { useCases } from "./use-cases-data";
 
 export const navItems = [
-  { label: "Industries", href: "#industries" },
-  { label: "Examples", href: "#coach-examples" },
-  { label: "Users", href: "#users" },
-  { label: "Coaches", href: "#coaches" },
-  { label: "Trust", href: "#trust" },
+  { label: "Explore", href: "/#channels" },
+  { label: "Agent Recipes", href: "/recipes" },
+  { label: "Become a Client", previewLabel: "For Clients", href: "/become-a-client" },
+  { label: "Become a Coach", previewLabel: "For Coaches", href: "/become-a-coach" },
+  { label: "Login", href: "/login" },
 ];
 
-export const heroIndustryTags = [
-  "Biotech & Pharma",
-  "Finance",
-  "Tax & Accounting",
-  "Technology",
+export const heroSignals = [
+  "8-part systems",
+  "Source discipline",
+  "Human review",
+  "Deployment plans",
 ];
 
-export const industries = [
+export const conversionPaths = [
   {
-    name: "Biotech & Pharma",
+    title: "Become a Client",
+    previewTitle: "For Clients",
+    eyebrow: "For individuals, teams, and enterprises",
     description:
-      "Professional AI coaches for biotech teams navigating scientific, commercial, clinical, and regulated work.",
-    coachTypes: [
-      "BD Coach",
-      "R&D Coach",
-      "Deal Intelligence Coach",
-      "Clinical Trial Coach",
-      "Conference Meeting Coach",
-      "Regulatory / CMC Coach",
+      "Explore structured sample recipes and tell us which repeated decisions your team needs to support next.",
+    previewDescription:
+      "Inspect how structured recipes turn repeated decisions into workflows a team can review and adapt.",
+    href: "/become-a-client",
+    cta: "Become a Client",
+    points: [
+      "Inspect complete sample workflows",
+      "Define your inputs and desired outputs",
+      "Request a private adaptation",
     ],
-    examples: [
-      {
-        name: "BD Coach",
-        focus: "Company fit, partnership angle, outreach preparation, and meeting context.",
-      },
-      {
-        name: "Clinical Trial Coach",
-        focus: "Trial landscape, enrollment context, endpoint review, and study comparison.",
-      },
-      {
-        name: "Regulatory / CMC Coach",
-        focus: "Submission preparation, manufacturing context, and review checklists.",
-      },
-    ],
-    icon: Beaker,
+    icon: Users,
   },
   {
-    name: "Finance",
+    title: "Become a Coach",
+    previewTitle: "For Coaches",
+    eyebrow: "For experts and operators",
     description:
-      "Professional AI coaches for personal and market-facing financial decisions that need structure and review.",
-    coachTypes: [
-      "Personal Finance Coach",
-      "Stock Research Coach",
-      "Portfolio Review Coach",
-      "Retirement Planning Coach",
-      "Insurance Review Coach",
+      "Join the early coach network to help shape reusable Agent Recipes around your workflows, judgment, and domain knowledge.",
+    previewDescription:
+      "See how professional judgment can become a reusable workflow with evidence and review standards.",
+    href: "/become-a-coach",
+    cta: "Become a Coach",
+    points: [
+      "Propose a complete Agent Recipe",
+      "Define evidence and review standards",
+      "Help shape future publishing and licensing",
     ],
-    examples: [
-      {
-        name: "Personal Finance Coach",
-        focus: "Cash-flow visibility, tradeoff review, and monthly planning support.",
-      },
-      {
-        name: "Portfolio Review Coach",
-        focus: "Holdings context, concentration review, risk discussion, and decision checklist.",
-      },
-      {
-        name: "Insurance Review Coach",
-        focus: "Policy comparison, coverage gaps, renewal questions, and advisor-ready notes.",
-      },
-    ],
-    icon: Landmark,
-  },
-  {
-    name: "Tax & Accounting",
-    description:
-      "Professional AI coaches for preparing cleaner records, clearer questions, and more consistent reviews.",
-    coachTypes: [
-      "Tax Prep Coach",
-      "Deduction Checklist Coach",
-      "Expense Review Coach",
-      "Small Business Accounting Coach",
-    ],
-    examples: [
-      {
-        name: "Tax Prep Coach",
-        focus: "Document readiness, filing context, missing items, and preparer handoff.",
-      },
-      {
-        name: "Expense Review Coach",
-        focus: "Expense categorization, anomaly review, and month-end cleanup.",
-      },
-      {
-        name: "Small Business Accounting Coach",
-        focus: "Bookkeeping cadence, cash context, owner questions, and reporting prep.",
-      },
-    ],
-    icon: FileCheck2,
-  },
-  {
-    name: "Technology",
-    description:
-      "Professional AI coaches for teams making product, tooling, startup, and diligence decisions.",
-    coachTypes: [
-      "Product Strategy Coach",
-      "AI Tooling Coach",
-      "Startup Operations Coach",
-      "Technical Due Diligence Coach",
-    ],
-    examples: [
-      {
-        name: "Product Strategy Coach",
-        focus: "Market context, roadmap tradeoffs, customer signals, and launch decisions.",
-      },
-      {
-        name: "AI Tooling Coach",
-        focus: "Tool selection, workflow fit, adoption risk, and implementation planning.",
-      },
-      {
-        name: "Technical Due Diligence Coach",
-        focus: "Architecture review, team questions, risk summary, and diligence notes.",
-      },
-    ],
-    icon: Cpu,
-  },
-  {
-    name: "Legal & Compliance",
-    description:
-      "Professional AI coaches for review preparation, policy alignment, and decision records.",
-    coachTypes: [
-      "Contract Review Coach",
-      "Policy Compliance Coach",
-      "Privacy Review Coach",
-      "Approval Workflow Coach",
-    ],
-    examples: [
-      {
-        name: "Contract Review Coach",
-        focus: "Clause flags, commercial risk, negotiation questions, and counsel-ready notes.",
-      },
-      {
-        name: "Privacy Review Coach",
-        focus: "Data handling questions, review packets, and policy alignment checks.",
-      },
-      {
-        name: "Approval Workflow Coach",
-        focus: "Decision history, stakeholder routing, and approval documentation.",
-      },
-    ],
-    icon: Scale,
-  },
-  {
-    name: "Healthcare",
-    description:
-      "Professional AI coaches for education, preparation, navigation, and care conversations.",
-    coachTypes: [
-      "Medication Navigation Coach",
-      "Care Visit Prep Coach",
-      "Insurance Navigation Coach",
-      "Patient Timeline Coach",
-    ],
-    examples: [
-      {
-        name: "Medication Navigation Coach",
-        focus: "Medication lists, label summaries, possible questions, and visit preparation.",
-      },
-      {
-        name: "Care Visit Prep Coach",
-        focus: "Symptoms, timeline, lab context, and doctor-ready discussion points.",
-      },
-      {
-        name: "Insurance Navigation Coach",
-        focus: "Benefits context, claims questions, and coverage conversation prep.",
-      },
-    ],
-    icon: HeartPulse,
+    icon: Workflow,
   },
 ];
 
-export const userBenefits = [
+export const recipeParts = [
   {
-    title: "Start with your industry",
-    body: "Find professional AI coaches organized by the decisions and context your field already understands.",
-    icon: Building2,
+    title: "System instruction",
+    body: "Role, domain context, decision rules, constraints, and source discipline.",
+    icon: Binary,
   },
   {
-    title: "Get structured guidance",
-    body: "Use coach-led checklists, briefs, scoring rubrics, and handoffs instead of ad hoc AI conversations.",
+    title: "Workflow",
+    body: "A repeatable sequence for gathering data, reasoning through choices, and handing off work.",
+    icon: Workflow,
+  },
+  {
+    title: "Input template",
+    body: "The structured fields, files, tools, and source requirements needed to run the recipe.",
     icon: ClipboardCheck,
   },
   {
-    title: "Stay in control",
-    body: "AI coaches support preparation and decision clarity while keeping expert and human review in the loop.",
-    icon: CheckCircle2,
-  },
-];
-
-export const coachBenefits = [
-  {
-    title: "Package expertise",
-    body: "Turn your professional judgment into a reusable AI coach for a specific industry audience.",
-    icon: BriefcaseBusiness,
+    title: "Output format",
+    body: "Briefs, scores, tables, checklists, plans, or review packets shaped for real decisions.",
+    icon: FileText,
   },
   {
-    title: "Build reputation",
-    body: "Publish clear coach types, improve them with feedback, and become discoverable by teams.",
-    icon: BadgeDollarSign,
+    title: "Required tools",
+    body: "The search, coding, database, CRM, document, or internal systems the agent must use.",
+    icon: Search,
   },
   {
-    title: "Support private deployments",
-    body: "Help organizations adapt industry coaches to internal policies, data, and review processes.",
+    title: "Evaluation criteria",
+    body: "Source checks, quality gates, pass/fail criteria, and review steps before deployment.",
+    icon: Activity,
+  },
+  {
+    title: "Risk boundary",
+    body: "Clear escalation rules for regulated, financial, medical, legal, or high-impact work.",
     icon: ShieldCheck,
   },
+  {
+    title: "Deployment option",
+    body: "Public preview, pro recipe, team workflow, private agent, or local model package.",
+    icon: Database,
+  },
 ];
 
-export const trustPrinciples = [
+const industryIcons = {
+  "biotech-pharma": Stethoscope,
+  "finance-market-research": LineChart,
+  "coding-automation": Cpu,
+  "sales-business-development": BriefcaseBusiness,
+  "healthcare-research": HeartPulse,
+  "enterprise-operations": Truck,
+};
+
+export const channels = industries.map((industry) => ({
+  ...industry,
+  decisions: industry.decisionsSupported.slice(0, 3).join(", "),
+  data: industry.dataUsed.slice(0, 5).join(", "),
+  produces: industry.agentOutputs.slice(0, 5).join(", "),
+  icon: industryIcons[industry.slug as keyof typeof industryIcons],
+}));
+
+const recipeIcons = {
+  "biotech-bd-meeting-prep-agent": Stethoscope,
+  "finance-earnings-call-analyst": Landmark,
+  "codex-full-stack-builder-agent": Cpu,
+  "healthcare-evidence-review-agent": HeartPulse,
+};
+
+export const featuredRecipes = featuredAgentRecipes.map((recipe) => ({
+  ...recipe,
+  summaryModules: recipeSummaryModules,
+  output: recipe.outputExamples.join(", "),
+  icon: recipeIcons[recipe.slug as keyof typeof recipeIcons],
+}));
+
+export const useCaseHighlights = useCases
+  .filter((useCase) =>
+    [
+      "biotech-bd-meeting-preparation",
+      "earnings-call-analysis",
+      "codex-task-generation",
+      "lead-research",
+      "healthcare-literature-review",
+      "sop-transformation",
+    ].includes(useCase.slug),
+  )
+  .map((useCase) => ({
+    ...useCase,
+    industry: industries.find((industry) => industry.slug === useCase.industrySlug)?.name ?? "",
+  }));
+
+export const enterpriseCapabilities = [
+  "Private Agent Recipe adaptation",
+  "Secure team workflows",
+  "Local AI and private model options",
+  "Governance and approval paths",
+  "Evaluation checklists",
+  "Role-based access patterns",
+  "Internal knowledge integration",
+  "Public-to-private recipe conversion",
+];
+
+export const enterpriseFlow = [
+  "Discover public Agent Recipes",
+  "Adapt to internal data and policies",
+  "Evaluate with team-specific criteria",
+  "Deploy as private enterprise agents",
+];
+
+export const finalAudiencePaths = [
   {
-    title: "Privacy first",
-    body: "Private deployments can keep sensitive data inside team-approved environments.",
+    title: "Become a Client",
+    body: "Explore samples and request a workflow adaptation.",
+    href: "/become-a-client",
+    icon: Users,
+  },
+  {
+    title: "Become a Coach",
+    body: "Apply to contribute your professional workflows.",
+    href: "/become-a-coach",
+    icon: Workflow,
+  },
+  {
+    title: "Enterprise",
+    body: "Plan a private workflow for your team.",
+    href: "/#enterprise",
     icon: LockKeyhole,
-  },
-  {
-    title: "Professional boundaries",
-    body: "Coaches are built for preparation and decision support, not replacing licensed professionals.",
-    icon: ShieldCheck,
-  },
-  {
-    title: "Human review",
-    body: "High-stakes decisions should keep source review, audit trails, and accountable owners.",
-    icon: CheckCircle2,
   },
 ];

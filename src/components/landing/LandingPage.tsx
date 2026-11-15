@@ -1,30 +1,34 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
+import { useState } from "react";
+import { ArrowRight, ArrowUpRight, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
+import Link from "next/link";
+import type { AgentRecipe } from "@/lib/recipes-data";
+import { RecipePreview } from "@/components/recipes/RecipePreview";
 import {
-  coachBenefits,
-  heroIndustryTags,
-  industries,
-  trustPrinciples,
-  userBenefits,
+  channels,
+  conversionPaths,
+  enterpriseCapabilities,
+  enterpriseFlow,
+  featuredRecipes,
+  finalAudiencePaths,
+  heroSignals,
+  recipeParts,
+  useCaseHighlights,
 } from "@/lib/landing-data";
 import { OrbitalNetwork } from "./OrbitalNetwork";
+import { useEarlyAccessMode } from "./EarlyAccessMode";
 import { SectionReveal } from "./SectionReveal";
+import { SiteFooter } from "./SiteFooter";
 import { TopNavigation } from "./TopNavigation";
 import { WaitlistForm } from "./WaitlistForm";
 
-function industryId(name: string) {
-  return name
-    .toLowerCase()
-    .replace(/&/g, "and")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-}
-
 export function LandingPage() {
+  const earlyAccessOpen = useEarlyAccessMode();
+  const [selectedRecipe, setSelectedRecipe] = useState<AgentRecipe | null>(null);
   return (
-    <main className="min-h-screen overflow-hidden bg-carbon text-platinum">
+    <main id="main-content" tabIndex={-1} className="min-h-screen overflow-hidden bg-carbon text-platinum">
       <TopNavigation />
 
       <section
@@ -32,10 +36,11 @@ export function LandingPage() {
         className="relative flex min-h-[100svh] items-center border-b border-white/10 px-5 pt-20 sm:px-8 sm:pt-24"
       >
         <OrbitalNetwork />
-        <div className="relative z-10 mx-auto w-full max-w-7xl py-14 sm:py-20 lg:py-24">
-          <div className="max-w-5xl">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_78%,rgba(215,180,106,0.12),transparent_34rem)]" />
+        <div className="relative z-10 mx-auto w-full max-w-7xl py-16 sm:py-20 lg:py-24">
+          <div className="max-w-6xl">
             <motion.p
-              className="mb-6 text-base font-semibold text-platinum sm:text-lg"
+              className="mb-7 text-sm font-semibold uppercase text-ion sm:text-base"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.12 }}
@@ -43,59 +48,64 @@ export function LandingPage() {
               AgentCoach
             </motion.p>
             <motion.h1
-              className="max-w-5xl text-balance text-5xl font-semibold leading-none text-platinum sm:text-7xl lg:text-8xl"
+              className="max-w-6xl text-balance text-5xl font-semibold leading-none text-platinum sm:text-7xl lg:text-8xl"
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
             >
-              Professional coaches for better decisions.
+              Train the world&apos;s AI agents.
             </motion.h1>
             <motion.p
-              className="mt-7 max-w-3xl text-pretty text-base leading-7 text-steel sm:text-xl sm:leading-8"
+              className="mt-7 max-w-4xl text-pretty text-xl leading-8 text-platinum/90 sm:text-2xl sm:leading-9"
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.34, ease: [0.22, 1, 0.36, 1] }}
             >
-              AI coaches built by industry professionals — starting with Biotech &
-              Pharma, Finance, Tax & Accounting, and Technology.
+              Turn expert workflows into reusable, rankable, and deployable AI agents.
+            </motion.p>
+            <motion.p
+              className="mt-5 max-w-3xl text-pretty text-base leading-7 text-steel sm:text-lg"
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.44, ease: [0.22, 1, 0.36, 1] }}
+            >
+              Not prompts. Agent Recipes — complete instruction systems built for real
+              workflows.
             </motion.p>
 
             <motion.div
-              className="mt-9 flex flex-col gap-3 sm:flex-row"
+              className="mt-10 flex flex-col gap-3 sm:flex-row"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.48 }}
+              transition={{ duration: 0.7, delay: 0.54 }}
             >
-              <a
-                href="#industries"
+              <Link
+                href="/recipes"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded bg-platinum px-5 text-sm font-semibold text-carbon transition duration-200 hover:bg-white focus:outline-none focus:ring-2 focus:ring-ion/50"
               >
-                Explore Industries
+                Explore Recipes
                 <ArrowRight aria-hidden="true" className="size-4" />
-              </a>
-              <a
-                href="#coaches"
+              </Link>
+              <Link
+                href="/become-a-coach"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded border border-white/[0.16] bg-white/[0.07] px-5 text-sm font-semibold text-platinum shadow-inner-line transition duration-200 hover:border-white/[0.28] hover:bg-white/[0.12] focus:outline-none focus:ring-2 focus:ring-ion/50"
               >
-                Become a Coach
+                {earlyAccessOpen ? "Become a Coach" : "For Coaches"}
                 <ArrowRight aria-hidden="true" className="size-4" />
-              </a>
+              </Link>
             </motion.div>
 
             <motion.div
-              aria-label="Initial AgentCoach industries"
-              className="mt-10 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm font-medium text-steel sm:mt-12"
+              aria-label="Agent Recipe signals"
+              className="mt-9 grid max-w-4xl grid-cols-2 gap-px overflow-hidden rounded-lg border border-white/10 bg-white/10 shadow-inner-line sm:mt-12 sm:grid-cols-4"
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.58 }}
+              transition={{ duration: 0.7, delay: 0.64 }}
             >
-              {heroIndustryTags.map((tag, index) => (
-                <span key={tag} className="inline-flex items-center gap-3">
-                  <span>{tag}</span>
-                  {index < heroIndustryTags.length - 1 ? (
-                    <span className="size-1 rounded-full bg-steel/50" />
-                  ) : null}
-                </span>
+              {heroSignals.map((signal) => (
+                <div key={signal} className="bg-carbon/70 px-3 py-3 backdrop-blur sm:px-4 sm:py-4">
+                  <p className="text-sm font-semibold text-platinum">{signal}</p>
+                </div>
               ))}
             </motion.div>
           </div>
@@ -103,61 +113,47 @@ export function LandingPage() {
       </section>
 
       <SectionReveal
-        id="industries"
-        className="relative border-b border-white/10 px-5 py-24 sm:px-8 lg:py-32"
+        id="recipes"
+        className="relative border-b border-white/10 px-5 py-24 sm:px-8 lg:py-36"
       >
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-ion/50 to-transparent" />
         <div className="mx-auto max-w-7xl">
-          <div className="grid gap-8 lg:grid-cols-[0.82fr_1fr] lg:items-end">
+          <div className="grid gap-10 lg:grid-cols-[0.86fr_1fr] lg:items-end">
             <div>
-              <p className="text-sm font-semibold text-ion">Explore by Industry</p>
+              <p className="text-sm font-semibold text-ion">Agent Recipe System</p>
               <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl lg:text-6xl">
-                Start with the field. Then choose the coach.
+                Prompts are easy to copy. Expert workflows are the real asset.
               </h2>
             </div>
             <p className="max-w-2xl text-pretty text-lg leading-8 text-steel lg:ml-auto">
-              AgentCoach organizes professional AI coaches by industry first, so each
-              coach starts from the language, constraints, and decisions of the field it
-              serves.
+              An Agent Recipe packages the judgment, sequence, tools, boundaries, and
+              evaluation logic behind useful AI agents. It is designed to be improved,
+              ranked, monetized, and deployed.
             </p>
           </div>
 
-          <div className="mt-14 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {industries.map((industry, index) => {
-              const Icon = industry.icon;
+          <div className="mt-14 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {recipeParts.map((part, index) => {
+              const Icon = part.icon;
               return (
                 <motion.article
-                  id={industryId(industry.name)}
-                  key={industry.name}
-                  className="flex min-h-[24rem] flex-col rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-inner-line transition duration-200 hover:border-white/[0.2] hover:bg-white/[0.065]"
+                  key={part.title}
+                  className="min-h-64 rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-inner-line transition duration-200 hover:border-white/[0.2] hover:bg-white/[0.065]"
                   initial={{ opacity: 0, y: 22 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.55, delay: (index % 3) * 0.08 }}
+                  transition={{ duration: 0.55, delay: (index % 4) * 0.06 }}
                   viewport={{ once: true, amount: 0.28 }}
                 >
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-center justify-between gap-4">
                     <div className="grid size-10 shrink-0 place-items-center rounded border border-white/[0.12] bg-black/30">
                       <Icon aria-hidden="true" className="size-5 text-ion" />
                     </div>
-                    <span className="rounded border border-white/10 bg-black/25 px-2.5 py-1 text-xs font-medium text-steel">
-                      Industry
+                    <span className="text-xs font-semibold text-steel">
+                      {String(index + 1).padStart(2, "0")}
                     </span>
                   </div>
-                  <h3 className="mt-10 text-2xl font-semibold leading-tight text-platinum">
-                    {industry.name}
-                  </h3>
-                  <p className="mt-4 text-pretty text-base leading-7 text-steel">
-                    {industry.description}
-                  </p>
-                  <div className="mt-7 flex flex-wrap gap-2">
-                    {industry.coachTypes.map((coachType) => (
-                      <span
-                        key={coachType}
-                        className="rounded border border-white/10 bg-black/25 px-2.5 py-1 text-xs font-medium text-platinum"
-                      >
-                        {coachType}
-                      </span>
-                    ))}
-                  </div>
+                  <h3 className="mt-10 text-xl font-semibold text-platinum">{part.title}</h3>
+                  <p className="mt-4 text-pretty text-sm leading-6 text-steel">{part.body}</p>
                 </motion.article>
               );
             })}
@@ -166,56 +162,220 @@ export function LandingPage() {
       </SectionReveal>
 
       <SectionReveal
-        id="coach-examples"
-        className="relative border-b border-white/10 px-5 py-24 sm:px-8 lg:py-32"
+        id="paths"
+        className="relative border-b border-white/10 px-5 py-24 sm:px-8 lg:py-36"
       >
         <div className="mx-auto max-w-7xl">
-          <div className="max-w-3xl">
-            <p className="text-sm font-semibold text-ember">Selected Coach Examples</p>
-            <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl lg:text-6xl">
-              Industry professionals define the coach types.
-            </h2>
-            <p className="mt-6 text-pretty text-lg leading-8 text-steel">
-              Each category can contain multiple professional coaches, with the specific
-              questions, source expectations, and review boundaries handled inside the
-              industry context.
+          <div className="grid gap-10 lg:grid-cols-[0.8fr_1fr] lg:items-end">
+            <div>
+              <p className="text-sm font-semibold text-ember">Two Paths</p>
+              <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl lg:text-6xl">
+                Build the network from both sides.
+              </h2>
+            </div>
+            <p className="max-w-2xl text-pretty text-lg leading-8 text-steel lg:ml-auto">
+              AgentCoach connects clients who need better AI workflows with experts who
+              know how high-value work should actually be done.
             </p>
           </div>
 
           <div className="mt-14 grid gap-4 lg:grid-cols-2">
-            {industries.map((industry, index) => {
-              const Icon = industry.icon;
+            {conversionPaths.map((path, index) => {
+              const Icon = path.icon;
               return (
                 <motion.article
-                  key={industry.name}
-                  className="rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-inner-line"
+                  key={path.title}
+                  className="rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-inner-line transition duration-200 hover:border-white/[0.22] hover:bg-white/[0.065] sm:p-8"
+                  initial={{ opacity: 0, y: 22 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.55, delay: index * 0.08 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                >
+                  <div className="grid size-11 place-items-center rounded border border-white/[0.12] bg-black/30">
+                    <Icon aria-hidden="true" className="size-5 text-ember" />
+                  </div>
+                  <p className="mt-9 text-sm font-semibold text-steel">{path.eyebrow}</p>
+                  <h3 className="mt-3 text-3xl font-semibold leading-tight text-platinum">
+                    {earlyAccessOpen ? path.title : path.previewTitle}
+                  </h3>
+                  <p className="mt-5 text-pretty text-base leading-7 text-steel">
+                    {earlyAccessOpen ? path.description : path.previewDescription}
+                  </p>
+                  <div className="mt-7 grid gap-3">
+                    {path.points.filter((point) => earlyAccessOpen || point !== "Request a private adaptation").map((point) => (
+                      <p key={point} className="flex gap-3 text-sm leading-6 text-steel">
+                        <CheckCircle2
+                          aria-hidden="true"
+                          className="mt-0.5 size-4 shrink-0 text-ion"
+                        />
+                        <span>{point}</span>
+                      </p>
+                    ))}
+                  </div>
+                  <Link
+                    href={path.href}
+                    className="mt-8 inline-flex h-11 items-center justify-center gap-2 rounded border border-white/[0.16] bg-white/[0.07] px-4 text-sm font-semibold text-platinum transition duration-200 hover:border-white/[0.28] hover:bg-white/[0.12] focus:outline-none focus:ring-2 focus:ring-ion/50"
+                  >
+                    {earlyAccessOpen ? path.cta : path.previewTitle}
+                    <ArrowRight aria-hidden="true" className="size-4" />
+                  </Link>
+                </motion.article>
+              );
+            })}
+          </div>
+        </div>
+      </SectionReveal>
+
+      <SectionReveal
+        id="channels"
+        className="relative border-b border-white/10 px-5 py-24 sm:px-8 lg:py-36"
+      >
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:96px_96px] opacity-25" />
+        <div className="relative mx-auto max-w-7xl">
+          <div className="grid gap-10 lg:grid-cols-[0.9fr_1fr] lg:items-end">
+            <div>
+              <p className="text-sm font-semibold text-ember">Industry Channels</p>
+              <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl lg:text-6xl">
+                A strategic map for where agent workflows will be deployed.
+              </h2>
+            </div>
+            <p className="max-w-2xl text-pretty text-lg leading-8 text-steel lg:ml-auto">
+              Each channel defines the decisions, data sources, and professional outputs
+              that future Agent Recipes can standardize.
+            </p>
+          </div>
+
+          <div className="mt-14 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {channels.map((channel, index) => {
+              const Icon = channel.icon;
+              return (
+                <Link
+                  href={`/industries/${channel.slug}`}
+                  key={channel.name}
+                  className="block"
+                >
+                  <motion.article
+                    className="flex min-h-[31rem] flex-col rounded-lg border border-white/10 bg-carbon/80 p-6 shadow-inner-line backdrop-blur transition duration-200 hover:border-white/[0.22] hover:bg-ink"
+                    initial={{ opacity: 0, y: 22 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.55, delay: (index % 3) * 0.08 }}
+                    viewport={{ once: true, amount: 0.22 }}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="grid size-10 shrink-0 place-items-center rounded border border-white/[0.12] bg-black/30">
+                        <Icon aria-hidden="true" className="size-5 text-ember" />
+                      </div>
+                      <span className="rounded border border-white/10 bg-white/[0.06] px-2.5 py-1 text-xs font-medium text-steel">
+                        Channel
+                      </span>
+                    </div>
+                    <h3 className="mt-10 text-2xl font-semibold leading-tight text-platinum">
+                      {channel.name}
+                    </h3>
+                    <p className="mt-3 text-pretty text-sm leading-6 text-steel">
+                      {channel.tagline}
+                    </p>
+                    <div className="mt-7 grid gap-5 text-sm leading-6">
+                      <div>
+                        <p className="font-semibold text-platinum">Decisions</p>
+                        <p className="mt-1 text-steel">{channel.decisions}</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-platinum">Data</p>
+                        <p className="mt-1 text-steel">{channel.data}</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-platinum">Recipes produce</p>
+                        <p className="mt-1 text-steel">{channel.produces}</p>
+                      </div>
+                    </div>
+                    <span className="mt-auto inline-flex items-center gap-2 pt-8 text-sm font-semibold text-platinum">
+                      Explore industry
+                      <ArrowRight aria-hidden="true" className="size-4" />
+                    </span>
+                  </motion.article>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </SectionReveal>
+
+      <SectionReveal
+        id="featured-recipes"
+        className="relative border-b border-white/10 px-5 py-24 sm:px-8 lg:py-36"
+      >
+        <div className="mx-auto max-w-7xl">
+          <div className="max-w-4xl">
+            <p className="text-sm font-semibold text-ion">Featured Agent Recipes</p>
+            <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl lg:text-6xl">
+              Preview expert systems before they become deployable agents.
+            </h2>
+            <p className="mt-6 max-w-3xl text-pretty text-lg leading-8 text-steel">
+              Illustrative, unverified examples of how domain expertise becomes a
+              structured agent system. Human review is part of every workflow.
+            </p>
+          </div>
+
+          <div className="mt-14 grid gap-4 lg:grid-cols-2">
+            {featuredRecipes.map((recipe, index) => {
+              const Icon = recipe.icon;
+              return (
+                <motion.article
+                  key={recipe.name}
+                  className="rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-inner-line transition duration-200 hover:border-white/[0.22] hover:bg-white/[0.065]"
                   initial={{ opacity: 0, y: 22 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.55, delay: (index % 2) * 0.08 }}
                   viewport={{ once: true, amount: 0.24 }}
                 >
-                  <div className="flex items-start gap-4">
-                    <div className="grid size-10 shrink-0 place-items-center rounded border border-white/[0.12] bg-black/30">
-                      <Icon aria-hidden="true" className="size-5 text-ember" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-steel">Industry</p>
-                      <h3 className="mt-1 text-2xl font-semibold text-platinum">
-                        {industry.name}
-                      </h3>
-                    </div>
-                  </div>
-
-                  <div className="mt-8 divide-y divide-white/10">
-                    {industry.examples.map((example) => (
-                      <div key={example.name} className="py-5 first:pt-0 last:pb-0">
-                        <p className="text-lg font-semibold text-platinum">{example.name}</p>
-                        <p className="mt-2 text-pretty text-sm leading-6 text-steel">
-                          {example.focus}
-                        </p>
+                  <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="flex items-start gap-4">
+                      <div className="grid size-10 shrink-0 place-items-center rounded border border-white/[0.12] bg-black/30">
+                        <Icon aria-hidden="true" className="size-5 text-ember" />
                       </div>
-                    ))}
+                      <div>
+                        <p className="text-sm font-semibold text-steel">{recipe.domain}</p>
+                        <h3 className="mt-2 text-2xl font-semibold leading-tight text-platinum">
+                          {recipe.name}
+                        </h3>
+                      </div>
+                    </div>
+                    <span className="w-fit rounded border border-ion/20 bg-ion/[0.08] px-2.5 py-1 text-xs font-medium text-ion">
+                      Preview
+                    </span>
                   </div>
+                  <div className="mt-8 grid gap-6 md:grid-cols-[0.9fr_1fr]">
+                    <div>
+                      <p className="text-sm font-semibold text-platinum">Use case</p>
+                      <p className="mt-2 text-pretty text-sm leading-6 text-steel">
+                        {recipe.useCase}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-platinum">Included modules</p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {recipe.summaryModules.map((module) => (
+                          <span
+                            key={module}
+                            className="rounded border border-white/10 bg-black/25 px-2.5 py-1 text-xs font-medium text-platinum"
+                          >
+                            {module}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-7 border-t border-white/10 pt-5">
+                    <p className="text-sm font-semibold text-platinum">Example output</p>
+                    <p className="mt-2 text-pretty text-sm leading-6 text-steel">
+                      {recipe.output}
+                    </p>
+                  </div>
+                  <button type="button" onClick={() => setSelectedRecipe(recipe)} aria-label={`Preview ${recipe.name}`}
+                    className="mt-7 inline-flex min-h-11 items-center justify-center gap-2 rounded border border-white/20 bg-white/[0.05] px-4 text-sm font-semibold text-platinum transition hover:border-ion/50 hover:bg-white/10">
+                    Preview recipe<ArrowUpRight aria-hidden="true" className="size-4" />
+                  </button>
                 </motion.article>
               );
             })}
@@ -224,164 +384,179 @@ export function LandingPage() {
       </SectionReveal>
 
       <SectionReveal
-        id="users"
-        className="relative border-b border-white/10 px-5 py-24 sm:px-8 lg:py-32"
+        id="use-cases"
+        className="relative border-b border-white/10 px-5 py-24 sm:px-8 lg:py-36"
       >
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.82fr_1fr] lg:items-start">
-          <div>
-            <p className="text-sm font-semibold text-ion">For Users</p>
-            <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl lg:text-6xl">
-              Find a coach built for your field.
-            </h2>
-            <p className="mt-7 max-w-3xl text-pretty text-lg leading-8 text-steel">
-              AgentCoach gives professionals a cleaner way to move from scattered
-              context to structured guidance, without losing the human judgment that
-              serious decisions require.
-            </p>
-          </div>
-
-          <div className="grid gap-4">
-            {userBenefits.map((item, index) => {
-              const Icon = item.icon;
-              return (
-                <motion.article
-                  key={item.title}
-                  className="rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-inner-line"
-                  initial={{ opacity: 0, x: 24 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.55, delay: index * 0.08 }}
-                  viewport={{ once: true, amount: 0.4 }}
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="grid size-10 shrink-0 place-items-center rounded border border-white/[0.12] bg-black/30">
-                      <Icon aria-hidden="true" className="size-5 text-ion" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-semibold text-platinum">{item.title}</h3>
-                      <p className="mt-2 text-pretty text-base leading-7 text-steel">
-                        {item.body}
-                      </p>
-                    </div>
-                  </div>
-                </motion.article>
-              );
-            })}
-          </div>
-        </div>
-      </SectionReveal>
-
-      <SectionReveal
-        id="coaches"
-        className="relative border-b border-white/10 px-5 py-24 sm:px-8 lg:py-32"
-      >
-        <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_0.82fr] lg:items-start">
-          <div>
-            <p className="text-sm font-semibold text-ember">For Coaches</p>
-            <h2 className="mt-5 max-w-4xl text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl lg:text-6xl">
-              Become the professional behind the coach.
-            </h2>
-            <p className="mt-7 max-w-3xl text-pretty text-lg leading-8 text-steel">
-              Industry professionals can package repeatable judgment into AI coaches
-              that users and teams can discover, evaluate, and adapt.
-            </p>
-          </div>
-
-          <div className="grid gap-4">
-            {coachBenefits.map((item, index) => {
-              const Icon = item.icon;
-              return (
-                <motion.article
-                  key={item.title}
-                  className="rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-inner-line"
-                  initial={{ opacity: 0, x: 24 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.55, delay: index * 0.08 }}
-                  viewport={{ once: true, amount: 0.4 }}
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="grid size-10 shrink-0 place-items-center rounded border border-white/[0.12] bg-black/30">
-                      <Icon aria-hidden="true" className="size-5 text-ember" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-semibold text-platinum">{item.title}</h3>
-                      <p className="mt-2 text-pretty text-base leading-7 text-steel">
-                        {item.body}
-                      </p>
-                    </div>
-                  </div>
-                </motion.article>
-              );
-            })}
-          </div>
-        </div>
-      </SectionReveal>
-
-      <SectionReveal id="trust" className="relative px-5 py-24 sm:px-8 lg:py-32">
         <div className="mx-auto max-w-7xl">
-          <div className="grid gap-8 lg:grid-cols-[0.82fr_1fr] lg:items-end">
+          <div className="grid gap-10 lg:grid-cols-[0.86fr_1fr] lg:items-end">
             <div>
-              <p className="text-sm font-semibold text-ion">Trust / Privacy</p>
+              <p className="text-sm font-semibold text-ember">Efficiency Examples</p>
               <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl lg:text-6xl">
-                Built for professional standards.
+                Repeated work becomes a reusable system.
               </h2>
             </div>
             <p className="max-w-2xl text-pretty text-lg leading-8 text-steel lg:ml-auto">
-              AgentCoach is designed for teams and individuals who need privacy,
-              clear boundaries, and accountable review around AI-assisted decisions.
+              Use cases show where Agent Recipes reduce manual research, improve output
+              consistency, and keep risk boundaries visible.
             </p>
           </div>
 
-          <div className="mt-14 grid gap-4 md:grid-cols-3">
-            {trustPrinciples.map((item, index) => {
-              const Icon = item.icon;
-              return (
-                <motion.article
-                  key={item.title}
-                  className="min-h-64 rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-inner-line"
-                  initial={{ opacity: 0, y: 22 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.55, delay: index * 0.08 }}
-                  viewport={{ once: true, amount: 0.36 }}
-                >
-                  <div className="grid size-10 place-items-center rounded border border-white/[0.12] bg-black/30">
-                    <Icon aria-hidden="true" className="size-5 text-ion" />
-                  </div>
-                  <h3 className="mt-10 text-2xl font-semibold text-platinum">
-                    {item.title}
-                  </h3>
-                  <p className="mt-4 text-pretty text-base leading-7 text-steel">
-                    {item.body}
+          <div className="mt-14 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {useCaseHighlights.map((useCase, index) => (
+              <motion.article
+                key={useCase.slug}
+                className="rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-inner-line"
+                initial={{ opacity: 0, y: 22 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: (index % 3) * 0.08 }}
+                viewport={{ once: true, amount: 0.24 }}
+              >
+                <p className="text-sm font-semibold text-ion">{useCase.industry}</p>
+                <h3 className="mt-4 text-2xl font-semibold leading-tight text-platinum">
+                  {useCase.title}
+                </h3>
+                <div className="mt-7 grid gap-5 text-sm leading-6 text-steel">
+                  <p>
+                    <span className="font-semibold text-platinum">Problem: </span>
+                    {useCase.problem}
                   </p>
-                </motion.article>
-              );
-            })}
-          </div>
-
-          <div
-            id="waitlist"
-            className="mt-16 grid gap-10 border-t border-white/10 pt-12 lg:grid-cols-[0.86fr_1fr] lg:items-end"
-          >
-            <div>
-              <p className="text-sm font-semibold text-ember">Request Access</p>
-              <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl">
-                Explore the first professional AI coaches.
-              </h2>
-              <p className="mt-6 max-w-2xl text-pretty text-lg leading-8 text-steel">
-                Join as a user, an industry professional, or a team preparing private AI
-                coach deployments.
-              </p>
-            </div>
-            <WaitlistForm />
+                  <p>
+                    <span className="font-semibold text-platinum">Agent workflow: </span>
+                    {useCase.agentWorkflow}
+                  </p>
+                  <p>
+                    <span className="font-semibold text-platinum">Efficiency gain: </span>
+                    {useCase.efficiencyGain}
+                  </p>
+                </div>
+              </motion.article>
+            ))}
           </div>
         </div>
       </SectionReveal>
 
-      <footer className="border-t border-white/10 px-5 py-8 sm:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 text-sm text-steel sm:flex-row sm:items-center sm:justify-between">
-          <p>AgentCoach</p>
-          <p>Professional coaches built by industry professionals.</p>
+      <SectionReveal
+        id="enterprise"
+        className="relative border-b border-white/10 px-5 py-24 sm:px-8 lg:py-36"
+      >
+        <div className="absolute inset-x-0 top-1/3 h-[28rem] bg-[radial-gradient(circle_at_70%_50%,rgba(127,212,255,0.1),transparent_32rem)]" />
+        <div className="relative mx-auto max-w-7xl">
+          <div className="grid gap-12 lg:grid-cols-[0.84fr_1fr] lg:items-start">
+            <div>
+              <p className="text-sm font-semibold text-ember">Enterprise Deployment</p>
+              <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl lg:text-6xl">
+                From public recipes to private enterprise agents.
+              </h2>
+              <p className="mt-7 max-w-3xl text-pretty text-lg leading-8 text-steel">
+                AgentCoach is being built for organizations that need secure team workflows,
+                governance, evaluation, local AI options, and controlled access before
+                agent systems touch internal work.
+              </p>
+              <p className="mt-6 max-w-3xl border-l border-ion/40 pl-4 text-sm leading-6 text-steel">
+                Planned capabilities, not a live deployment service. Private runtime,
+                role-based access, and internal integrations are not available yet.
+              </p>
+              <Link href={earlyAccessOpen ? "/become-a-client#client-access" : "/recipes"}
+                className="mt-7 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-platinum transition hover:text-ion">
+                {earlyAccessOpen ? "Discuss a private workflow" : "Explore sample workflows"}<ArrowRight aria-hidden="true" className="size-4" />
+              </Link>
+            </div>
+
+            <div className="grid gap-8">
+              <div className="grid gap-px overflow-hidden rounded-lg border border-white/10 bg-white/10 sm:grid-cols-2">
+                {enterpriseCapabilities.map((capability) => (
+                  <div key={capability} className="bg-ink p-5">
+                    <p className="text-base font-medium leading-6 text-platinum">
+                      {capability}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              <div className="rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-inner-line">
+                <p className="text-sm font-semibold text-ion">Enterprise path</p>
+                <div className="mt-6 grid gap-4">
+                  {enterpriseFlow.map((step, index) => (
+                    <div key={step} className="flex gap-4">
+                      <span className="grid size-7 shrink-0 place-items-center rounded border border-white/10 bg-black/30 text-xs font-semibold text-platinum">
+                        {index + 1}
+                      </span>
+                      <p className="text-sm leading-6 text-steel">{step}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </footer>
+      </SectionReveal>
+
+      {earlyAccessOpen ? <SectionReveal id="waitlist" className="relative px-5 py-20 sm:px-8 lg:py-32">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-12 lg:grid-cols-[0.86fr_1fr] lg:items-end">
+            <div>
+              <p className="text-sm font-semibold text-ion">Request Access</p>
+              <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl lg:text-6xl">
+                Join the Agent Recipe network.
+              </h2>
+              <p className="mt-7 max-w-3xl text-pretty text-lg leading-8 text-steel">
+                Early access is for experts proposing workflow systems, teams exploring
+                reusable workflows, and enterprises preparing private agent
+                deployment.
+              </p>
+            </div>
+            <div>
+              <div className="grid gap-3 sm:grid-cols-3">
+                {finalAudiencePaths.map((path) => {
+                  const Icon = path.icon;
+                  return (
+                    <Link
+                      href={path.href}
+                      key={path.title}
+                      className="rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-inner-line transition duration-200 hover:border-white/[0.22] hover:bg-white/[0.065]"
+                    >
+                      <Icon aria-hidden="true" className="size-5 text-ember" />
+                      <h3 className="mt-5 text-base font-semibold text-platinum">
+                        {path.title}
+                      </h3>
+                      <p className="mt-2 text-sm leading-6 text-steel">{path.body}</p>
+                    </Link>
+                  );
+                })}
+              </div>
+              <div className="mt-8 rounded-lg border border-white/10 bg-white/[0.04] p-5 shadow-inner-line sm:p-6">
+                <div className="flex gap-3 text-sm leading-6 text-steel">
+                  <CheckCircle2
+                    aria-hidden="true"
+                    className="mt-0.5 size-5 shrink-0 text-ion"
+                  />
+                  <p>
+                    Request early access for your work or your team. We will follow
+                    up as AgentCoach opens.
+                  </p>
+                </div>
+                <WaitlistForm />
+              </div>
+            </div>
+          </div>
+        </div>
+      </SectionReveal> : (
+        <SectionReveal id="waitlist" className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:py-32">
+          <p className="text-sm font-semibold text-ion">Recipe Library</p>
+          <h2 className="mt-5 text-balance text-4xl font-semibold leading-tight text-platinum sm:text-5xl">
+            Start with a sample workflow.
+          </h2>
+          <p className="mt-5 max-w-xl text-base leading-7 text-steel">
+            Explore the public library without an account. Early access requests are not open yet.
+          </p>
+          <Link href="/recipes"
+            className="mt-8 inline-flex min-h-12 items-center gap-2 rounded bg-platinum px-5 text-sm font-semibold text-carbon transition hover:bg-white">
+            Explore Recipes<ArrowRight aria-hidden="true" className="size-4" />
+          </Link>
+        </SectionReveal>
+      )}
+
+      <SiteFooter />
+      <RecipePreview recipe={selectedRecipe} onClose={() => setSelectedRecipe(null)} />
     </main>
   );
 }

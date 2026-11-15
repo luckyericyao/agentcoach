@@ -3,6 +3,7 @@ node_modules/
 
 # Next.js
 .next/
+.next-e2e/
 out/
 build/
 
@@ -10,8 +11,8 @@ build/
 dist/
 
 # Environment
-.env
-.env*.local
+.env*
+!.env.example
 
 # Logs
 npm-debug.log*
@@ -24,4 +25,9 @@ pnpm-debug.log*
 
 # TypeScript
 *.tsbuildinfo
+
+# Local verification artifacts
+test-results/
+playwright-report/
+coverage/
 

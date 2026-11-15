@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { EarlyAccessMode } from "@/components/landing/EarlyAccessMode";
+import { MotionProvider } from "@/components/landing/MotionProvider";
+import { isEarlyAccessOpen } from "@/lib/server/early-access";
 
 export const metadata: Metadata = {
-  title: "AgentCoach | Professional coaches for better decisions",
+  title: "AgentCoach | Train the world's AI agents",
   description:
-    "Professional AI coaches built by industry professionals for Biotech & Pharma, Finance, Tax & Accounting, Technology, Legal, and Healthcare.",
+    "AgentCoach turns expert workflows into reusable, rankable, and deployable AI agents through complete Agent Recipes.",
   openGraph: {
     title: "AgentCoach",
     description:
-      "A platform for professional AI coaches built by real industry professionals.",
+      "A public network and future marketplace for expert-built AI Agent Recipes.",
     type: "website",
   },
 };
@@ -19,8 +22,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="bg-carbon text-platinum antialiased">{children}</body>
+    <html lang="en" data-scroll-behavior="smooth">
+      <body className="bg-carbon text-platinum antialiased">
+        <a href="#main-content" className="skip-link">Skip to content</a>
+        <EarlyAccessMode open={isEarlyAccessOpen()}>
+          <MotionProvider>{children}</MotionProvider>
+        </EarlyAccessMode>
+      </body>
     </html>
   );
 }
