@@ -71,6 +71,8 @@ test("homepage and catalog copy a recipe-only link and download a complete publi
     expect(sample.sourcePath).toBe(`/recipes?recipe=${slug}`);
     expect(sample.review).toMatchObject({ status: "unverified", humanReviewRequired: true, executionAvailable: false });
     expect(Object.keys(sample.modules)).toHaveLength(8);
+    expect(sample.workedExample).toMatchObject({ kind: "synthetic", title: "Partnering meeting brief" });
+    await expect(dialog.getByText("Worked example", { exact: true })).toBeVisible();
     expect(sample.modules.riskBoundary).toContain("expert review");
     expect(sample.modules.deploymentOption).toMatchObject({ status: "proposed", runtimeConnected: false });
     expect(JSON.stringify(sample)).not.toContain("q=meeting");
