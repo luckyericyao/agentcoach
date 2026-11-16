@@ -1,7 +1,6 @@
 "use client";
 
 import { ArrowRight, Loader2 } from "lucide-react";
-import { motion } from "framer-motion";
 import { useEffect, useId, useRef, type FormEvent, type ReactNode } from "react";
 import type { LeadFormStatus } from "./useLeadSubmission";
 
@@ -35,15 +34,12 @@ export function LeadFormShell({
   }, [status]);
 
   return (
-    <motion.form
+    <form
       onSubmit={onSubmit}
       method="post"
       aria-busy={isLoading}
       aria-describedby={`${dataNoticeId} ${feedbackId}`}
       className="rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-inner-line sm:p-6"
-      initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
     >
       <p id={dataNoticeId} className="mb-6 border-b border-white/10 pb-5 text-sm leading-6 text-steel">
         Describe the workflow at a high level. Do not include patient records,
@@ -77,7 +73,7 @@ export function LeadFormShell({
           <p role="alert" className="mt-4 text-sm leading-6 text-ember">{errorMessage}</p>
         ) : null}
       </div>
-    </motion.form>
+    </form>
   );
 }
 

@@ -219,7 +219,7 @@ test("invalid magic link shows a recoverable error", async ({ page }) => {
 test("navigation works by keyboard on mobile", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile");
   await page.goto("/");
-  const toggle = page.getByRole("button", { name: "Open navigation", exact: true });
+  const toggle = page.locator('summary[aria-label="Navigation menu"]');
   await toggle.click();
   const menu = page.getByRole("navigation", { name: "Mobile navigation", exact: true });
   await expect(menu.getByRole("link", { name: "Login", exact: true })).toBeVisible();
@@ -243,4 +243,14 @@ test("reduced motion stops the orbital network", async ({ page }) => {
   await page.waitForTimeout(800);
   expect(await read()).toEqual(first);
   expect(errors).toEqual([]);
+});
+
+test("the orbital network still moves when reduced motion is off", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+  const ring = page.locator("#hero svg g").filter({ has: page.locator("ellipse") }).first();
+  const rotation = () => ring.evaluate((element) => getComputedStyle(element).transform);
+  await expect.poll(rotation).not.toBe("none");
+  const first = await rotation();
+  await expect.poll(rotation).not.toBe(first);
 });

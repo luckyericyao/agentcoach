@@ -39,46 +39,21 @@ export function LandingPage() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_78%,rgba(215,180,106,0.12),transparent_34rem)]" />
         <div className="relative z-10 mx-auto w-full max-w-7xl py-16 sm:py-20 lg:py-24">
           <div className="max-w-6xl">
-            <motion.p
-              className="mb-7 text-sm font-semibold uppercase text-ion sm:text-base"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.12 }}
-            >
+            <p className="mb-7 text-sm font-semibold uppercase text-ion sm:text-base">
               AgentCoach
-            </motion.p>
-            <motion.h1
-              className="max-w-6xl text-balance text-5xl font-semibold leading-none text-platinum sm:text-7xl lg:text-8xl"
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            >
+            </p>
+            <h1 className="max-w-6xl text-balance text-5xl font-semibold leading-none text-platinum sm:text-7xl lg:text-8xl">
               Train the world&apos;s AI agents.
-            </motion.h1>
-            <motion.p
-              className="mt-7 max-w-4xl text-pretty text-xl leading-8 text-platinum/90 sm:text-2xl sm:leading-9"
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.34, ease: [0.22, 1, 0.36, 1] }}
-            >
+            </h1>
+            <p className="mt-7 max-w-4xl text-pretty text-xl leading-8 text-platinum/90 sm:text-2xl sm:leading-9">
               Turn expert workflows into reusable, rankable, and deployable AI agents.
-            </motion.p>
-            <motion.p
-              className="mt-5 max-w-3xl text-pretty text-base leading-7 text-steel sm:text-lg"
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.44, ease: [0.22, 1, 0.36, 1] }}
-            >
+            </p>
+            <p className="mt-5 max-w-3xl text-pretty text-base leading-7 text-steel sm:text-lg">
               Not prompts. Agent Recipes — complete instruction systems built for real
               workflows.
-            </motion.p>
+            </p>
 
-            <motion.div
-              className="mt-10 flex flex-col gap-3 sm:flex-row"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.54 }}
-            >
+            <div className="mt-10 flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/recipes"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded bg-platinum px-5 text-sm font-semibold text-carbon transition duration-200 hover:bg-white focus:outline-none focus:ring-2 focus:ring-ion/50"
@@ -93,21 +68,18 @@ export function LandingPage() {
                 {earlyAccessOpen ? "Become a Coach" : "For Coaches"}
                 <ArrowRight aria-hidden="true" className="size-4" />
               </Link>
-            </motion.div>
+            </div>
 
-            <motion.div
+            <div
               aria-label="Agent Recipe signals"
               className="mt-9 grid max-w-4xl grid-cols-2 gap-px overflow-hidden rounded-lg border border-white/10 bg-white/10 shadow-inner-line sm:mt-12 sm:grid-cols-4"
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.64 }}
             >
               {heroSignals.map((signal) => (
                 <div key={signal} className="bg-carbon/70 px-3 py-3 backdrop-blur sm:px-4 sm:py-4">
                   <p className="text-sm font-semibold text-platinum">{signal}</p>
                 </div>
               ))}
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -139,8 +111,8 @@ export function LandingPage() {
                 <motion.article
                   key={part.title}
                   className="min-h-64 rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-inner-line transition duration-200 hover:border-white/[0.2] hover:bg-white/[0.065]"
-                  initial={{ opacity: 0, y: 22 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ y: 8 }}
+                  whileInView={{ y: 0 }}
                   transition={{ duration: 0.55, delay: (index % 4) * 0.06 }}
                   viewport={{ once: true, amount: 0.28 }}
                 >
@@ -186,8 +158,8 @@ export function LandingPage() {
                 <motion.article
                   key={path.title}
                   className="rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-inner-line transition duration-200 hover:border-white/[0.22] hover:bg-white/[0.065] sm:p-8"
-                  initial={{ opacity: 0, y: 22 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ y: 8 }}
+                  whileInView={{ y: 0 }}
                   transition={{ duration: 0.55, delay: index * 0.08 }}
                   viewport={{ once: true, amount: 0.3 }}
                 >
@@ -256,8 +228,8 @@ export function LandingPage() {
                 >
                   <motion.article
                     className="flex min-h-[31rem] flex-col rounded-lg border border-white/10 bg-carbon/80 p-6 shadow-inner-line backdrop-blur transition duration-200 hover:border-white/[0.22] hover:bg-ink"
-                    initial={{ opacity: 0, y: 22 }}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    initial={{ y: 8 }}
+                    whileInView={{ y: 0 }}
                     transition={{ duration: 0.55, delay: (index % 3) * 0.08 }}
                     viewport={{ once: true, amount: 0.22 }}
                   >
@@ -324,8 +296,8 @@ export function LandingPage() {
                 <motion.article
                   key={recipe.name}
                   className="rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-inner-line transition duration-200 hover:border-white/[0.22] hover:bg-white/[0.065]"
-                  initial={{ opacity: 0, y: 22 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ y: 8 }}
+                  whileInView={{ y: 0 }}
                   transition={{ duration: 0.55, delay: (index % 2) * 0.08 }}
                   viewport={{ once: true, amount: 0.24 }}
                 >
@@ -406,8 +378,8 @@ export function LandingPage() {
               <motion.article
                 key={useCase.slug}
                 className="rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-inner-line"
-                initial={{ opacity: 0, y: 22 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ y: 8 }}
+                whileInView={{ y: 0 }}
                 transition={{ duration: 0.55, delay: (index % 3) * 0.08 }}
                 viewport={{ once: true, amount: 0.24 }}
               >

@@ -40,12 +40,9 @@ export function OrbitalNetwork() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
       <div className="absolute right-[-12rem] top-20 h-[46rem] w-[46rem] opacity-80 sm:right-[-7rem] lg:right-0 lg:top-8">
-        <motion.svg
+        <svg
           viewBox="0 0 610 610"
           className="h-full w-full"
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
         >
           <defs>
             <linearGradient id="agent-line" x1="0" x2="1" y1="0" y2="1">
@@ -132,7 +129,7 @@ export function OrbitalNetwork() {
               const a = nodes[from];
               const b = nodes[to];
               return (
-                <motion.line
+                <line
                   key={`${from}-${to}`}
                   x1={a.x}
                   y1={a.y}
@@ -142,9 +139,6 @@ export function OrbitalNetwork() {
                   strokeLinecap="round"
                   strokeOpacity="0.38"
                   strokeWidth="1.1"
-                  initial={{ pathLength: 0, opacity: 0 }}
-                  animate={{ pathLength: 1, opacity: 1 }}
-                  transition={{ duration: 1.4, delay: 0.15 + from * 0.03 }}
                 />
               );
             })}
@@ -158,7 +152,7 @@ export function OrbitalNetwork() {
                 cy={node.y}
                 r={node.r}
                 fill={index === 8 ? "#f5f3ef" : index % 3 === 0 ? "#d7b46a" : "#7fd4ff"}
-                initial={{ opacity: 0, scale: 0.2 }}
+                initial={false}
                 animate={reducedMotion ? { opacity: 1, scale: 1 } : {
                   opacity: [0.55, 1, 0.55],
                   scale: [0.86, 1.18, 0.86],
@@ -172,7 +166,7 @@ export function OrbitalNetwork() {
               />
             ))}
           </g>
-        </motion.svg>
+        </svg>
       </div>
       <div className="absolute inset-0 bg-[linear-gradient(90deg,#050505_0%,rgba(5,5,5,0.74)_35%,rgba(5,5,5,0.22)_75%,#050505_100%)]" />
     </div>
