@@ -11,6 +11,7 @@
     "test:e2e": "playwright test",
     "test:postgres": "node scripts/test-postgres-concurrency.mjs",
     "check:client-bundle": "node scripts/check-client-bundle.mjs",
+    "check:release": "node scripts/check-release.mjs",
     "verify": "node scripts/verify.mjs"
   },
   "dependencies": {

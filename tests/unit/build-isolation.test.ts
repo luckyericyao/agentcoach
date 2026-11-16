@@ -21,3 +21,22 @@ describe("local fixture build isolation", () => {
     expect(config.distDir).toBe(".next");
   });
 });
+
+describe("public release revision", () => {
+  it("reports the platform commit on the two public release check paths", async () => {
+    const revision = "0123456789abcdef0123456789abcdef01234567";
+    vi.stubEnv("VERCEL_GIT_COMMIT_SHA", revision);
+    const { default: config } = await import("../../next.config");
+    const routes = (await config.headers!()).filter(({ headers }) =>
+      headers.some(({ key }) => key === "X-AgentCoach-Revision"));
+    expect(routes).toEqual(["/", "/recipes"].map((source) => ({
+      source, headers: [{ key: "X-AgentCoach-Revision", value: revision }],
+    })));
+  });
+
+  it.each([undefined, "unknown", "abc", "a".repeat(40) + "\n"])("omits invalid or missing revisions (%s)", async (revision) => {
+    vi.stubEnv("VERCEL_GIT_COMMIT_SHA", revision);
+    const { default: config } = await import("../../next.config");
+    expect(JSON.stringify(await config.headers!())).not.toContain("X-AgentCoach-Revision");
+  });
+});

@@ -422,6 +422,20 @@ This project uses the standard Next.js hosting model supported by Vercel and
 other compatible platforms. The catalog-only release requires no database
 migrations, email configuration, or production variable changes.
 
+When Vercel supplies its [built-in Git commit SHA](https://vercel.com/docs/environment-variables/system-environment-variables#vercel_git_commit_sha),
+the homepage and recipe catalog return it in `X-AgentCoach-Revision`. After
+the deployment is ready, verify the public alias against the release commit:
+
+```bash
+git fetch origin
+npm run check:release -- https://agentcoach-three.vercel.app "$(git rev-parse origin/main)"
+```
+
+The check makes only GET requests, follows no redirects, and fails unless both
+pages return HTTP 200 with the expected full SHA. A missing platform revision
+is reported as unavailable; this check does not require changing host settings
+and does not test live account or email delivery.
+
 For an owner-approved early access pilot on Vercel:
 
 1. Import the GitHub repository.
