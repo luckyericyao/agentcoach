@@ -42,6 +42,10 @@ The homepage's primary action opens this catalog. Private deployment, team roles
 internal integrations, publishing, rankings, and monetization are described as
 planned capabilities, not services provisioned by the current site.
 
+Industry pages link to each matching recipe preview. Closing that preview
+keeps the catalog filtered to the industry, while copied links remain
+recipe-only.
+
 A recipe-specific URL opens its full preview, for example:
 
 ```text

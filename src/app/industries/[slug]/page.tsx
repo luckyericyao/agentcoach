@@ -6,7 +6,7 @@ import { SectionReveal } from "@/components/landing/SectionReveal";
 import { SiteFooter } from "@/components/landing/SiteFooter";
 import { TopNavigation } from "@/components/landing/TopNavigation";
 import { getIndustryBySlug, industries } from "@/lib/industries-data";
-import { getRecipesByIndustrySlug } from "@/lib/recipes-data";
+import { getRecipesByIndustrySlug, recipeSummaryModules } from "@/lib/recipes-data";
 import { getUseCasesByIndustrySlug } from "@/lib/use-cases-data";
 
 type IndustryPageProps = {
@@ -67,6 +67,12 @@ export default async function IndustryPage({ params }: IndustryPageProps) {
           <p className="mt-7 max-w-3xl text-pretty text-lg leading-8 text-steel sm:text-xl">
             {industry.description}
           </p>
+          {recipes.length ? (
+            <Link href="#recipe-previews"
+              className="mt-7 inline-flex min-h-12 items-center gap-2 rounded bg-platinum px-5 text-sm font-semibold text-carbon transition hover:bg-white">
+              See sample recipes<ArrowRight aria-hidden="true" className="size-4" />
+            </Link>
+          ) : null}
         </div>
       </section>
 
@@ -177,7 +183,7 @@ export default async function IndustryPage({ params }: IndustryPageProps) {
         </div>
       </SectionReveal>
 
-      <SectionReveal className="border-b border-white/10 px-5 py-20 sm:px-8 lg:py-28">
+      <SectionReveal id="recipe-previews" className="border-b border-white/10 px-5 py-20 sm:px-8 lg:py-28">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.86fr_1fr]">
           <div>
             <p className="text-sm font-semibold text-ion">Example Agent Recipes</p>
@@ -203,19 +209,25 @@ export default async function IndustryPage({ params }: IndustryPageProps) {
                     {recipe.shortDescription}
                   </p>
                   <div className="mt-5 flex flex-wrap gap-2">
-                    {recipe.modules.slice(0, 4).map((module) => (
+                    {recipeSummaryModules.map((module) => (
                       <span key={module} className="rounded border border-white/10 bg-black/25 px-2.5 py-1 text-xs font-medium text-platinum">
                         {module}
                       </span>
                     ))}
                   </div>
+                  <Link
+                    href={{ pathname: "/recipes", query: { industry: industry.slug, recipe: recipe.slug } }}
+                    aria-label={`Preview ${recipe.name}`}
+                    className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-platinum transition hover:text-ion"
+                  >
+                    Preview recipe<ArrowRight aria-hidden="true" className="size-4" />
+                  </Link>
                 </article>
               ))
             ) : (
               <article className="rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-inner-line">
                 <p className="text-base leading-7 text-steel">
-                  Agent Recipe previews for this industry are being shaped with early
-                  coaches and clients.
+                  No sample recipes for this industry yet.
                 </p>
               </article>
             )}
