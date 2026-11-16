@@ -2,7 +2,6 @@
 
 import { useRef, useState, type FormEvent } from "react";
 import { ArrowRight, Loader2, Mail } from "lucide-react";
-import { motion } from "framer-motion";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { isValidEmail } from "@/lib/leads/schema";
 
@@ -47,15 +46,12 @@ export function LoginForm({ initialError = "", notice = "" }: { initialError?: s
   }
 
   return (
-    <motion.form
+    <form
       onSubmit={handleSubmit}
       method="post"
       aria-busy={status === "loading"}
       aria-describedby="login-feedback"
       className="rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-inner-line sm:p-6"
-      initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
     >
       <label className="grid gap-2 text-sm font-medium text-platinum" htmlFor="login-email">
         Email
@@ -114,6 +110,6 @@ export function LoginForm({ initialError = "", notice = "" }: { initialError?: s
       }} className="mt-5 text-sm font-medium text-steel underline underline-offset-4 hover:text-platinum">
         Use a different email
       </button> : null}
-    </motion.form>
+    </form>
   );
 }

@@ -90,8 +90,7 @@ textarea {
 
 @media (prefers-reduced-motion: reduce) {
   [data-reveal],
-  [data-reveal] [style*="opacity"] {
-    opacity: 1 !important;
+  [data-reveal] [style*="translateY"] {
     transform: none !important;
   }
 

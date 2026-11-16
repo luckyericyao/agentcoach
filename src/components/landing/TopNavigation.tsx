@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { ArrowRight, Menu, X } from "lucide-react";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { navItems } from "@/lib/landing-data";
 import { useEarlyAccessMode } from "./EarlyAccessMode";
@@ -12,20 +11,23 @@ export function TopNavigation() {
   const items = navItems.filter(({ href }) => earlyAccessOpen || href !== "/login").map((item) => ({
     ...item, label: earlyAccessOpen ? item.label : item.previewLabel ?? item.label,
   }));
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuButton = useRef<HTMLButtonElement>(null);
+  const mobileMenu = useRef<HTMLDetailsElement>(null);
+  const menuButton = useRef<HTMLElement>(null);
   const header = useRef<HTMLElement>(null);
 
+  function closeMenu() {
+    if (mobileMenu.current) mobileMenu.current.open = false;
+  }
+
   useEffect(() => {
-    if (!menuOpen) return;
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setMenuOpen(false);
+      if (event.key === "Escape" && mobileMenu.current?.open) {
+        closeMenu();
         menuButton.current?.focus();
       }
     }
     function onPointerDown(event: PointerEvent) {
-      if (!header.current?.contains(event.target as Node)) setMenuOpen(false);
+      if (mobileMenu.current?.open && !header.current?.contains(event.target as Node)) closeMenu();
     }
     document.addEventListener("keydown", onKeyDown);
     document.addEventListener("pointerdown", onPointerDown);
@@ -33,15 +35,12 @@ export function TopNavigation() {
       document.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("pointerdown", onPointerDown);
     };
-  }, [menuOpen]);
+  }, []);
 
   return (
-    <motion.header
+    <header
       ref={header}
       className="fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-carbon/[0.72] backdrop-blur-xl"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
     >
       <nav aria-label="Main navigation" className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-5 sm:px-8">
         <Link
@@ -75,23 +74,24 @@ export function TopNavigation() {
               <ArrowRight aria-hidden="true" className="size-4" />
             </Link>
           ) : null}
-          <button ref={menuButton} type="button" onClick={() => setMenuOpen((open) => !open)}
-            aria-label={menuOpen ? "Close navigation" : "Open navigation"}
-            aria-expanded={menuOpen} aria-controls="mobile-navigation"
-            className="grid size-11 place-items-center rounded border border-white/15 bg-white/[0.06] text-platinum transition hover:bg-white/10 lg:hidden">
-            {menuOpen ? <X aria-hidden="true" className="size-5" /> : <Menu aria-hidden="true" className="size-5" />}
-          </button>
+          <details ref={mobileMenu} className="group lg:hidden">
+            <summary ref={menuButton} aria-label="Navigation menu" aria-controls="mobile-navigation"
+              className="grid size-11 cursor-pointer list-none place-items-center rounded border border-white/15 bg-white/[0.06] text-platinum transition hover:bg-white/10 [&::-webkit-details-marker]:hidden">
+              <Menu aria-hidden="true" className="size-5 group-open:hidden" />
+              <X aria-hidden="true" className="hidden size-5 group-open:block" />
+            </summary>
+            <nav id="mobile-navigation" aria-label="Mobile navigation"
+              className="absolute inset-x-0 top-full max-h-[calc(100svh-4rem)] overflow-y-auto border-t border-white/10 bg-carbon px-5 py-3 sm:px-8">
+              {[{ label: "Home", href: "/" }, ...items].map((item) => (
+                <Link key={item.href} href={item.href} onClick={closeMenu}
+                  className="flex min-h-12 items-center justify-between border-b border-white/[0.06] py-3 text-sm font-medium text-platinum transition hover:text-ion">
+                  {item.label}<ArrowRight aria-hidden="true" className="size-4 text-steel" />
+                </Link>
+              ))}
+            </nav>
+          </details>
         </div>
       </nav>
-      <nav id="mobile-navigation" aria-label="Mobile navigation" hidden={!menuOpen}
-        className="max-h-[calc(100svh-4rem)] overflow-y-auto border-t border-white/10 bg-carbon px-5 py-3 sm:px-8 lg:hidden">
-        {[{ label: "Home", href: "/" }, ...items].map((item) => (
-          <Link key={item.href} href={item.href} onClick={() => setMenuOpen(false)}
-            className="flex min-h-12 items-center justify-between border-b border-white/[0.06] py-3 text-sm font-medium text-platinum transition hover:text-ion">
-            {item.label}<ArrowRight aria-hidden="true" className="size-4 text-steel" />
-          </Link>
-        ))}
-      </nav>
-    </motion.header>
+    </header>
   );
 }

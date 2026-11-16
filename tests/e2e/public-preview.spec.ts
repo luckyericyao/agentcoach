@@ -1,8 +1,18 @@
 import { readFile } from "node:fs/promises";
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator } from "@playwright/test";
 import type { RecipeWorkedExample } from "../../src/lib/recipe-examples";
 
 const recipe = "biotech-bd-meeting-prep-agent";
+
+async function expectPainted(target: Locator) {
+  await expect(target).toBeVisible();
+  expect(await target.evaluate((element) => {
+    for (let ancestor: Element | null = element; ancestor; ancestor = ancestor.parentElement) {
+      if (getComputedStyle(ancestor).opacity === "0") return false;
+    }
+    return true;
+  })).toBe(true);
+}
 
 test("public preview exposes the catalog and no personal-data forms", async ({ page }, testInfo) => {
   for (const path of ["/", "/become-a-client", `/become-a-client?recipe=${recipe}`, "/become-a-coach", "/login", "/account"]) {
@@ -87,4 +97,39 @@ test("the worked meeting brief is keyboard-readable and matches the public downl
   await expect(dialog.getByText(workedExample.output.handoff, { exact: true })).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
+});
+
+test.describe("public first render without JavaScript", () => {
+  test.use({ javaScriptEnabled: false });
+
+  test("the homepage, industry links and catalog are painted and navigable", async ({ page }, testInfo) => {
+    await page.goto("/");
+    const hero = page.locator("#hero");
+    await expectPainted(hero.getByRole("heading", { level: 1 }));
+    await expectPainted(hero.getByRole("link", { name: "Explore Recipes", exact: true }));
+    await expectPainted(page.getByRole("link", { name: "AgentCoach home", exact: true }));
+    await page.screenshot({ path: testInfo.outputPath("first-render.png") });
+
+    const industry = page.locator('#channels a[href="/industries/biotech-pharma"]');
+    await expectPainted(industry);
+    await industry.click();
+    await expect(page).toHaveURL(/\/industries\/biotech-pharma$/);
+    await expectPainted(page.getByRole("heading", { name: "Biotech BD Meeting Prep Agent", exact: true }));
+
+    if (testInfo.project.name === "mobile") {
+      const menu = page.getByRole("navigation", { name: "Mobile navigation", exact: true });
+      await expect(menu).toBeHidden();
+      const trigger = page.locator('summary[aria-label="Navigation menu"]');
+      await trigger.focus();
+      await page.keyboard.press("Enter");
+      const link = menu.getByRole("link", { name: "Agent Recipes", exact: true });
+      await expectPainted(link);
+      await link.click();
+    } else {
+      await page.getByRole("navigation", { name: "Main navigation", exact: true })
+        .getByRole("link", { name: "Agent Recipes", exact: true }).click();
+    }
+    await expect(page).toHaveURL(/\/recipes$/);
+    await expectPainted(page.getByRole("heading", { name: "Biotech BD Meeting Prep Agent", exact: true }));
+  });
 });

@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ArrowRight, Loader2, Send } from "lucide-react";
-import { motion } from "framer-motion";
 import { useLeadSubmission } from "../forms/useLeadSubmission";
 
 export function WaitlistForm() {
@@ -20,16 +19,12 @@ export function WaitlistForm() {
   }
 
   return (
-    <motion.form
+    <form
       onSubmit={handleSubmit}
       method="post"
       aria-busy={status === "loading"}
       aria-describedby="waitlist-feedback"
       className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-[1fr_auto]"
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      viewport={{ once: true }}
     >
       <div className="flex h-[3.25rem] items-center gap-3 rounded border border-white/[0.14] bg-white/[0.07] px-4 shadow-inner-line transition duration-200 focus-within:border-ion/[0.55] focus-within:bg-white/10">
         <label className="sr-only" htmlFor="waitlist-email">Email address</label>
@@ -63,6 +58,6 @@ export function WaitlistForm() {
         {warning ? <p className="mt-3 text-sm leading-6 text-ember">{warning}</p> : null}
         {message ? <p role="alert" className="text-sm leading-6 text-ember">{message}</p> : null}
       </div>
-    </motion.form>
+    </form>
   );
 }
