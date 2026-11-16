@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { expect, test, type Locator } from "@playwright/test";
 import type { RecipeWorkedExample } from "../../src/lib/recipe-examples";
+import { agentRecipes } from "../../src/lib/recipes-data";
 
 const recipe = "biotech-bd-meeting-prep-agent";
 
@@ -97,6 +98,27 @@ test("the worked meeting brief is keyboard-readable and matches the public downl
   await expect(dialog.getByText(workedExample.output.handoff, { exact: true })).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
+});
+
+test("each industry opens its matching recipe and preserves navigation context", async ({ page }) => {
+  for (const { slug, name, industrySlug } of agentRecipes) {
+    const industryPath = `/industries/${industrySlug}`;
+    await page.goto(industryPath);
+    await page.getByRole("link", { name: "See sample recipes", exact: true }).click();
+    await expect(page).toHaveURL(/#recipe-previews$/);
+    const link = page.locator("#recipe-previews").getByRole("link", { name: `Preview ${name}`, exact: true });
+    await link.click();
+    const dialog = page.getByRole("dialog", { name, exact: true });
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator("[data-recipe-module]")).toHaveCount(8);
+    expect(Object.fromEntries(new URL(page.url()).searchParams)).toEqual({ industry: industrySlug, recipe: slug });
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+    await expect(page).toHaveURL(`/recipes?industry=${industrySlug}`);
+    await expect(page.getByLabel("Industry", { exact: true })).toHaveValue(industrySlug);
+    await page.goBack();
+    await expect(page).toHaveURL(`${industryPath}#recipe-previews`);
+  }
 });
 
 test.describe("public first render without JavaScript", () => {
