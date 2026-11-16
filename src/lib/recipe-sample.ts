@@ -1,4 +1,5 @@
 import type { AgentRecipe } from "./recipes-data";
+import { getRecipeWorkedExample } from "./recipe-examples";
 
 export function recipePreviewPath(slug: string) {
   return `/recipes?${new URLSearchParams({ recipe: slug })}`;
@@ -9,6 +10,7 @@ export function recipeSampleFilename(recipe: AgentRecipe) {
 }
 
 export function createRecipeSample(recipe: AgentRecipe) {
+  const workedExample = getRecipeWorkedExample(recipe.slug);
   // Project public blueprint fields only; never export component or visitor state.
   return {
     kind: "agentcoach.sample-recipe",
@@ -35,5 +37,6 @@ export function createRecipeSample(recipe: AgentRecipe) {
       riskBoundary: recipe.riskBoundary,
       deploymentOption: { description: recipe.deploymentOption, status: "proposed", runtimeConnected: false },
     },
+    ...(workedExample ? { workedExample: structuredClone(workedExample) } : {}),
   } as const;
 }

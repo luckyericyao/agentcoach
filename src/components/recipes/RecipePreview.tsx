@@ -4,8 +4,10 @@ import { useEffect, useId, useRef, useState } from "react";
 import { ArrowRight, Copy, Download, X } from "lucide-react";
 import Link from "next/link";
 import { useEarlyAccessMode } from "@/components/landing/EarlyAccessMode";
+import { getRecipeWorkedExample } from "@/lib/recipe-examples";
 import type { AgentRecipe } from "@/lib/recipes-data";
 import { createRecipeSample, recipePreviewPath, recipeSampleFilename } from "@/lib/recipe-sample";
+import { RecipeWorkedExampleSection } from "./RecipeWorkedExample";
 
 type RecipePreviewProps = {
   recipe: AgentRecipe | null;
@@ -17,6 +19,7 @@ export function RecipePreview({ recipe, onClose }: RecipePreviewProps) {
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const descriptionId = useId();
+  const example = recipe ? getRecipeWorkedExample(recipe.slug) : undefined;
 
   useEffect(() => {
     const element = dialog.current;
@@ -46,7 +49,7 @@ export function RecipePreview({ recipe, onClose }: RecipePreviewProps) {
       onKeyDown={(event) => {
         if (event.key !== "Tab") return;
         const controls = Array.from(event.currentTarget.querySelectorAll<HTMLElement>(
-          "button:not([disabled]), a[href], input:not([disabled])",
+          "button:not([disabled]), a[href], input:not([disabled]), details > summary:first-child",
         )).filter((element) => element.getClientRects().length > 0);
         const first = controls[0];
         const last = controls[controls.length - 1];
@@ -87,6 +90,7 @@ export function RecipePreview({ recipe, onClose }: RecipePreviewProps) {
               <span className="rounded border border-white/15 px-2.5 py-1 text-steel">Human review required</span>
             </div>
             <RecipeSampleActions key={recipe.slug} recipe={recipe} />
+            {example ? <RecipeWorkedExampleSection key={recipe.slug} example={example} /> : null}
 
             <div className="mt-9 space-y-7">
               <section data-recipe-module="instruction" className="border-t border-white/10 pt-6">

@@ -61,6 +61,12 @@ runtime import format. The version denotes the sample schema, not an expert
 certification or a content release. No account/form state or credentials enter
 the export. No creator identity, license, or deployment support is invented.
 
+The Biotech BD Meeting Prep sample includes an optional `workedExample` in the
+same v1 package. It matches the preview's worked example: synthetic inputs and
+dated source excerpts, a draft brief separating evidence from hypotheses and
+open questions, and a review checklist. It is hand-authored illustration, not
+a real company case, completed agent run, or professional verification.
+
 Catalog filters are stored in the URL: `q`, `industry`, `maturity`, `featured=1`,
 and `verified=1`. They survive refresh and browser back/forward navigation; the
 server also renders filtered results before JavaScript runs. The verified filter

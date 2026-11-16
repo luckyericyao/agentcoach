@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { getRecipeWorkedExample } from "@/lib/recipe-examples";
 import { agentRecipes } from "@/lib/recipes-data";
 import { createRecipeSample, recipePreviewPath, recipeSampleFilename } from "@/lib/recipe-sample";
 
@@ -41,5 +42,30 @@ describe("portable public sample contract", () => {
     const path = recipePreviewPath("known&unexpected=1");
     expect(new URLSearchParams(path.split("?")[1]).getAll("recipe")).toEqual(["known&unexpected=1"]);
     expect(new URLSearchParams(path.split("?")[1]).size).toBe(1);
+  });
+
+  it("exports a separately labeled, traceable synthetic example on the matching recipe only", () => {
+    const recipe = agentRecipes.find(({ slug }) => slug === "biotech-bd-meeting-prep-agent")!;
+    const example = getRecipeWorkedExample(recipe.slug)!;
+    const sample = createRecipeSample(recipe);
+    expect(sample.workedExample).toEqual(example);
+    expect(sample.workedExample).not.toBe(example);
+    expect(sample.workedExample?.sources).not.toBe(example.sources);
+    expect(example.kind).toBe("synthetic");
+    const sourceIds = example.sources.map(({ id }) => id);
+    expect(new Set(sourceIds).size).toBe(sourceIds.length);
+    const cited = new Set<string>();
+    for (const finding of example.output.findings) {
+      expect(finding.sourceIds.length > 0).toBe(finding.status !== "unknown");
+      for (const id of finding.sourceIds) {
+        expect(sourceIds).toContain(id);
+        cited.add(id);
+      }
+    }
+    expect(cited).toEqual(new Set(sourceIds));
+    expect(example.output.agenda.reduce((total, step) => total + step.minutes, 0)).toBe(20);
+    for (const other of agentRecipes.filter(({ slug }) => slug !== recipe.slug)) {
+      expect(createRecipeSample(other)).not.toHaveProperty("workedExample");
+    }
   });
 });

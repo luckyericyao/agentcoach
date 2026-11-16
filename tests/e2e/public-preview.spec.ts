@@ -1,4 +1,6 @@
+import { readFile } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
+import type { RecipeWorkedExample } from "../../src/lib/recipe-examples";
 
 const recipe = "biotech-bd-meeting-prep-agent";
 
@@ -47,4 +49,42 @@ test("production preview rejects intake and email credential work before reachin
   const confirmation = await request.post("/auth/callback", { headers: { origin: baseURL! }, maxRedirects: 0 });
   expect(confirmation.headers().location).toBe("/login");
   expect(await readState()).toEqual(before);
+});
+
+test("the worked meeting brief is keyboard-readable and matches the public download", async ({ page }, testInfo) => {
+  await page.goto(`/recipes?recipe=${recipe}`);
+  const dialog = page.getByRole("dialog", { name: "Biotech BD Meeting Prep Agent" });
+  const toggle = dialog.locator("summary");
+  const heading = dialog.getByRole("heading", { name: "Partnering meeting brief" });
+  await expect(dialog.getByRole("button", { name: "Close recipe preview" })).toBeFocused();
+  await expect(heading).toBeHidden();
+  await page.keyboard.press("Shift+Tab");
+  await expect(toggle).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(heading).toBeVisible();
+  await expect(dialog.getByText("Synthetic data", { exact: true })).toBeVisible();
+  await expect(dialog.getByText("Working hypothesis", { exact: true })).toBeVisible();
+  await expect(dialog.getByText("Open question", { exact: true })).toBeVisible();
+  expect(await dialog.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
+  await heading.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: testInfo.outputPath("worked-example.png") });
+
+  const downloadEvent = page.waitForEvent("download");
+  await dialog.getByRole("link", { name: "Download sample JSON" }).click();
+  const download = await downloadEvent;
+  const { workedExample } = JSON.parse(await readFile((await download.path())!, "utf8")) as {
+    workedExample: RecipeWorkedExample;
+  };
+  expect(workedExample.kind).toBe("synthetic");
+  await expect(heading).toHaveText(workedExample.title);
+  await expect(dialog.getByText(workedExample.scenario, { exact: true })).toBeVisible();
+  for (const { excerpt } of workedExample.sources) {
+    await expect(dialog.getByText(excerpt, { exact: true })).toBeVisible();
+  }
+  for (const { text } of workedExample.output.findings) {
+    await expect(dialog.getByText(text, { exact: true })).toBeVisible();
+  }
+  await expect(dialog.getByText(workedExample.output.handoff, { exact: true })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
 });
