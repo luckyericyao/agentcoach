@@ -1,9 +1,25 @@
 import { readFile } from "node:fs/promises";
+import { spawnSync } from "node:child_process";
 import { expect, test, type Locator } from "@playwright/test";
 import type { RecipeWorkedExample } from "../../src/lib/recipe-examples";
 import { agentRecipes } from "../../src/lib/recipes-data";
+import { fixtureReleaseRevision } from "../fixtures/release-revision";
 
 const recipe = "biotech-bd-meeting-prep-agent";
+
+test("the release check requires the exact deployed revision", async ({ request, baseURL }) => {
+  const check = (sha: string) => spawnSync(process.execPath, ["scripts/check-release.mjs", baseURL!, sha], {
+    encoding: "utf8", timeout: 15_000,
+  });
+  const matching = check(fixtureReleaseRevision);
+  expect(matching.status).toBe(0);
+  expect(matching.stdout).toContain(`PASS /recipes: HTTP 200, revision ${fixtureReleaseRevision}.`);
+  const mismatching = check("f".repeat(40));
+  expect(mismatching.status).toBe(1);
+  expect(mismatching.stderr).toContain("FAIL /recipes: HTTP 200");
+  const login = await request.get("/login");
+  expect(login.headers()["x-agentcoach-revision"]).toBeUndefined();
+});
 
 async function expectPainted(target: Locator) {
   await expect(target).toBeVisible();

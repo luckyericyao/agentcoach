@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   distDir: process.env.AGENTCOACH_TEST_BUILD === "1" ? ".next-e2e" : ".next",
   async headers() {
+    const revision = process.env.VERCEL_GIT_COMMIT_SHA;
     return [
       {
         source: "/:path*",
@@ -20,6 +21,10 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "no-referrer" },
         ],
       })),
+      ...(revision && /^[a-f0-9]{40}$/.test(revision) ? ["/", "/recipes"].map((source) => ({
+        source,
+        headers: [{ key: "X-AgentCoach-Revision", value: revision }],
+      })) : []),
     ];
   },
 };
