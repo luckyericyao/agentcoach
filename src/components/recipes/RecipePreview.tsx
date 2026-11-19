@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useEarlyAccessMode } from "@/components/landing/EarlyAccessMode";
 import { getRecipeWorkedExample } from "@/lib/recipe-examples";
 import type { AgentRecipe } from "@/lib/recipes-data";
-import { createRecipeSample, recipePreviewPath, recipeSampleFilename } from "@/lib/recipe-sample";
+import { recipePreviewPath, recipeSampleFilename, recipeSamplePath } from "@/lib/recipe-sample";
 import { useHydrated } from "@/lib/use-hydrated";
 import { RecipeWorkedExampleSection } from "./RecipeWorkedExample";
 
@@ -174,7 +174,6 @@ function RecipeSampleActions({ recipe, inline }: { recipe: AgentRecipe; inline: 
   const [manualLink, setManualLink] = useState("");
   const linkId = useId();
   const linkInput = useRef<HTMLInputElement>(null);
-  const sample = JSON.stringify(createRecipeSample(recipe), null, 2);
 
   useEffect(() => {
     if (manualLink) linkInput.current?.focus();
@@ -201,7 +200,7 @@ function RecipeSampleActions({ recipe, inline }: { recipe: AgentRecipe; inline: 
             className="grid size-11 place-items-center rounded border border-white/20 text-platinum transition hover:bg-white/10">
             <Copy aria-hidden="true" className="size-4" />
           </button> : null}
-          <a href={`data:application/json;charset=utf-8,${encodeURIComponent(sample)}`}
+          <a href={recipeSamplePath(recipe.slug)}
             download={recipeSampleFilename(recipe)} aria-label="Download sample JSON" title="Download sample JSON"
             className="grid size-11 place-items-center rounded border border-white/20 text-platinum transition hover:bg-white/10">
             <Download aria-hidden="true" className="size-4" />

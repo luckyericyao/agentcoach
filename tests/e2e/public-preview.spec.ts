@@ -3,6 +3,7 @@ import { spawnSync } from "node:child_process";
 import { expect, test, type Locator } from "@playwright/test";
 import type { RecipeWorkedExample } from "../../src/lib/recipe-examples";
 import { agentRecipes } from "../../src/lib/recipes-data";
+import { createRecipeSample, recipeSampleFilename } from "../../src/lib/recipe-sample";
 import { fixtureReleaseRevision } from "../fixtures/release-revision";
 
 const recipe = "biotech-bd-meeting-prep-agent";
@@ -19,6 +20,19 @@ test("the release check requires the exact deployed revision", async ({ request,
   expect(mismatching.stderr).toContain("FAIL /recipes: HTTP 200");
   const login = await request.get("/login");
   expect(login.headers()["x-agentcoach-revision"]).toBeUndefined();
+});
+
+test("public sample URLs return only the published JSON attachments", async ({ request }) => {
+  for (const recipe of agentRecipes) {
+    const response = await request.get(`/recipes/samples/${recipe.slug}?q=not-part-of-the-export`);
+    expect(response.status()).toBe(200);
+    expect(response.headers()["content-type"]).toContain("application/json");
+    expect(response.headers()["content-disposition"]).toBe(`attachment; filename="${recipeSampleFilename(recipe)}"`);
+    expect(response.headers()["x-robots-tag"]).toBe("noindex");
+    expect(response.headers()["set-cookie"]).toBeUndefined();
+    expect(await response.json()).toEqual(createRecipeSample(recipe));
+  }
+  expect((await request.get("/recipes/samples/unknown-sample")).status()).toBe(404);
 });
 
 async function expectPainted(target: Locator) {
@@ -236,7 +250,9 @@ test.describe("public first render without JavaScript", () => {
     await expect(preview.getByRole("heading", { name: "Partnering meeting brief" })).toBeVisible();
 
     const downloaded = page.waitForEvent("download");
-    await preview.getByRole("link", { name: "Download sample JSON" }).click();
+    const downloadLink = preview.getByRole("link", { name: "Download sample JSON" });
+    await expect(downloadLink).toHaveAttribute("href", `/recipes/samples/${recipe}`);
+    await downloadLink.click();
     const download = await downloaded;
     expect(download.suggestedFilename()).toBe(`agentcoach-${recipe}-sample-v1.json`);
     expect(Object.keys(JSON.parse(await readFile((await download.path())!, "utf8")).modules)).toHaveLength(8);
