@@ -60,3 +60,46 @@ test("contact forms describe the data boundary before any personal workflow deta
     await page.screenshot({ path: testInfo.outputPath(`${kind}-data-boundary.png`) });
   }
 });
+
+test("personal-data controls stay disabled until form scripts are ready", async ({ page }) => {
+  let scriptGate = Promise.resolve();
+  let pausedScripts = 0;
+  let attemptedWrites = 0;
+  await page.route("**/*", async (route) => {
+    const request = route.request();
+    if (request.method() !== "GET") {
+      attemptedWrites += 1;
+      return route.abort();
+    }
+    if (request.resourceType() === "script" && new URL(request.url()).pathname.startsWith("/_next/static/")) {
+      pausedScripts += 1;
+      await scriptGate;
+    }
+    return route.continue();
+  });
+
+  for (const path of ["/", "/become-a-client", "/become-a-coach", "/login"]) {
+    const gate = Promise.withResolvers<void>();
+    scriptGate = gate.promise;
+    pausedScripts = 0;
+    try {
+      await page.goto(path, { waitUntil: "commit" });
+      const form = page.locator('form[method="post"]');
+      const submit = form.locator('button[type="submit"]');
+      const email = form.locator('input[type="email"]');
+      await expect.poll(() => pausedScripts).toBeGreaterThan(0);
+      await expect(form).toHaveAttribute("aria-busy", "true");
+      await expect(submit).toBeDisabled();
+      await expect(email).toBeDisabled();
+      await expect(form.locator("input:enabled, textarea:enabled, select:enabled")).toHaveCount(0);
+
+      gate.resolve();
+      await expect(form).toHaveAttribute("aria-busy", "false");
+      await expect(submit).toBeEnabled();
+      await expect(email).toBeEnabled();
+    } finally {
+      gate.resolve();
+    }
+  }
+  expect(attemptedWrites).toBe(0);
+});

@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Copy, Download, X } from "lucide-react";
 import Link from "next/link";
 import { useEarlyAccessMode } from "@/components/landing/EarlyAccessMode";
 import { getRecipeWorkedExample } from "@/lib/recipe-examples";
 import type { AgentRecipe } from "@/lib/recipes-data";
 import { createRecipeSample, recipePreviewPath, recipeSampleFilename } from "@/lib/recipe-sample";
+import { useHydrated } from "@/lib/use-hydrated";
 import { RecipeWorkedExampleSection } from "./RecipeWorkedExample";
 
 type RecipePreviewProps = {
@@ -15,18 +16,13 @@ type RecipePreviewProps = {
   returnToResults?: string;
 };
 
-// Keep the initial HTML readable until the native modal can be opened.
-const subscribeToHydration = () => () => {};
-const clientSnapshot = () => true;
-const serverSnapshot = () => false;
-
 export function RecipePreview({ recipe, onClose, returnToResults }: RecipePreviewProps) {
   const earlyAccessOpen = useEarlyAccessMode();
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const descriptionId = useId();
   const example = recipe ? getRecipeWorkedExample(recipe.slug) : undefined;
-  const hydrated = useSyncExternalStore(subscribeToHydration, clientSnapshot, serverSnapshot);
+  const hydrated = useHydrated();
   const inline = Boolean(recipe && returnToResults && !hydrated);
   const Preview = inline ? "article" : "dialog";
 

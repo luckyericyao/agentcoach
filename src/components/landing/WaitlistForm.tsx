@@ -2,12 +2,14 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ArrowRight, Loader2, Send } from "lucide-react";
+import { useHydrated } from "@/lib/use-hydrated";
 import { useLeadSubmission } from "../forms/useLeadSubmission";
 
 export function WaitlistForm() {
   const [email, setEmail] = useState("");
   const { status, message, warning, submit, clearError } = useLeadSubmission();
-  const disabled = status === "loading" || status === "success";
+  const hydrated = useHydrated();
+  const disabled = !hydrated || status === "loading" || status === "success";
   const feedback = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (status === "success") feedback.current?.focus({ preventScroll: true });
@@ -22,7 +24,7 @@ export function WaitlistForm() {
     <form
       onSubmit={handleSubmit}
       method="post"
-      aria-busy={status === "loading"}
+      aria-busy={!hydrated || status === "loading"}
       aria-describedby="waitlist-feedback"
       className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-[1fr_auto]"
     >

@@ -4,6 +4,7 @@ import { useRef, useState, type FormEvent } from "react";
 import { ArrowRight, Loader2, Mail } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { isValidEmail } from "@/lib/leads/schema";
+import { useHydrated } from "@/lib/use-hydrated";
 
 type LoginStatus = "idle" | "loading" | "success" | "error";
 
@@ -12,7 +13,8 @@ export function LoginForm({ initialError = "", notice = "" }: { initialError?: s
   const [status, setStatus] = useState<LoginStatus>(initialError ? "error" : "idle");
   const [message, setMessage] = useState(initialError);
   const locked = useRef(false);
-  const disabled = status === "loading" || status === "success";
+  const hydrated = useHydrated();
+  const disabled = !hydrated || status === "loading" || status === "success";
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -49,7 +51,7 @@ export function LoginForm({ initialError = "", notice = "" }: { initialError?: s
     <form
       onSubmit={handleSubmit}
       method="post"
-      aria-busy={status === "loading"}
+      aria-busy={!hydrated || status === "loading"}
       aria-describedby="login-feedback"
       className="rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-inner-line sm:p-6"
     >
