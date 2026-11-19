@@ -137,6 +137,32 @@ test("each industry opens its matching recipe and preserves navigation context",
   }
 });
 
+test("catalog GET filters work when JavaScript is enabled but app scripts fail", async ({ page }) => {
+  let blockedScripts = 0;
+  await page.route("**/_next/static/**", (route) => {
+    if (route.request().resourceType() !== "script") return route.continue();
+    blockedScripts += 1;
+    return route.abort();
+  });
+  await page.goto("/recipes");
+  expect(blockedScripts).toBeGreaterThan(0);
+
+  const search = page.getByRole("search", { name: "Recipe filters" });
+  const results = page.getByRole("region", { name: "Recipe results" });
+  await search.getByLabel("Industry", { exact: true }).selectOption("finance-market-research");
+  await expect(results.getByRole("status")).toHaveText("6 sample recipes");
+  const submitted = page.waitForRequest((request) => request.isNavigationRequest() &&
+    new URL(request.url()).searchParams.get("industry") === "finance-market-research");
+  await search.getByRole("button", { name: "Show results", exact: true }).press("Enter");
+  expect((await submitted).method()).toBe("GET");
+  await expect(page).toHaveURL((url) => url.hash === "#recipe-results");
+  await expect(results.getByRole("status")).toHaveText("1 sample recipe");
+  await expect(page.getByRole("heading", { name: "Finance Earnings Call Analyst", exact: true })).toBeVisible();
+  await search.getByRole("button", { name: "Reset filters", exact: true }).click();
+  await expect(page).toHaveURL((url) => !url.searchParams.size && url.hash === "#recipe-results");
+  await expect(results.getByRole("status")).toHaveText("6 sample recipes");
+});
+
 test.describe("public first render without JavaScript", () => {
   test.use({ javaScriptEnabled: false });
 
@@ -180,13 +206,13 @@ test.describe("public first render without JavaScript", () => {
     await search.getByLabel("Featured", { exact: true }).check();
     const submission = page.waitForRequest((request) => request.isNavigationRequest() &&
       new URL(request.url()).searchParams.get("q") === "earnings call");
-    await search.getByRole("button", { name: "Apply filters", exact: true }).click();
+    await search.getByRole("button", { name: "Show results", exact: true }).click();
     expect((await submission).method()).toBe("GET");
     await expect(page.getByRole("status")).toHaveText("1 sample recipe");
     await expect(page.getByRole("heading", { name: "Finance Earnings Call Analyst", exact: true })).toBeVisible();
     await expect(search.getByLabel("Featured", { exact: true })).toBeChecked();
     await search.getByLabel("Verified", { exact: true }).check();
-    await search.getByRole("button", { name: "Apply filters", exact: true }).click();
+    await search.getByRole("button", { name: "Show results", exact: true }).click();
     await expect(page.getByRole("heading", { name: "No verified recipes available yet.", exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Clear all filters", exact: true }).click();
     await expect(page).toHaveURL((url) => url.pathname === "/recipes" && url.searchParams.size === 0);

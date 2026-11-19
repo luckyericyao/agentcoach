@@ -19,6 +19,11 @@ test("catalog filters survive reload and back/forward, and reset recovers empty 
   await page.getByLabel("Search recipes", { exact: true }).fill("earnings call");
   await expect(page.getByRole("status")).toHaveText("1 sample recipe");
   await expect(page).toHaveURL(/q=earnings\+call/);
+  await page.getByRole("button", { name: "Show results", exact: true }).press("Enter");
+  const results = page.getByRole("region", { name: "Recipe results" });
+  await expect(results).toBeFocused();
+  await expect(results).toBeInViewport();
+  expect(new URL(page.url()).hash).toBe("");
   await page.reload();
   await expect(page.getByLabel("Search recipes", { exact: true })).toHaveValue("earnings call");
   await expect(page.getByLabel("Industry", { exact: true })).toHaveValue("finance-market-research");
