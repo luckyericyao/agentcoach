@@ -193,4 +193,43 @@ test.describe("public first render without JavaScript", () => {
     await expect(page.getByRole("status")).toHaveText("6 sample recipes");
     await expect(search.getByRole("button", { name: "Reset filters", exact: true })).toBeDisabled();
   });
+
+  test("native recipe links open a readable sample and return to the filtered results", async ({ page }) => {
+    const name = "Biotech BD Meeting Prep Agent";
+    const previewLink = page.getByRole("link", { name: `Preview ${name}`, exact: true });
+    const preview = page.getByRole("article", { name, exact: true });
+
+    await page.goto("/recipes?q=meeting&industry=biotech-pharma&featured=1");
+    await previewLink.press("Enter");
+    await expect(page).toHaveURL((url) => url.searchParams.get("recipe") === recipe && url.hash === "#recipe-preview");
+    await expect(preview.getByRole("heading", { name, exact: true })).toBeInViewport();
+    await expect(preview.locator("[data-recipe-module]")).toHaveCount(8);
+    await expect(preview.getByText("Human review required", { exact: true })).toBeVisible();
+    await expect(preview.getByRole("button", { name: "Copy recipe link" })).toHaveCount(0);
+    await preview.locator("summary").press("Enter");
+    await expect(preview.getByRole("heading", { name: "Partnering meeting brief" })).toBeVisible();
+
+    const downloaded = page.waitForEvent("download");
+    await preview.getByRole("link", { name: "Download sample JSON" }).click();
+    const download = await downloaded;
+    expect(download.suggestedFilename()).toBe(`agentcoach-${recipe}-sample-v1.json`);
+    expect(Object.keys(JSON.parse(await readFile((await download.path())!, "utf8")).modules)).toHaveLength(8);
+
+    await preview.getByRole("link", { name: "Back to results" }).click();
+    await expect(page).toHaveURL((url) => url.hash === "#recipe-results" && !url.searchParams.has("recipe"));
+    expect(Object.fromEntries(new URL(page.url()).searchParams)).toEqual({
+      q: "meeting", industry: "biotech-pharma", featured: "1",
+    });
+    await expect(page.getByRole("status")).toHaveText("1 sample recipe");
+    await expect(preview).toHaveCount(0);
+
+    for (const path of ["/", "/industries/biotech-pharma"]) {
+      await page.goto(path);
+      await previewLink.click();
+      await expect(preview.getByRole("heading", { name, exact: true })).toBeInViewport();
+    }
+    await page.goto(`/recipes?recipe=${recipe}`);
+    await expect(preview).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  });
 });

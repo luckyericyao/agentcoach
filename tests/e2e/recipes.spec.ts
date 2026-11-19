@@ -46,7 +46,7 @@ test("recipe preview has all eight modules, traps keyboard focus, and restores i
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/recipes");
-  const trigger = page.getByRole("button", { name: `Preview ${biotech}`, exact: true });
+  const trigger = page.getByRole("link", { name: `Preview ${biotech}`, exact: true });
   await trigger.focus();
   await page.keyboard.press("Enter");
   const dialog = page.getByRole("dialog", { name: biotech, exact: true });
@@ -67,7 +67,7 @@ test("recipe preview has all eight modules, traps keyboard focus, and restores i
   await expect(dialog).toBeHidden();
   await expect(trigger).toBeFocused();
   await expect(page.locator("body")).not.toHaveCSS("overflow", "hidden");
-  await page.getByRole("button", { name: `Preview ${finance}`, exact: true }).click();
+  await page.getByRole("link", { name: `Preview ${finance}`, exact: true }).click();
   const next = page.getByRole("dialog", { name: finance, exact: true });
   await expect(next).toBeVisible();
   await expect(next.locator('[data-recipe-module="risk"]')).toContainText("No financial advice");
@@ -78,16 +78,16 @@ test("recipe preview has all eight modules, traps keyboard focus, and restores i
 
 test("homepage featured samples open the same complete preview", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: `Preview ${biotech}`, exact: true }).click();
+  await page.getByRole("link", { name: `Preview ${biotech}`, exact: true }).click();
   const dialog = page.getByRole("dialog", { name: biotech, exact: true });
   await expect(dialog.locator("[data-recipe-module]")).toHaveCount(8);
   await dialog.getByRole("button", { name: "Close recipe preview", exact: true }).click();
-  await expect(page.getByRole("button", { name: `Preview ${biotech}`, exact: true })).toBeFocused();
+  await expect(page.getByRole("link", { name: `Preview ${biotech}`, exact: true })).toBeFocused();
 });
 
 test("selected recipe reaches an editable client request and is saved with its context", async ({ page, request }, testInfo) => {
   await page.goto("/recipes?industry=biotech-pharma");
-  await page.getByRole("button", { name: `Preview ${biotech}`, exact: true }).click();
+  await page.getByRole("link", { name: `Preview ${biotech}`, exact: true }).click();
   await page.getByRole("dialog", { name: biotech, exact: true })
     .getByRole("link", { name: "Request this workflow", exact: true }).click();
   await expect(page).toHaveURL(/\/become-a-client\?recipe=biotech-bd-meeting-prep-agent#client-access$/);
