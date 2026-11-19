@@ -2,6 +2,7 @@
 
 import { ArrowRight, Loader2 } from "lucide-react";
 import { useEffect, useId, useRef, type FormEvent, type ReactNode } from "react";
+import { useHydrated } from "@/lib/use-hydrated";
 import type { LeadFormStatus } from "./useLeadSubmission";
 
 type LeadFormShellProps = {
@@ -26,6 +27,8 @@ export function LeadFormShell({
   warning,
 }: LeadFormShellProps) {
   const isLoading = status === "loading";
+  const hydrated = useHydrated();
+  const controlsDisabled = !hydrated || disabled || isLoading || status === "success";
   const feedbackId = useId();
   const dataNoticeId = useId();
   const feedback = useRef<HTMLDivElement>(null);
@@ -37,7 +40,7 @@ export function LeadFormShell({
     <form
       onSubmit={onSubmit}
       method="post"
-      aria-busy={isLoading}
+      aria-busy={!hydrated || isLoading}
       aria-describedby={`${dataNoticeId} ${feedbackId}`}
       className="rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-inner-line sm:p-6"
     >
@@ -45,14 +48,14 @@ export function LeadFormShell({
         Describe the workflow at a high level. Do not include patient records,
         financial account details, passwords, or confidential documents.
       </p>
-      <fieldset disabled={disabled || isLoading || status === "success"} className="grid min-w-0 gap-4">
+      <fieldset disabled={controlsDisabled} className="grid min-w-0 gap-4">
         <legend className="sr-only">Contact details</legend>
         {children}
       </fieldset>
 
       <button
         type="submit"
-        disabled={disabled || isLoading || status === "success"}
+        disabled={controlsDisabled}
         className="mt-6 inline-flex h-12 w-full items-center justify-center gap-2 rounded bg-platinum px-5 text-sm font-semibold text-carbon transition duration-200 hover:bg-white focus:outline-none focus:ring-2 focus:ring-ion/50 disabled:cursor-not-allowed disabled:opacity-65"
       >
         {isLoading ? <Loader2 aria-hidden="true" className="size-4 animate-spin" /> : null}
