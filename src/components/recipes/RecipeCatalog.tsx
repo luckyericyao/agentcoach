@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ArrowUpRight, RotateCcw, Search } from "lucide-react";
+import { ArrowDown, ArrowUpRight, RotateCcw, Search } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { recipeSummaryModules, type AgentRecipe } from "@/lib/recipes-data";
 import type { Industry } from "@/lib/industries-data";
@@ -23,6 +23,7 @@ export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
   }
   const selectedRecipe = readRecipeSelection(searchParams, recipes);
   const search = useRef<HTMLInputElement>(null);
+  const results = useRef<HTMLDivElement>(null);
   const maturityLevels = Array.from(new Set(recipes.map((recipe) => recipe.maturityLevel)));
   const filteredRecipes = filterRecipes(recipes, filters);
   const filterQuery = recipeFiltersQuery(filters);
@@ -54,12 +55,15 @@ export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
 
   return (
     <div>
-      <form id={resetForm} action="/recipes" method="get" onSubmit={(event) => {
+      <form id={resetForm} action="/recipes#recipe-results" method="get" onSubmit={(event) => {
         event.preventDefault();
         updateFilters(defaultRecipeFilters);
       }} />
-      <form action="/recipes" method="get" role="search" aria-label="Recipe filters"
-        className="border-y border-white/10 py-5" onSubmit={(event) => event.preventDefault()}>
+      <form action="/recipes#recipe-results" method="get" role="search" aria-label="Recipe filters"
+        className="border-y border-white/10 py-5" onSubmit={(event) => {
+          event.preventDefault();
+          results.current?.focus();
+        }}>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_10rem]">
           <label className="grid gap-2 text-sm font-medium text-platinum md:col-span-2 lg:col-span-1" htmlFor="recipe-search">
             Search recipes
@@ -99,12 +103,10 @@ export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
             <input type="checkbox" name="verified" value="1" checked={filters.verified} onChange={(event) => updateFilters({ verified: event.target.checked })}
               className="size-4 accent-platinum" />Verified
           </label>
-          <noscript>
-            <button type="submit"
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded bg-platinum px-4 text-sm font-semibold text-carbon transition hover:bg-white">
-              Apply filters<Search aria-hidden="true" className="size-4" />
-            </button>
-          </noscript>
+          <button type="submit"
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded border border-white/20 bg-white/[0.05] px-3 text-sm font-semibold text-platinum transition hover:bg-white/10">
+            Show results<ArrowDown aria-hidden="true" className="size-4" />
+          </button>
           <button type="submit" form={resetForm} disabled={!hasFilters}
             className="inline-flex min-h-11 items-center justify-center gap-2 rounded px-2 text-sm font-medium text-steel transition hover:text-platinum disabled:opacity-40 sm:ml-auto">
             <RotateCcw aria-hidden="true" className="size-4" />Reset filters
@@ -114,7 +116,8 @@ export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
 
       <RecipePreview recipe={selectedRecipe} onClose={closeRecipe} returnToResults={`${resultsPath}#recipe-results`} />
 
-      <div id="recipe-results" className="mt-7 flex scroll-mt-24 flex-col gap-2 text-sm text-steel sm:flex-row sm:items-center sm:justify-between">
+      <div id="recipe-results" ref={results} tabIndex={-1} role="region" aria-label="Recipe results"
+        className="mt-7 flex scroll-mt-24 flex-col gap-2 text-sm text-steel focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ion sm:flex-row sm:items-center sm:justify-between">
         <p role="status" aria-live="polite" aria-atomic="true" className="font-medium text-platinum">
           {filteredRecipes.length} sample {filteredRecipes.length === 1 ? "recipe" : "recipes"}
         </p>
