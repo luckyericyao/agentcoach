@@ -1,6 +1,7 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { createHmac } from "node:crypto";
 import { pathToFileURL } from "node:url";
+import { watchFixtureParent } from "./parent-lifetime.mts";
 
 type FixtureRecord = Record<string, unknown>;
 
@@ -167,4 +168,8 @@ export function createProviderServer() {
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const { server } = createProviderServer();
   server.listen(4319, "127.0.0.1", () => console.log("Local test providers ready on 4319"));
+  watchFixtureParent(() => {
+    server.close();
+    server.closeAllConnections();
+  });
 }

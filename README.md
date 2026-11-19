@@ -322,6 +322,8 @@ recovery. It does not accept a database URL or connect to a hosted project.
 
 `npm run test:e2e` starts disposable local providers on `127.0.0.1:4319` and an optimized `next build` / `next start` test app on `127.0.0.1:3100`. It injects synthetic test credentials and `AGENTCOACH_TEST_BUILD=1` into those child processes, never changes a real `.env` file, and never calls real Supabase/Resend services. The flag selects `.next-e2e` for both build and start; do not set it in hosting or ordinary app environments. Keep these ports free and run only one browser suite per checkout at a time. Desktop/mobile traces and screenshots go to ignored `test-results/`. Use `npm run verify` or a normal build after a standalone browser run to restore generated type references; the fixture bundle no longer overwrites the ordinary production assets.
 
+On macOS and Linux, the fixture servers also shut down if the Playwright process is forcibly interrupted.
+
 To keep the test browser installation inside this repository:
 
 ```bash
