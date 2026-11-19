@@ -10,6 +10,7 @@ export const metadata: Metadata = {
   title: "Agent Recipes | AgentCoach",
   description:
     "Browse reusable expert workflows that combine instruction, workflow, evaluation, risk boundaries, and deployment logic.",
+  alternates: { canonical: "/recipes" },
 };
 
 export default async function RecipesPage() {

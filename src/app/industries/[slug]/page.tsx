@@ -32,6 +32,7 @@ export async function generateMetadata({ params }: IndustryPageProps): Promise<M
   return {
     title: `${industry.name} | AgentCoach`,
     description: industry.description,
+    alternates: { canonical: `/industries/${industry.slug}` },
   };
 }
 
