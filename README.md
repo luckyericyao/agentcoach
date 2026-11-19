@@ -56,6 +56,8 @@ Known single slugs only are accepted. Catalog filters remain intact when opening
 and closing the preview, including browser back/forward. Copying a recipe link
 uses only the recipe slug, never a visitor's search or other query parameters.
 If clipboard access is blocked, a read-only selectable URL is shown instead.
+Share crawlers receive the known sample's title and description, with a
+recipe-only Open Graph URL. Search canonical URLs still point to `/recipes`.
 
 Each preview also downloads a public JSON sample with `kind` set to
 `agentcoach.sample-recipe` and `schemaVersion` set to `1`. The same attachment

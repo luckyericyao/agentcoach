@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { industries } from "../../src/lib/industries-data";
 import { publicSiteOrigin } from "../../src/lib/public-site";
+import { agentRecipes } from "../../src/lib/recipes-data";
 
 test("public discovery lists canonical pages and preserves private noindex headers", async ({ page, request }) => {
   const robots = await request.get("/robots.txt");
@@ -31,5 +32,41 @@ test("public discovery lists canonical pages and preserves private noindex heade
   for (const path of ["/login", "/account", "/auth/callback", "/api/leads"]) {
     const response = await request.get(path, { maxRedirects: 0 });
     expect(response.headers()["x-robots-tag"], path).toBe("noindex, nofollow");
+  }
+});
+
+test("recipe share crawlers receive sample metadata without visitor filters", async ({ page, request }) => {
+  const scenarios = [
+    ...agentRecipes.map(({ slug, name, shortDescription }) => ({
+      query: `recipe=${slug}&q=not-part-of-the-share&industry=biotech-pharma`,
+      title: `${name} | AgentCoach`,
+      description: `Illustrative sample, not a live agent. ${shortDescription}`,
+      path: `/recipes?recipe=${slug}`,
+    })),
+    ...["q=not-part-of-the-share", "recipe=unknown", `recipe=${agentRecipes[0].slug}&recipe=${agentRecipes[0].slug}`]
+      .map((query) => ({
+        query,
+        title: "Agent Recipes | AgentCoach",
+        description: "Browse reusable expert workflows that combine instruction, workflow, evaluation, risk boundaries, and deployment logic.",
+        path: "/recipes",
+      })),
+  ];
+
+  for (const { query, title, description, path } of scenarios) {
+    const response = await request.get(`/recipes?${query}`, { headers: { "User-Agent": "Slackbot-LinkExpanding 1.0" } });
+    expect(response.status()).toBe(200);
+    const metadata = await page.evaluate((html) => {
+      const { head } = new DOMParser().parseFromString(html, "text/html");
+      const og = (name: string) => head.querySelector(`meta[property="og:${name}"]`)?.getAttribute("content");
+      return {
+        title: og("title"),
+        description: og("description"),
+        url: og("url"),
+        canonical: head.querySelector('link[rel="canonical"]')?.getAttribute("href"),
+      };
+    }, await response.text());
+    expect(metadata, query).toEqual({
+      title, description, url: new URL(path, publicSiteOrigin).href, canonical: `${publicSiteOrigin}/recipes`,
+    });
   }
 });
