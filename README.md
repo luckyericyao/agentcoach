@@ -58,7 +58,9 @@ uses only the recipe slug, never a visitor's search or other query parameters.
 If clipboard access is blocked, a read-only selectable URL is shown instead.
 
 Each preview also downloads a public JSON sample with `kind` set to
-`agentcoach.sample-recipe` and `schemaVersion` set to `1`. The package contains
+`agentcoach.sample-recipe` and `schemaVersion` set to `1`. The same attachment
+is available at `/recipes/samples/<recipe-slug>` without JavaScript or an account.
+The package contains
 all eight modules, explicit unverified/human-review flags, and a proposed (not
 live) deployment path. It is a portable blueprint, not an executable agent or a
 runtime import format. The version denotes the sample schema, not an expert
@@ -74,7 +76,7 @@ a real company case, completed agent run, or professional verification.
 Catalog filters are stored in the URL: `q`, `industry`, `maturity`, `featured=1`,
 and `verified=1`. They survive refresh and browser back/forward navigation; the
 server also renders filtered results before JavaScript runs. Without JavaScript,
-Apply filters and Reset filters navigate using ordinary GET form submissions.
+Show results and Reset filters navigate using ordinary GET form submissions.
 The verified filter
 currently has an explicit empty state because no sample is independently verified.
 

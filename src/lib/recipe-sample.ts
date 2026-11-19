@@ -11,6 +11,10 @@ export function recipeSampleFilename(recipe: AgentRecipe) {
   return `agentcoach-${recipe.slug}-sample-v1.json`;
 }
 
+export function recipeSamplePath(slug: string) {
+  return `/recipes/samples/${encodeURIComponent(slug)}`;
+}
+
 export function createRecipeSample(recipe: AgentRecipe) {
   const workedExample = getRecipeWorkedExample(recipe.slug);
   // Project public blueprint fields only; never export component or visitor state.
