@@ -4,14 +4,31 @@ import { RecipeCatalog } from "@/components/recipes/RecipeCatalog";
 import { SiteFooter } from "@/components/landing/SiteFooter";
 import { TopNavigation } from "@/components/landing/TopNavigation";
 import { industries } from "@/lib/industries-data";
-import { agentRecipes } from "@/lib/recipes-data";
+import { agentRecipes, getRecipeBySlug } from "@/lib/recipes-data";
+import { recipePreviewPath } from "@/lib/recipe-sample";
 
-export const metadata: Metadata = {
+const catalogMetadata = {
   title: "Agent Recipes | AgentCoach",
   description:
     "Browse reusable expert workflows that combine instruction, workflow, evaluation, risk boundaries, and deployment logic.",
   alternates: { canonical: "/recipes" },
 };
+
+export async function generateMetadata({ searchParams }: PageProps<"/recipes">): Promise<Metadata> {
+  const { recipe: slug } = await searchParams;
+  const recipe = typeof slug === "string" ? getRecipeBySlug(slug) : undefined;
+
+  return {
+    ...catalogMetadata,
+    openGraph: {
+      type: "website",
+      siteName: "AgentCoach",
+      title: recipe ? `${recipe.name} | AgentCoach` : catalogMetadata.title,
+      description: recipe ? `Illustrative sample, not a live agent. ${recipe.shortDescription}` : catalogMetadata.description,
+      url: recipe ? recipePreviewPath(recipe.slug) : "/recipes",
+    },
+  };
+}
 
 export default async function RecipesPage() {
   await connection();
