@@ -170,4 +170,27 @@ test.describe("public first render without JavaScript", () => {
     await expect(page).toHaveURL(/\/recipes$/);
     await expectPainted(page.getByRole("heading", { name: "Biotech BD Meeting Prep Agent", exact: true }));
   });
+
+  test("native search submits catalog filters and clears empty results", async ({ page }) => {
+    await page.goto("/recipes");
+    const search = page.getByRole("search", { name: "Recipe filters" });
+    await search.getByLabel("Search recipes", { exact: true }).fill("earnings call");
+    await search.getByLabel("Industry", { exact: true }).selectOption("finance-market-research");
+    await search.getByLabel("Maturity", { exact: true }).selectOption("preview");
+    await search.getByLabel("Featured", { exact: true }).check();
+    const submission = page.waitForRequest((request) => request.isNavigationRequest() &&
+      new URL(request.url()).searchParams.get("q") === "earnings call");
+    await search.getByRole("button", { name: "Apply filters", exact: true }).click();
+    expect((await submission).method()).toBe("GET");
+    await expect(page.getByRole("status")).toHaveText("1 sample recipe");
+    await expect(page.getByRole("heading", { name: "Finance Earnings Call Analyst", exact: true })).toBeVisible();
+    await expect(search.getByLabel("Featured", { exact: true })).toBeChecked();
+    await search.getByLabel("Verified", { exact: true }).check();
+    await search.getByRole("button", { name: "Apply filters", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "No verified recipes available yet.", exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "Clear all filters", exact: true }).click();
+    await expect(page).toHaveURL((url) => url.pathname === "/recipes" && url.searchParams.size === 0);
+    await expect(page.getByRole("status")).toHaveText("6 sample recipes");
+    await expect(search.getByRole("button", { name: "Reset filters", exact: true })).toBeDisabled();
+  });
 });

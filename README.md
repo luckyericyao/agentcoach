@@ -73,7 +73,9 @@ a real company case, completed agent run, or professional verification.
 
 Catalog filters are stored in the URL: `q`, `industry`, `maturity`, `featured=1`,
 and `verified=1`. They survive refresh and browser back/forward navigation; the
-server also renders filtered results before JavaScript runs. The verified filter
+server also renders filtered results before JavaScript runs. Without JavaScript,
+Apply filters and Reset filters navigate using ordinary GET form submissions.
+The verified filter
 currently has an explicit empty state because no sample is independently verified.
 
 When early access is explicitly enabled, the preview's request link leads to:

@@ -25,6 +25,7 @@ export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
   const maturityLevels = Array.from(new Set(recipes.map((recipe) => recipe.maturityLevel)));
   const filteredRecipes = filterRecipes(recipes, filters);
   const hasFilters = Boolean(recipeFiltersQuery(filters));
+  const resetForm = "reset-recipe-filters";
 
   function updateFilters(changes: Partial<RecipeFilters>, replace = false) {
     const next = { ...filters, ...changes };
@@ -57,13 +58,18 @@ export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
 
   return (
     <div>
-      <div aria-label="Recipe filters" className="border-y border-white/10 py-5">
+      <form id={resetForm} action="/recipes" method="get" onSubmit={(event) => {
+        event.preventDefault();
+        updateFilters(defaultRecipeFilters);
+      }} />
+      <form action="/recipes" method="get" role="search" aria-label="Recipe filters"
+        className="border-y border-white/10 py-5" onSubmit={(event) => event.preventDefault()}>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_10rem]">
           <label className="grid gap-2 text-sm font-medium text-platinum md:col-span-2 lg:col-span-1" htmlFor="recipe-search">
             Search recipes
             <span className="flex h-12 min-w-0 items-center gap-3 rounded border border-white/15 bg-white/[0.04] px-3 focus-within:border-ion/55">
               <Search aria-hidden="true" className="size-4 shrink-0 text-steel" />
-              <input ref={search} id="recipe-search" type="search" value={filters.query} maxLength={120}
+              <input ref={search} id="recipe-search" name="q" type="search" value={filters.query} maxLength={120}
                 onChange={(event) => updateFilters({ query: event.target.value }, true)}
                 placeholder="Search by name, data, or output"
                 className="h-full w-full min-w-0 bg-transparent text-base text-platinum outline-none placeholder:text-steel/65" />
@@ -71,7 +77,7 @@ export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
           </label>
           <div className="grid gap-2 text-sm font-medium text-platinum">
             <label htmlFor="industry-filter">Industry</label>
-            <select id="industry-filter" value={filters.industry}
+            <select id="industry-filter" name="industry" value={filters.industry}
               onChange={(event) => updateFilters({ industry: event.target.value })}
               className="h-12 min-w-0 w-full rounded border border-white/15 bg-carbon px-3 text-sm text-platinum outline-none focus:border-ion/55">
               <option value="all">All industries</option>
@@ -80,7 +86,7 @@ export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
           </div>
           <div className="grid gap-2 text-sm font-medium text-platinum">
             <label htmlFor="maturity-filter">Maturity</label>
-            <select id="maturity-filter" value={filters.maturity}
+            <select id="maturity-filter" name="maturity" value={filters.maturity}
               onChange={(event) => updateFilters({ maturity: event.target.value })}
               className="h-12 min-w-0 w-full rounded border border-white/15 bg-carbon px-3 text-sm text-platinum outline-none focus:border-ion/55">
               <option value="all">All levels</option>
@@ -90,19 +96,25 @@ export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
         </div>
         <div className="mt-4 flex flex-wrap items-center gap-x-7 gap-y-3">
           <label className="flex min-h-11 items-center gap-3 text-sm font-medium text-platinum">
-            <input type="checkbox" checked={filters.featured} onChange={(event) => updateFilters({ featured: event.target.checked })}
+            <input type="checkbox" name="featured" value="1" checked={filters.featured} onChange={(event) => updateFilters({ featured: event.target.checked })}
               className="size-4 accent-platinum" />Featured
           </label>
           <label className="flex min-h-11 items-center gap-3 text-sm font-medium text-platinum">
-            <input type="checkbox" checked={filters.verified} onChange={(event) => updateFilters({ verified: event.target.checked })}
+            <input type="checkbox" name="verified" value="1" checked={filters.verified} onChange={(event) => updateFilters({ verified: event.target.checked })}
               className="size-4 accent-platinum" />Verified
           </label>
-          <button type="button" disabled={!hasFilters} onClick={() => updateFilters(defaultRecipeFilters)}
+          <noscript>
+            <button type="submit"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded bg-platinum px-4 text-sm font-semibold text-carbon transition hover:bg-white">
+              Apply filters<Search aria-hidden="true" className="size-4" />
+            </button>
+          </noscript>
+          <button type="submit" form={resetForm} disabled={!hasFilters}
             className="inline-flex min-h-11 items-center justify-center gap-2 rounded px-2 text-sm font-medium text-steel transition hover:text-platinum disabled:opacity-40 sm:ml-auto">
             <RotateCcw aria-hidden="true" className="size-4" />Reset filters
           </button>
         </div>
-      </div>
+      </form>
 
       <div className="mt-7 flex flex-col gap-2 text-sm text-steel sm:flex-row sm:items-center sm:justify-between">
         <p role="status" aria-live="polite" aria-atomic="true" className="font-medium text-platinum">
@@ -147,7 +159,7 @@ export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
           <p className="mt-3 max-w-2xl text-base leading-7 text-steel">
             {filters.verified ? "The current catalog contains unverified, illustrative samples." : "There are no samples for this combination of search and filters."}
           </p>
-          <button type="button" onClick={() => updateFilters(defaultRecipeFilters)}
+          <button type="submit" form={resetForm}
             className="mt-6 inline-flex min-h-11 items-center gap-2 rounded border border-white/20 px-4 text-sm font-semibold text-platinum transition hover:bg-white/10">
             <RotateCcw aria-hidden="true" className="size-4" />Clear all filters
           </button>
