@@ -20,7 +20,7 @@ test("known permalink survives refresh and closing preserves filters with a focu
 
 test("preview history opens and closes without losing catalog state or keyboard focus", async ({ page }) => {
   await page.goto("/recipes?industry=biotech-pharma&q=meeting");
-  const trigger = page.getByRole("button", { name: `Preview ${name}`, exact: true });
+  const trigger = page.getByRole("link", { name: `Preview ${name}`, exact: true });
   const dialog = page.getByRole("dialog", { name, exact: true });
   for (let cycle = 0; cycle < 5; cycle += 1) {
     await trigger.click();
@@ -56,7 +56,7 @@ test("homepage and catalog copy a recipe-only link and download a complete publi
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   for (const path of ["/", "/recipes?q=meeting&industry=biotech-pharma"]) {
     await page.goto(path);
-    await page.getByRole("button", { name: `Preview ${name}`, exact: true }).click();
+    await page.getByRole("link", { name: `Preview ${name}`, exact: true }).click();
     const dialog = page.getByRole("dialog", { name, exact: true });
     await dialog.getByRole("button", { name: "Copy recipe link", exact: true }).click();
     await expect(dialog.getByRole("status")).toHaveText("Recipe link copied.");
@@ -88,7 +88,7 @@ test("blocked clipboard exposes a selectable link inside the accessible preview"
     } });
   });
   await page.goto("/recipes");
-  const trigger = page.getByRole("button", { name: `Preview ${name}`, exact: true });
+  const trigger = page.getByRole("link", { name: `Preview ${name}`, exact: true });
   await trigger.click();
   const dialog = page.getByRole("dialog", { name, exact: true });
   await dialog.getByRole("button", { name: "Copy recipe link", exact: true }).click();

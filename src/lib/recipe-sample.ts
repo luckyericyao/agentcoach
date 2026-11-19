@@ -1,8 +1,10 @@
 import type { AgentRecipe } from "./recipes-data";
 import { getRecipeWorkedExample } from "./recipe-examples";
 
-export function recipePreviewPath(slug: string) {
-  return `/recipes?${new URLSearchParams({ recipe: slug })}`;
+export function recipePreviewPath(slug: string, filterQuery = "") {
+  const params = new URLSearchParams(filterQuery);
+  params.set("recipe", slug);
+  return `/recipes?${params}`;
 }
 
 export function recipeSampleFilename(recipe: AgentRecipe) {

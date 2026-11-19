@@ -5,6 +5,7 @@ import { ArrowRight, ArrowUpRight, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import type { AgentRecipe } from "@/lib/recipes-data";
+import { recipePreviewPath } from "@/lib/recipe-sample";
 import { RecipePreview } from "@/components/recipes/RecipePreview";
 import {
   channels,
@@ -344,10 +345,15 @@ export function LandingPage() {
                       {recipe.output}
                     </p>
                   </div>
-                  <button type="button" onClick={() => setSelectedRecipe(recipe)} aria-label={`Preview ${recipe.name}`}
+                  <a href={`${recipePreviewPath(recipe.slug)}#recipe-preview`} aria-label={`Preview ${recipe.name}`}
+                    onClick={(event) => {
+                      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                      event.preventDefault();
+                      setSelectedRecipe(recipe);
+                    }}
                     className="mt-7 inline-flex min-h-11 items-center justify-center gap-2 rounded border border-white/20 bg-white/[0.05] px-4 text-sm font-semibold text-platinum transition hover:border-ion/50 hover:bg-white/10">
                     Preview recipe<ArrowUpRight aria-hidden="true" className="size-4" />
-                  </button>
+                  </a>
                 </motion.article>
               );
             })}

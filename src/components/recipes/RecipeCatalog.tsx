@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { recipeSummaryModules, type AgentRecipe } from "@/lib/recipes-data";
 import type { Industry } from "@/lib/industries-data";
 import { defaultRecipeFilters, filterRecipes, readRecipeFilters, readRecipeSelection, recipeFiltersQuery, type RecipeFilters } from "@/lib/recipe-catalog";
+import { recipePreviewPath } from "@/lib/recipe-sample";
 import { RecipePreview } from "./RecipePreview";
 
 type RecipeCatalogProps = { industries: Industry[]; recipes: AgentRecipe[] };
@@ -24,7 +25,9 @@ export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
   const search = useRef<HTMLInputElement>(null);
   const maturityLevels = Array.from(new Set(recipes.map((recipe) => recipe.maturityLevel)));
   const filteredRecipes = filterRecipes(recipes, filters);
-  const hasFilters = Boolean(recipeFiltersQuery(filters));
+  const filterQuery = recipeFiltersQuery(filters);
+  const hasFilters = Boolean(filterQuery);
+  const resultsPath = `/recipes${filterQuery ? `?${filterQuery}` : ""}`;
   const resetForm = "reset-recipe-filters";
 
   function updateFilters(changes: Partial<RecipeFilters>, replace = false) {
@@ -34,13 +37,6 @@ export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
     const url = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ""}`;
     if (replace) window.history.replaceState(null, "", url);
     else window.history.pushState(null, "", url);
-  }
-
-  function openRecipe(recipe: AgentRecipe) {
-    const params = new URLSearchParams(recipeFiltersQuery(filters));
-    const origin = `${window.location.pathname}${params.size ? `?${params}` : ""}`;
-    params.set("recipe", recipe.slug);
-    window.history.pushState({ agentcoachPreviewOrigin: origin }, "", `${window.location.pathname}?${params}`);
   }
 
   function closeRecipe() {
@@ -116,7 +112,9 @@ export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
         </div>
       </form>
 
-      <div className="mt-7 flex flex-col gap-2 text-sm text-steel sm:flex-row sm:items-center sm:justify-between">
+      <RecipePreview recipe={selectedRecipe} onClose={closeRecipe} returnToResults={`${resultsPath}#recipe-results`} />
+
+      <div id="recipe-results" className="mt-7 flex scroll-mt-24 flex-col gap-2 text-sm text-steel sm:flex-row sm:items-center sm:justify-between">
         <p role="status" aria-live="polite" aria-atomic="true" className="font-medium text-platinum">
           {filteredRecipes.length} sample {filteredRecipes.length === 1 ? "recipe" : "recipes"}
         </p>
@@ -143,10 +141,15 @@ export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
                 <p className="mt-2 text-sm leading-6 text-steel">{recipe.useCase}</p>
               </div>
               <div className="mt-auto pt-7">
-                <button type="button" onClick={() => openRecipe(recipe)} aria-label={`Preview ${recipe.name}`}
+                <a href={`${recipePreviewPath(recipe.slug, filterQuery)}#recipe-preview`} aria-label={`Preview ${recipe.name}`}
+                  onClick={(event) => {
+                    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                    event.preventDefault();
+                    window.history.pushState({ agentcoachPreviewOrigin: resultsPath }, "", recipePreviewPath(recipe.slug, filterQuery));
+                  }}
                   className="inline-flex min-h-11 items-center justify-center gap-2 rounded border border-white/20 bg-white/[0.05] px-4 text-sm font-semibold text-platinum transition hover:border-ion/50 hover:bg-white/10">
                   Preview recipe<ArrowUpRight aria-hidden="true" className="size-4" />
-                </button>
+                </a>
               </div>
             </article>
           ))}
@@ -165,8 +168,6 @@ export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
           </button>
         </div>
       )}
-
-      <RecipePreview recipe={selectedRecipe} onClose={closeRecipe} />
     </div>
   );
 }

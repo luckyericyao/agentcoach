@@ -216,7 +216,7 @@ export default async function IndustryPage({ params }: IndustryPageProps) {
                     ))}
                   </div>
                   <Link
-                    href={{ pathname: "/recipes", query: { industry: industry.slug, recipe: recipe.slug } }}
+                    href={{ pathname: "/recipes", query: { industry: industry.slug, recipe: recipe.slug }, hash: "recipe-preview" }}
                     aria-label={`Preview ${recipe.name}`}
                     className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-platinum transition hover:text-ion"
                   >

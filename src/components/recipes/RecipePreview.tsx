@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
-import { ArrowRight, Copy, Download, X } from "lucide-react";
+import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
+import { ArrowLeft, ArrowRight, Copy, Download, X } from "lucide-react";
 import Link from "next/link";
 import { useEarlyAccessMode } from "@/components/landing/EarlyAccessMode";
 import { getRecipeWorkedExample } from "@/lib/recipe-examples";
@@ -12,14 +12,23 @@ import { RecipeWorkedExampleSection } from "./RecipeWorkedExample";
 type RecipePreviewProps = {
   recipe: AgentRecipe | null;
   onClose: () => void;
+  returnToResults?: string;
 };
 
-export function RecipePreview({ recipe, onClose }: RecipePreviewProps) {
+// Keep the initial HTML readable until the native modal can be opened.
+const subscribeToHydration = () => () => {};
+const clientSnapshot = () => true;
+const serverSnapshot = () => false;
+
+export function RecipePreview({ recipe, onClose, returnToResults }: RecipePreviewProps) {
   const earlyAccessOpen = useEarlyAccessMode();
   const dialog = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const descriptionId = useId();
   const example = recipe ? getRecipeWorkedExample(recipe.slug) : undefined;
+  const hydrated = useSyncExternalStore(subscribeToHydration, clientSnapshot, serverSnapshot);
+  const inline = Boolean(recipe && returnToResults && !hydrated);
+  const Preview = inline ? "article" : "dialog";
 
   useEffect(() => {
     const element = dialog.current;
@@ -30,7 +39,7 @@ export function RecipePreview({ recipe, onClose }: RecipePreviewProps) {
     } else if (!recipe && element.open) {
       element.close();
     }
-  }, [recipe]);
+  }, [recipe, inline]);
 
   function requestClose() {
     const element = dialog.current;
@@ -41,13 +50,14 @@ export function RecipePreview({ recipe, onClose }: RecipePreviewProps) {
   }
 
   return (
-    <dialog
-      ref={dialog}
+    <Preview
+      id={inline ? "recipe-preview" : undefined}
+      ref={inline ? undefined : dialog}
       aria-labelledby={titleId}
       aria-describedby={descriptionId}
       onCancel={(event) => { event.preventDefault(); requestClose(); }}
       onKeyDown={(event) => {
-        if (event.key !== "Tab") return;
+        if (inline || event.key !== "Tab") return;
         const controls = Array.from(event.currentTarget.querySelectorAll<HTMLElement>(
           "button:not([disabled]), a[href], input:not([disabled]), details > summary:first-child",
         )).filter((element) => element.getClientRects().length > 0);
@@ -67,17 +77,22 @@ export function RecipePreview({ recipe, onClose }: RecipePreviewProps) {
         if (event.clientX < bounds.left || event.clientX > bounds.right ||
           event.clientY < bounds.top || event.clientY > bounds.bottom) requestClose();
       }}
-      className="recipe-preview m-auto max-h-[calc(100svh_-_2rem)] w-[calc(100%_-_2rem)] max-w-4xl overflow-y-auto rounded-lg border border-white/20 bg-ink p-0 text-platinum shadow-2xl"
+      className={inline
+        ? "mt-7 max-w-4xl scroll-mt-24 rounded-lg border border-white/20 bg-ink text-platinum"
+        : "recipe-preview m-auto max-h-[calc(100svh_-_2rem)] w-[calc(100%_-_2rem)] max-w-4xl overflow-y-auto rounded-lg border border-white/20 bg-ink p-0 text-platinum shadow-2xl"}
     >
       {recipe ? (
         <div>
-          <header className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-white/10 bg-ink/95 px-5 py-4 backdrop-blur sm:px-8">
+          <header className={`${inline ? "" : "sticky top-0 z-10"} flex items-center justify-between gap-4 border-b border-white/10 bg-ink/95 px-5 py-4 backdrop-blur sm:px-8`}>
             <p className="text-xs font-semibold uppercase text-ion">Sample recipe</p>
-            <button type="button" autoFocus onClick={requestClose}
+            {inline ? <a href={returnToResults}
+              className="inline-flex min-h-11 items-center gap-2 rounded border border-white/15 px-3 text-sm font-medium text-platinum transition hover:bg-white/10">
+              <ArrowLeft aria-hidden="true" className="size-4 shrink-0" />Back to results
+            </a> : <button type="button" autoFocus onClick={requestClose}
               aria-label="Close recipe preview" title="Close recipe preview"
               className="grid size-11 shrink-0 place-items-center rounded border border-white/15 text-platinum transition hover:bg-white/10">
               <X aria-hidden="true" className="size-5" />
-            </button>
+            </button>}
           </header>
 
           <div className="px-5 py-7 sm:px-8 sm:py-9">
@@ -89,7 +104,7 @@ export function RecipePreview({ recipe, onClose }: RecipePreviewProps) {
               <span className="rounded border border-ember/25 px-2.5 py-1 text-ember">Unverified sample</span>
               <span className="rounded border border-white/15 px-2.5 py-1 text-steel">Human review required</span>
             </div>
-            <RecipeSampleActions key={recipe.slug} recipe={recipe} />
+            <RecipeSampleActions key={recipe.slug} recipe={recipe} inline={inline} />
             {example ? <RecipeWorkedExampleSection key={recipe.slug} example={example} /> : null}
 
             <div className="mt-9 space-y-7">
@@ -154,11 +169,11 @@ export function RecipePreview({ recipe, onClose }: RecipePreviewProps) {
           </footer> : null}
         </div>
       ) : null}
-    </dialog>
+    </Preview>
   );
 }
 
-function RecipeSampleActions({ recipe }: { recipe: AgentRecipe }) {
+function RecipeSampleActions({ recipe, inline }: { recipe: AgentRecipe; inline: boolean }) {
   const [copied, setCopied] = useState(false);
   const [manualLink, setManualLink] = useState("");
   const linkId = useId();
@@ -186,10 +201,10 @@ function RecipeSampleActions({ recipe }: { recipe: AgentRecipe }) {
     <div className="mt-6">
       <div className="flex flex-wrap items-center gap-3">
         <div role="group" aria-label="Recipe sharing and sample package" className="flex gap-2">
-          <button type="button" onClick={copyLink} aria-label="Copy recipe link" title="Copy recipe link"
+          {!inline ? <button type="button" onClick={copyLink} aria-label="Copy recipe link" title="Copy recipe link"
             className="grid size-11 place-items-center rounded border border-white/20 text-platinum transition hover:bg-white/10">
             <Copy aria-hidden="true" className="size-4" />
-          </button>
+          </button> : null}
           <a href={`data:application/json;charset=utf-8,${encodeURIComponent(sample)}`}
             download={recipeSampleFilename(recipe)} aria-label="Download sample JSON" title="Download sample JSON"
             className="grid size-11 place-items-center rounded border border-white/20 text-platinum transition hover:bg-white/10">
@@ -198,9 +213,9 @@ function RecipeSampleActions({ recipe }: { recipe: AgentRecipe }) {
         </div>
         <p className="text-xs leading-5 text-steel">Sample package / JSON / v1</p>
       </div>
-      <p role="status" aria-live="polite" className="mt-2 min-h-5 text-xs leading-5 text-ion">
+      {!inline ? <p role="status" aria-live="polite" className="mt-2 min-h-5 text-xs leading-5 text-ion">
         {copied ? "Recipe link copied." : manualLink ? "Clipboard unavailable. Recipe link:" : ""}
-      </p>
+      </p> : null}
       {manualLink ? (
         <div className="mt-3 grid gap-2">
           <label htmlFor={linkId} className="text-sm font-medium text-platinum">Recipe link</label>
