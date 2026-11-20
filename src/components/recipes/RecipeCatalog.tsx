@@ -50,6 +50,7 @@ export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
     } else {
       window.history.replaceState(null, "", origin);
       search.current?.focus({ preventScroll: true });
+      search.current?.scrollIntoView({ block: "center", behavior: "instant" });
     }
   }
 
