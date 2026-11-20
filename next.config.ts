@@ -21,7 +21,9 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "no-referrer" },
         ],
       })),
-      ...(revision && /^[a-f0-9]{40}$/.test(revision) ? ["/", "/recipes"].map((source) => ({
+      ...(revision && /^[a-f0-9]{40}$/.test(revision) ? [
+        "/", "/recipes", "/recipes/samples/:slug", "/recipes/share-image/:slug",
+      ].map((source) => ({
         source,
         headers: [{ key: "X-AgentCoach-Revision", value: revision }],
       })) : []),

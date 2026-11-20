@@ -440,9 +440,11 @@ npm run check:release -- https://agentcoach-three.vercel.app "$(git rev-parse or
 ```
 
 The check makes only GET requests, follows no redirects, and fails unless both
-pages return HTTP 200 with the expected full SHA. A missing platform revision
-is reported as unavailable; this check does not require changing host settings
-and does not test live account or email delivery.
+pages return HTTP 200 with the expected full SHA. Add `--catalog` after the SHA
+to also check every public JSON attachment and share image for the same revision
+and expected response headers. The full browser suite separately checks JSON
+content and PNG decoding. A missing platform revision is reported as unavailable.
+This check requires no hosting changes and does not test account access or email delivery.
 
 For an owner-approved early access pilot on Vercel:
 
