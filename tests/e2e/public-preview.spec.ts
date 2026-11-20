@@ -239,6 +239,21 @@ test.describe("public first render without JavaScript", () => {
     await expect(search.getByRole("button", { name: "Reset filters", exact: true })).toBeDisabled();
   });
 
+  test("empty results links recover matches while preserving the other filters", async ({ page }) => {
+    await page.goto("/recipes?q=earnings&industry=biotech-pharma&featured=1");
+    await expect(page.getByRole("status")).toHaveText("0 sample recipes");
+    await expect(page.getByRole("link", { name: /Include non-featured samples/ })).toHaveCount(0);
+    await page.getByRole("link", { name: "Any industry (1)", exact: true }).press("Enter");
+    await expect(page.getByRole("status")).toHaveText("1 sample recipe");
+    await expect(page.getByRole("heading", { name: "Finance Earnings Call Analyst", exact: true })).toBeVisible();
+    expect(Object.fromEntries(new URL(page.url()).searchParams)).toEqual({ q: "earnings", featured: "1" });
+    await page.goBack();
+    await page.getByRole("link", { name: "Clear search (1)", exact: true }).click();
+    await expect(page.getByRole("status")).toHaveText("1 sample recipe");
+    await expect(page.getByRole("heading", { name: "Biotech BD Meeting Prep Agent", exact: true })).toBeVisible();
+    expect(Object.fromEntries(new URL(page.url()).searchParams)).toEqual({ industry: "biotech-pharma", featured: "1" });
+  });
+
   test("native recipe links open a readable sample and return to the filtered results", async ({ page }) => {
     const name = "Biotech BD Meeting Prep Agent";
     const previewLink = page.getByRole("link", { name: `Preview ${name}`, exact: true });

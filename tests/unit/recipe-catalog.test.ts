@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { agentRecipes } from "@/lib/recipes-data";
 import { getIndustryBySlug } from "@/lib/industries-data";
-import { defaultRecipeFilters, filterRecipes, readRecipeFilters, readRecipeSelection, recipeFiltersQuery } from "@/lib/recipe-catalog";
+import { defaultRecipeFilters, filterRecipes, readRecipeFilters, readRecipeSelection, recipeFilterRecoveries, recipeFiltersQuery } from "@/lib/recipe-catalog";
 
 describe("sample recipe contract", () => {
   it("keeps every sample complete and explicitly unverified", () => {
@@ -45,6 +45,21 @@ describe("recipe search and URL filters", () => {
   });
   it("does not fabricate verified results", () => {
     expect(filterRecipes(agentRecipes, { ...defaultRecipeFilters, verified: true })).toHaveLength(0);
+  });
+  it("recommends only single-filter changes that return actual samples", () => {
+    const filters = { ...defaultRecipeFilters, query: "earnings", industry: "biotech-pharma", featured: true };
+    expect(recipeFilterRecoveries(agentRecipes, filters)).toEqual([
+      { key: "query", query: "industry=biotech-pharma&featured=1", count: 1 },
+      { key: "industry", query: "q=earnings&featured=1", count: 1 },
+    ]);
+    const verified = { ...filters, industry: "finance-market-research", verified: true };
+    expect(recipeFilterRecoveries(agentRecipes, verified)).toEqual([
+      { key: "verified", query: "q=earnings&industry=finance-market-research&featured=1", count: 1 },
+    ]);
+  });
+  it("omits recovery links that still fail or duplicate clear-all", () => {
+    expect(recipeFilterRecoveries(agentRecipes, { ...defaultRecipeFilters, query: "not a matching term" })).toEqual([]);
+    expect(recipeFilterRecoveries(agentRecipes, { ...defaultRecipeFilters, query: "not a matching term", verified: true })).toEqual([]);
   });
   it("restores valid filters from a shareable URL", () => {
     const filters = { query: "earnings call", industry: "finance-market-research", maturity: "preview", featured: true, verified: false };

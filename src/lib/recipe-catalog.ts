@@ -51,3 +51,15 @@ export function filterRecipes(recipes: AgentRecipe[], filters: RecipeFilters) {
     return terms.every((term) => searchable.includes(term));
   });
 }
+
+export function recipeFilterRecoveries(recipes: AgentRecipe[], filters: RecipeFilters) {
+  const keys = ["query", "industry", "maturity", "featured", "verified"] as const;
+  return keys.flatMap((key) => {
+    if (filters[key] === defaultRecipeFilters[key]) return [];
+    const relaxed = { ...filters, [key]: defaultRecipeFilters[key] };
+    const query = recipeFiltersQuery(relaxed);
+    if (!query) return []; // Clear all filters already reaches the same results.
+    const count = filterRecipes(recipes, relaxed).length;
+    return count > 0 ? [{ key, query, count }] : [];
+  });
+}
