@@ -38,6 +38,19 @@ describe("recipe search and URL filters", () => {
     expect(filterRecipes(agentRecipes, { ...defaultRecipeFilters, query: "EARNINGS transcript" })).toHaveLength(1);
     expect(filterRecipes(agentRecipes, { ...defaultRecipeFilters, query: "[.*]" })).toHaveLength(0);
   });
+  it.each([
+    ["earnings, call", "finance-earnings-call-analyst"],
+    ["full\u2011stack", "codex-full-stack-builder-agent"],
+    ["\uff45arnings\uff0c call", "finance-earnings-call-analyst"],
+  ])("matches pasted search text %s without changing the search URL", (query, slug) => {
+    const filters = { ...defaultRecipeFilters, query };
+    expect(filterRecipes(agentRecipes, filters).map((recipe) => recipe.slug)).toEqual([slug]);
+    expect(new URLSearchParams(recipeFiltersQuery(filters)).get("q")).toBe(query);
+  });
+  it("does not treat nonempty separator-only queries as an empty search", () => {
+    expect(filterRecipes(agentRecipes, { ...defaultRecipeFilters, query: ", \u2013 ()" })).toEqual([]);
+    expect(filterRecipes(agentRecipes, { ...defaultRecipeFilters, query: " " })).toHaveLength(agentRecipes.length);
+  });
   it("combines industry, featured, and maturity filters", () => {
     const filters = { ...defaultRecipeFilters, industry: "finance-market-research", featured: true, maturity: "preview" };
     expect(filterRecipes(agentRecipes, filters).map((recipe) => recipe.slug)).toEqual(["finance-earnings-call-analyst"]);
