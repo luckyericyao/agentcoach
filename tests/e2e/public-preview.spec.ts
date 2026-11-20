@@ -9,17 +9,22 @@ import { fixtureReleaseRevision } from "../fixtures/release-revision";
 const recipe = "biotech-bd-meeting-prep-agent";
 
 test("the release check requires the exact deployed revision", async ({ request, baseURL }) => {
-  const check = (sha: string) => spawnSync(process.execPath, ["scripts/check-release.mjs", baseURL!, sha], {
+  const check = (sha: string, ...flags: string[]) => spawnSync(process.execPath, ["scripts/check-release.mjs", baseURL!, sha, ...flags], {
     encoding: "utf8", timeout: 15_000,
   });
   const matching = check(fixtureReleaseRevision);
   expect(matching.status).toBe(0);
   expect(matching.stdout).toContain(`PASS /recipes: HTTP 200, revision ${fixtureReleaseRevision}.`);
+  const fullCatalog = check(fixtureReleaseRevision, "--catalog");
+  expect(fullCatalog.status, fullCatalog.stderr).toBe(0);
+  expect(fullCatalog.stdout.split("\n").filter((line) => line.startsWith("PASS "))).toHaveLength(2 + 2 * agentRecipes.length);
   const mismatching = check("f".repeat(40));
   expect(mismatching.status).toBe(1);
   expect(mismatching.stderr).toContain("FAIL /recipes: HTTP 200");
-  const login = await request.get("/login");
-  expect(login.headers()["x-agentcoach-revision"]).toBeUndefined();
+  for (const path of ["/login", "/account"]) {
+    const response = await request.get(path, { maxRedirects: 0 });
+    expect(response.headers()["x-agentcoach-revision"], path).toBeUndefined();
+  }
 });
 
 test("public sample URLs return only the published JSON attachments", async ({ request }) => {

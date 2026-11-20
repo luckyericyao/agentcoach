@@ -23,13 +23,13 @@ describe("local fixture build isolation", () => {
 });
 
 describe("public release revision", () => {
-  it("reports the platform commit on the two public release check paths", async () => {
+  it("reports the platform commit only on public pages and catalog assets", async () => {
     const revision = "0123456789abcdef0123456789abcdef01234567";
     vi.stubEnv("VERCEL_GIT_COMMIT_SHA", revision);
     const { default: config } = await import("../../next.config");
     const routes = (await config.headers!()).filter(({ headers }) =>
       headers.some(({ key }) => key === "X-AgentCoach-Revision"));
-    expect(routes).toEqual(["/", "/recipes"].map((source) => ({
+    expect(routes).toEqual(["/", "/recipes", "/recipes/samples/:slug", "/recipes/share-image/:slug"].map((source) => ({
       source, headers: [{ key: "X-AgentCoach-Revision", value: revision }],
     })));
   });

@@ -1,4 +1,4 @@
-const [originArg, expected, ...extra] = process.argv.slice(2);
+const [originArg, expected, mode, ...extra] = process.argv.slice(2);
 
 function readOrigin(value) {
   const url = URL.parse(value ?? "");
@@ -8,12 +8,25 @@ function readOrigin(value) {
 }
 
 const origin = readOrigin(originArg);
-if (!origin || !expected || !/^[a-f0-9]{40}$/.test(expected) || extra.length) {
-  console.error("Usage: npm run check:release -- <https-origin> <full-git-sha>");
+if (!origin || !expected || !/^[a-f0-9]{40}$/.test(expected) || (mode !== undefined && mode !== "--catalog") || extra.length) {
+  console.error("Usage: npm run check:release -- <https-origin> <full-git-sha> [--catalog]");
   process.exit(1);
 }
 
-for (const path of ["/", "/recipes"]) {
+const targets = [{ path: "/" }, { path: "/recipes" }];
+if (mode === "--catalog") {
+  const { agentRecipes } = await import("../src/lib/recipes-data.ts");
+  const { recipeShareImagePath } = await import("../src/lib/recipe-share-image.ts");
+  for (const { slug } of agentRecipes) {
+    targets.push({
+      path: `/recipes/samples/${encodeURIComponent(slug)}`,
+      type: "application/json",
+      disposition: `attachment; filename="agentcoach-${slug}-sample-v1.json"`,
+    }, { path: recipeShareImagePath(slug), type: "image/png" });
+  }
+}
+
+for (const { path, type, disposition } of targets) {
   let response;
   try {
     response = await fetch(new URL(path, origin), {
@@ -32,7 +45,19 @@ for (const path of ["/", "/recipes"]) {
     const reported = actual && /^[a-f0-9]{40}$/.test(actual) ? actual : "unavailable";
     console.error(`FAIL ${path}: HTTP ${response.status}, expected ${expected}, revision ${reported}.`);
     process.exitCode = 1;
-  } else {
-    console.log(`PASS ${path}: HTTP 200, revision ${actual}.`);
+    continue;
   }
+
+  const mediaType = response.headers.get("content-type")?.split(";")[0].trim().toLowerCase();
+  if (type && mediaType !== type) {
+    console.error(`FAIL ${path}: expected Content-Type ${type}.`);
+    process.exitCode = 1;
+    continue;
+  }
+  if (disposition && response.headers.get("content-disposition") !== disposition) {
+    console.error(`FAIL ${path}: expected the catalog attachment filename.`);
+    process.exitCode = 1;
+    continue;
+  }
+  console.log(`PASS ${path}: HTTP 200, revision ${actual}.`);
 }
