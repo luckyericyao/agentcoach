@@ -39,15 +39,23 @@ export function recipeFiltersQuery(filters: RecipeFilters) {
   return params.toString();
 }
 
+function normalizeRecipeSearch(value: string) {
+  return value.normalize("NFKC").toLowerCase()
+    .replace(/[\p{Pd},;:()"\u201c\u201d]+/gu, " ")
+    .replace(/[\u2018\u2019]/g, "'");
+}
+
 export function filterRecipes(recipes: AgentRecipe[], filters: RecipeFilters) {
-  const terms = filters.query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const query = filters.query.trim();
+  const terms = normalizeRecipeSearch(query).split(/\s+/).filter(Boolean);
+  if (query && !terms.length) return [];
   return recipes.filter((recipe) => {
     if (filters.industry !== "all" && recipe.industrySlug !== filters.industry) return false;
     if (filters.maturity !== "all" && recipe.maturityLevel.toLowerCase() !== filters.maturity) return false;
     if (filters.featured && !recipe.featured) return false;
     if (filters.verified && !recipe.verified) return false;
-    const searchable = [recipe.name, recipe.domain, recipe.useCase, recipe.shortDescription,
-      ...recipe.inputExamples, ...recipe.outputExamples, ...recipe.requiredTools].join(" ").toLowerCase();
+    const searchable = normalizeRecipeSearch([recipe.name, recipe.domain, recipe.useCase, recipe.shortDescription,
+      ...recipe.inputExamples, ...recipe.outputExamples, ...recipe.requiredTools].join(" "));
     return terms.every((term) => searchable.includes(term));
   });
 }

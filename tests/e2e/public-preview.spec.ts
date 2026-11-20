@@ -254,6 +254,18 @@ test.describe("public first render without JavaScript", () => {
     expect(Object.fromEntries(new URL(page.url()).searchParams)).toEqual({ industry: "biotech-pharma", featured: "1" });
   });
 
+  test("pasted punctuation does not hide a matching sample before JavaScript", async ({ page }) => {
+    await page.goto("/recipes");
+    const search = page.getByLabel("Search recipes", { exact: true });
+    const query = "earnings, call";
+    await search.fill(query);
+    await page.getByRole("button", { name: "Show results", exact: true }).click();
+    await expect(page.getByRole("status")).toHaveText("1 sample recipe");
+    await expect(page.getByRole("heading", { name: "Finance Earnings Call Analyst", exact: true })).toBeVisible();
+    await expect(search).toHaveValue(query);
+    expect(new URL(page.url()).searchParams.get("q")).toBe(query);
+  });
+
   test("native recipe links open a readable sample and return to the filtered results", async ({ page }) => {
     const name = "Biotech BD Meeting Prep Agent";
     const previewLink = page.getByRole("link", { name: `Preview ${name}`, exact: true });
