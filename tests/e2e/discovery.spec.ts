@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { createHash } from "node:crypto";
 import { industries } from "../../src/lib/industries-data";
 import { publicSiteOrigin } from "../../src/lib/public-site";
 import { agentRecipes } from "../../src/lib/recipes-data";
@@ -42,6 +43,8 @@ test("recipe share crawlers receive sample metadata without visitor filters", as
       title: `${name} | AgentCoach`,
       description: `Illustrative sample, not a live agent. ${shortDescription}`,
       path: `/recipes?recipe=${slug}`,
+      image: `${publicSiteOrigin}/recipes/share-image/${slug}`,
+      imageAlt: `${name}: illustrative AgentCoach recipe sample`,
     })),
     ...["q=not-part-of-the-share", "recipe=unknown", `recipe=${agentRecipes[0].slug}&recipe=${agentRecipes[0].slug}`]
       .map((query) => ({
@@ -49,10 +52,12 @@ test("recipe share crawlers receive sample metadata without visitor filters", as
         title: "Agent Recipes | AgentCoach",
         description: "Browse reusable expert workflows that combine instruction, workflow, evaluation, risk boundaries, and deployment logic.",
         path: "/recipes",
+        image: undefined,
+        imageAlt: undefined,
       })),
   ];
 
-  for (const { query, title, description, path } of scenarios) {
+  for (const { query, title, description, path, image, imageAlt } of scenarios) {
     const response = await request.get(`/recipes?${query}`, { headers: { "User-Agent": "Slackbot-LinkExpanding 1.0" } });
     expect(response.status()).toBe(200);
     const metadata = await page.evaluate((html) => {
@@ -62,11 +67,39 @@ test("recipe share crawlers receive sample metadata without visitor filters", as
         title: og("title"),
         description: og("description"),
         url: og("url"),
+        image: og("image"),
+        imageAlt: og("image:alt"),
+        twitterImage: head.querySelector('meta[name="twitter:image"]')?.getAttribute("content"),
+        twitterCard: head.querySelector('meta[name="twitter:card"]')?.getAttribute("content"),
         canonical: head.querySelector('link[rel="canonical"]')?.getAttribute("href"),
       };
     }, await response.text());
-    expect(metadata, query).toEqual({
+    expect(metadata, query).toMatchObject({
       title, description, url: new URL(path, publicSiteOrigin).href, canonical: `${publicSiteOrigin}/recipes`,
+      image, imageAlt, twitterImage: image,
     });
+    if (image) expect(metadata.twitterCard).toBe("summary_large_image");
   }
+});
+
+test("all six public share images are distinct, decodable PNGs", async ({ page, request }) => {
+  const hashes = new Set<string>();
+  for (const { slug } of agentRecipes) {
+    const response = await request.get(`/recipes/share-image/${slug}`);
+    expect(response.status()).toBe(200);
+    expect(response.headers()["content-type"]).toContain("image/png");
+    expect(response.headers()["set-cookie"]).toBeUndefined();
+    const body = await response.body();
+    expect(body.length).toBeLessThan(200_000);
+    hashes.add(createHash("sha256").update(body).digest("hex"));
+    const size = await page.evaluate(async (base64) => {
+      const image = new Image();
+      image.src = `data:image/png;base64,${base64}`;
+      await image.decode();
+      return [image.naturalWidth, image.naturalHeight];
+    }, body.toString("base64"));
+    expect(size, slug).toEqual([1200, 630]);
+  }
+  expect(hashes.size).toBe(agentRecipes.length);
+  expect((await request.get("/recipes/share-image/unknown-sample")).status()).toBe(404);
 });

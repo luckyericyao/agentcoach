@@ -6,6 +6,7 @@ import { TopNavigation } from "@/components/landing/TopNavigation";
 import { industries } from "@/lib/industries-data";
 import { agentRecipes, getRecipeBySlug } from "@/lib/recipes-data";
 import { recipePreviewPath } from "@/lib/recipe-sample";
+import { recipeShareImagePath, recipeShareImageSize } from "@/lib/recipe-share-image";
 
 const catalogMetadata = {
   title: "Agent Recipes | AgentCoach",
@@ -17,16 +18,25 @@ const catalogMetadata = {
 export async function generateMetadata({ searchParams }: PageProps<"/recipes">): Promise<Metadata> {
   const { recipe: slug } = await searchParams;
   const recipe = typeof slug === "string" ? getRecipeBySlug(slug) : undefined;
+  const title = recipe ? `${recipe.name} | AgentCoach` : catalogMetadata.title;
+  const description = recipe ? `Illustrative sample, not a live agent. ${recipe.shortDescription}` : catalogMetadata.description;
+  const image = recipe ? {
+    url: recipeShareImagePath(recipe.slug),
+    alt: `${recipe.name}: illustrative AgentCoach recipe sample`,
+    ...recipeShareImageSize,
+  } : undefined;
 
   return {
     ...catalogMetadata,
     openGraph: {
       type: "website",
       siteName: "AgentCoach",
-      title: recipe ? `${recipe.name} | AgentCoach` : catalogMetadata.title,
-      description: recipe ? `Illustrative sample, not a live agent. ${recipe.shortDescription}` : catalogMetadata.description,
+      title,
+      description,
       url: recipe ? recipePreviewPath(recipe.slug) : "/recipes",
+      images: image ? [image] : undefined,
     },
+    twitter: image ? { card: "summary_large_image", title, description, images: [image] } : undefined,
   };
 }
 
