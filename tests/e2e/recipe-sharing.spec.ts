@@ -5,7 +5,7 @@ const name = "Biotech BD Meeting Prep Agent";
 const slug = "biotech-bd-meeting-prep-agent";
 
 test("known permalink survives refresh and closing preserves filters with a focus destination", async ({ page }) => {
-  await page.goto(`/recipes?industry=biotech-pharma&recipe=${slug}`);
+  await page.goto(`/recipes?industry=biotech-pharma&recipe=${slug}#recipe-preview`);
   const dialog = page.getByRole("dialog", { name, exact: true });
   await expect(dialog).toBeVisible();
   await expect(dialog.locator("[data-recipe-module]")).toHaveCount(8);
@@ -15,7 +15,12 @@ test("known permalink survives refresh and closing preserves filters with a focu
   await expect(page).toHaveURL(/\/recipes\?industry=biotech-pharma$/);
   await expect(dialog).toBeHidden();
   await expect(page.getByLabel("Industry", { exact: true })).toHaveValue("biotech-pharma");
-  await expect(page.getByLabel("Search recipes", { exact: true })).toBeFocused();
+  const search = page.getByLabel("Search recipes", { exact: true });
+  await expect(search).toBeFocused();
+  expect(await search.evaluate((input) => {
+    const bounds = input.getBoundingClientRect();
+    return bounds.top >= 80 && bounds.bottom <= window.innerHeight;
+  })).toBe(true);
 });
 
 test("preview history opens and closes without losing catalog state or keyboard focus", async ({ page }) => {
