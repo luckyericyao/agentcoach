@@ -5,11 +5,19 @@ import { ArrowDown, ArrowUpRight, RotateCcw, Search } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { recipeSummaryModules, type AgentRecipe } from "@/lib/recipes-data";
 import type { Industry } from "@/lib/industries-data";
-import { defaultRecipeFilters, filterRecipes, readRecipeFilters, readRecipeSelection, recipeFiltersQuery, type RecipeFilters } from "@/lib/recipe-catalog";
+import { defaultRecipeFilters, filterRecipes, readRecipeFilters, readRecipeSelection, recipeFilterRecoveries, recipeFiltersQuery, type RecipeFilters } from "@/lib/recipe-catalog";
 import { recipePreviewPath } from "@/lib/recipe-sample";
 import { RecipePreview } from "./RecipePreview";
 
 type RecipeCatalogProps = { industries: Industry[]; recipes: AgentRecipe[] };
+
+const recoveryLabels: Record<keyof RecipeFilters, string> = {
+  query: "Clear search",
+  industry: "Any industry",
+  maturity: "Any maturity",
+  featured: "Include non-featured samples",
+  verified: "Include unverified samples",
+};
 
 export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
   const searchParams = useSearchParams();
@@ -166,10 +174,18 @@ export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
           <p className="mt-3 max-w-2xl text-base leading-7 text-steel">
             {filters.verified ? "The current catalog contains unverified, illustrative samples." : "There are no samples for this combination of search and filters."}
           </p>
-          <button type="submit" form={resetForm}
-            className="mt-6 inline-flex min-h-11 items-center gap-2 rounded border border-white/20 px-4 text-sm font-semibold text-platinum transition hover:bg-white/10">
-            <RotateCcw aria-hidden="true" className="size-4" />Clear all filters
-          </button>
+          <div className="mt-6 flex flex-wrap gap-3">
+            {recipeFilterRecoveries(recipes, filters).map(({ key, query, count }) => (
+              <a key={key} href={`/recipes?${query}#recipe-results`}
+                className="inline-flex min-h-11 items-center gap-2 rounded border border-ion/40 px-4 text-sm font-semibold text-platinum transition hover:bg-white/10">
+                {recoveryLabels[key]} <span className="text-steel">({count})</span>
+              </a>
+            ))}
+            <button type="submit" form={resetForm}
+              className="inline-flex min-h-11 items-center gap-2 rounded border border-white/20 px-4 text-sm font-semibold text-platinum transition hover:bg-white/10">
+              <RotateCcw aria-hidden="true" className="size-4" />Clear all filters
+            </button>
+          </div>
         </div>
       )}
     </div>
