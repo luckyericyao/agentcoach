@@ -293,8 +293,10 @@ Run the full local verification sequence with:
 PLAYWRIGHT_BROWSERS_PATH=0 npm run verify
 ```
 
-It runs lint, unit/integration tests, a full dependency audit, production-browser
-journeys in both modes, and a normal production build with the client-bundle guard. The fixture
+It runs lint, unit/integration tests, production-browser journeys in both modes,
+a normal production build with the client-bundle guard, and then a full dependency
+audit. Audit failures still fail verification, but registry outages do not prevent
+the local checks from running. The fixture
 app uses a separate `.next-e2e` build directory, leaving ordinary `.next` client
 assets separate. The final build also refreshes Next's generated type references,
 even when a browser assertion fails. It does not push or deploy anything.

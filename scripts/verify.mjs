@@ -9,7 +9,7 @@ function run(args, env = process.env) {
 }
 
 let passed = true;
-for (const args of [["run", "lint"], ["test"], ["audit"]]) {
+for (const args of [["run", "lint"], ["test"]]) {
   if (!run(args)) { passed = false; break; }
 }
 if (passed) {
@@ -24,7 +24,9 @@ if (passed) {
   finally {
     const built = run(["run", "build"]);
     const checked = built && run(["run", "check:client-bundle", "--", "--normal-build"]);
-    passed = passed && checked;
+    // Registry failures must not prevent us from collecting local check results.
+    const audited = run(["audit"]);
+    passed = passed && checked && audited;
   }
 }
 process.exitCode = passed ? 0 : 1;
