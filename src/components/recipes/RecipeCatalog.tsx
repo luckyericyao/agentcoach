@@ -7,6 +7,7 @@ import { recipeSummaryModules, type AgentRecipe } from "@/lib/recipes-data";
 import type { Industry } from "@/lib/industries-data";
 import { defaultRecipeFilters, filterRecipes, readRecipeFilters, readRecipeSelection, recipeFilterRecoveries, recipeFiltersQuery, type RecipeFilters } from "@/lib/recipe-catalog";
 import { recipePreviewPath } from "@/lib/recipe-sample";
+import { RecipeDownloadLink } from "./RecipeDownloadLink";
 import { RecipePreview } from "./RecipePreview";
 
 type RecipeCatalogProps = { industries: Industry[]; recipes: AgentRecipe[] };
@@ -152,7 +153,7 @@ export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
                 <p className="text-sm font-semibold text-platinum">Use case</p>
                 <p className="mt-2 text-sm leading-6 text-steel">{recipe.useCase}</p>
               </div>
-              <div className="mt-auto pt-7">
+              <div className="mt-auto flex flex-wrap items-center gap-2 pt-7">
                 <a href={`${recipePreviewPath(recipe.slug, filterQuery)}#recipe-preview`} aria-label={`Preview ${recipe.name}`}
                   onClick={(event) => {
                     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -162,6 +163,7 @@ export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
                   className="inline-flex min-h-11 items-center justify-center gap-2 rounded border border-white/20 bg-white/[0.05] px-4 text-sm font-semibold text-platinum transition hover:border-ion/50 hover:bg-white/10">
                   Preview recipe<ArrowUpRight aria-hidden="true" className="size-4" />
                 </a>
+                <RecipeDownloadLink recipe={recipe} includeRecipeName />
               </div>
             </article>
           ))}

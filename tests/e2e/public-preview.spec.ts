@@ -266,6 +266,22 @@ test.describe("public first render without JavaScript", () => {
     expect(new URL(page.url()).searchParams.get("q")).toBe(query);
   });
 
+  test("catalog cards download the matching v1 sample without leaving filtered results", async ({ page }) => {
+    const match = agentRecipes.find(({ slug }) => slug === "finance-earnings-call-analyst")!;
+    await page.goto("/recipes?q=earnings&featured=1");
+    const originalUrl = page.url();
+    const link = page.getByRole("link", { name: `Download sample JSON for ${match.name}`, exact: true });
+    await expect(link).toHaveAttribute("href", `/recipes/samples/${match.slug}`);
+    const downloaded = page.waitForEvent("download");
+    await link.press("Enter");
+    const download = await downloaded;
+    expect(download.suggestedFilename()).toBe(recipeSampleFilename(match));
+    expect(JSON.parse(await readFile((await download.path())!, "utf8"))).toEqual(createRecipeSample(match));
+    await expect(page).toHaveURL(originalUrl);
+    await expect(page.getByRole("status")).toHaveText("1 sample recipe");
+    await expect(page.locator("[data-recipe-module]")).toHaveCount(0);
+  });
+
   test("native recipe links open a readable sample and return to the filtered results", async ({ page }) => {
     const name = "Biotech BD Meeting Prep Agent";
     const previewLink = page.getByRole("link", { name: `Preview ${name}`, exact: true });
