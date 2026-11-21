@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { getRecipeWorkedExample } from "@/lib/recipe-examples";
+import { createRecipeMarkdown } from "@/lib/recipe-markdown";
 import { agentRecipes } from "@/lib/recipes-data";
-import { createRecipeSample, recipePreviewPath, recipeSampleFilename } from "@/lib/recipe-sample";
+import { createRecipeSample, recipePreviewPath, recipeSampleFilename, recipeSamplePath } from "@/lib/recipe-sample";
 
 describe("portable public sample contract", () => {
   it.each(agentRecipes)("exports all eight modules and boundaries for $name", (recipe) => {
@@ -31,6 +32,26 @@ describe("portable public sample contract", () => {
       expect(sample).not.toContain(marker);
     }
     expect(JSON.parse(sample).review.status).toBe("unverified");
+  });
+
+  it.each(agentRecipes)("creates a readable review brief with the same modules for $name", (recipe) => {
+    const sample = createRecipeSample(recipe);
+    const { modules } = sample;
+    const brief = createRecipeMarkdown(recipe);
+    expect(brief.split("\n").filter((line) => line.startsWith("## "))).toEqual([
+      "## System instruction", "## Workflow", "## Input template", "## Output format",
+      "## Required tools", "## Evaluation criteria", "## Risk boundary", "## Deployment option",
+    ]);
+    for (const line of [
+      `# ${recipe.name}`, `> **Unverified sample.** ${sample.review.note}`, sample.useCase,
+      `https://agentcoach-three.vercel.app${sample.sourcePath}`,
+      modules.systemInstruction, ...modules.workflow.map((step, index) => `${index + 1}. ${step}`),
+      ...modules.inputTemplate, modules.outputFormat.contract, ...modules.outputFormat.examples,
+      ...modules.requiredTools, ...modules.evaluationCriteria, modules.riskBoundary,
+      `**Proposed only.** ${modules.deploymentOption.description}`,
+    ]) expect(brief).toContain(line);
+    expect(recipeSamplePath(recipe.slug, "markdown")).toBe(`/recipes/samples/${recipe.slug}/brief`);
+    expect(recipeSampleFilename(recipe, "markdown")).toBe(`agentcoach-${recipe.slug}-sample-v1.md`);
   });
 
   it("does not alias mutable catalog arrays or embed additional URL parameters", () => {

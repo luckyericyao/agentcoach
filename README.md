@@ -69,6 +69,11 @@ runtime import format. The version denotes the sample schema, not an expert
 certification or a content release. No account/form state or credentials enter
 the export. No creator identity, license, or deployment support is invented.
 
+The preview also links to a human-readable Markdown review brief at
+`/recipes/samples/<recipe-slug>/brief`. It contains the same eight modules and
+human-review boundaries, plus a link back to the public sample. Both formats
+use native downloads with or without JavaScript.
+
 The Biotech BD Meeting Prep sample includes an optional `workedExample` in the
 same v1 package. It matches the preview's worked example: synthetic inputs and
 dated source excerpts, a draft brief separating evidence from hypotheses and
@@ -443,9 +448,10 @@ npm run check:release -- https://agentcoach-three.vercel.app "$(git rev-parse or
 
 The check makes only GET requests, follows no redirects, and fails unless both
 pages return HTTP 200 with the expected full SHA. Add `--catalog` after the SHA
-to also check every public JSON attachment and share image for the same revision
-and expected response headers. The full browser suite separately checks JSON
-content and PNG decoding. A missing platform revision is reported as unavailable.
+to also check every public JSON attachment, Markdown brief, and share image for
+the same revision and expected response headers. The full browser suite separately
+checks attachment content and PNG decoding. A missing platform revision is reported
+as unavailable.
 This check requires no hosting changes and does not test account access or email delivery.
 
 For an owner-approved early access pilot on Vercel:

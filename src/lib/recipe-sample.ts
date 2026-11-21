@@ -7,12 +7,14 @@ export function recipePreviewPath(slug: string, filterQuery = "") {
   return `/recipes?${params}`;
 }
 
-export function recipeSampleFilename(recipe: AgentRecipe) {
-  return `agentcoach-${recipe.slug}-sample-v1.json`;
+export type RecipeSampleFormat = "json" | "markdown";
+
+export function recipeSampleFilename(recipe: AgentRecipe, format: RecipeSampleFormat = "json") {
+  return `agentcoach-${recipe.slug}-sample-v1.${format === "markdown" ? "md" : "json"}`;
 }
 
-export function recipeSamplePath(slug: string) {
-  return `/recipes/samples/${encodeURIComponent(slug)}`;
+export function recipeSamplePath(slug: string, format: RecipeSampleFormat = "json") {
+  return `/recipes/samples/${encodeURIComponent(slug)}${format === "markdown" ? "/brief" : ""}`;
 }
 
 export function createRecipeSample(recipe: AgentRecipe) {

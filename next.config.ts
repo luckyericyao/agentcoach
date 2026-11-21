@@ -22,7 +22,7 @@ const nextConfig: NextConfig = {
         ],
       })),
       ...(revision && /^[a-f0-9]{40}$/.test(revision) ? [
-        "/", "/recipes", "/recipes/samples/:slug", "/recipes/share-image/:slug",
+        "/", "/recipes", "/recipes/samples/:slug", "/recipes/samples/:slug/brief", "/recipes/share-image/:slug",
       ].map((source) => ({
         source,
         headers: [{ key: "X-AgentCoach-Revision", value: revision }],
