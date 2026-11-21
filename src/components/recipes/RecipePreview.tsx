@@ -195,15 +195,13 @@ function RecipeSampleActions({ recipe, inline }: { recipe: AgentRecipe; inline: 
 
   return (
     <div className="mt-6">
-      <div className="flex flex-wrap items-center gap-3">
-        <div role="group" aria-label="Recipe sharing and sample package" className="flex gap-2">
-          {!inline ? <button type="button" onClick={copyLink} aria-label="Copy recipe link" title="Copy recipe link"
-            className="grid size-11 place-items-center rounded border border-white/20 text-platinum transition hover:bg-white/10">
-            <Copy aria-hidden="true" className="size-4" />
-          </button> : null}
-          <RecipeDownloadLink recipe={recipe} />
-        </div>
-        <p className="text-xs leading-5 text-steel">Sample package / JSON / v1</p>
+      <div role="group" aria-label="Recipe sharing and downloads" className="flex flex-wrap items-center gap-2">
+        {!inline ? <button type="button" onClick={copyLink} aria-label="Copy recipe link" title="Copy recipe link"
+          className="grid size-11 place-items-center rounded border border-white/20 text-platinum transition hover:bg-white/10">
+          <Copy aria-hidden="true" className="size-4" />
+        </button> : null}
+        <RecipeDownloadLink recipe={recipe} />
+        <RecipeDownloadLink recipe={recipe} format="markdown" />
       </div>
       {!inline ? <p role="status" aria-live="polite" className="mt-2 min-h-5 text-xs leading-5 text-ion">
         {copied ? "Recipe link copied." : manualLink ? "Clipboard unavailable. Recipe link:" : ""}

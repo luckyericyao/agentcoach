@@ -1,7 +1,8 @@
 import { readFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
-import { expect, test, type Locator } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import type { RecipeWorkedExample } from "../../src/lib/recipe-examples";
+import { createRecipeMarkdown } from "../../src/lib/recipe-markdown";
 import { agentRecipes } from "../../src/lib/recipes-data";
 import { createRecipeSample, recipeSampleFilename } from "../../src/lib/recipe-sample";
 import { fixtureReleaseRevision } from "../fixtures/release-revision";
@@ -17,7 +18,7 @@ test("the release check requires the exact deployed revision", async ({ request,
   expect(matching.stdout).toContain(`PASS /recipes: HTTP 200, revision ${fixtureReleaseRevision}.`);
   const fullCatalog = check(fixtureReleaseRevision, "--catalog");
   expect(fullCatalog.status, fullCatalog.stderr).toBe(0);
-  expect(fullCatalog.stdout.split("\n").filter((line) => line.startsWith("PASS "))).toHaveLength(2 + 2 * agentRecipes.length);
+  expect(fullCatalog.stdout.split("\n").filter((line) => line.startsWith("PASS "))).toHaveLength(2 + 3 * agentRecipes.length);
   const mismatching = check("f".repeat(40));
   expect(mismatching.status).toBe(1);
   expect(mismatching.stderr).toContain("FAIL /recipes: HTTP 200");
@@ -38,6 +39,19 @@ test("public sample URLs return only the published JSON attachments", async ({ r
     expect(await response.json()).toEqual(createRecipeSample(recipe));
   }
   expect((await request.get("/recipes/samples/unknown-sample")).status()).toBe(404);
+});
+
+test("review briefs are public Markdown attachments that only contain catalog data", async ({ request }) => {
+  for (const recipe of agentRecipes) {
+    const response = await request.get(`/recipes/samples/${recipe.slug}/brief?q=not-part-of-the-export`);
+    expect(response.status()).toBe(200);
+    expect(response.headers()["content-type"]).toBe("text/markdown; charset=utf-8");
+    expect(response.headers()["content-disposition"]).toBe(`attachment; filename="${recipeSampleFilename(recipe, "markdown")}"`);
+    expect(response.headers()["x-robots-tag"]).toBe("noindex");
+    expect(response.headers()["set-cookie"]).toBeUndefined();
+    expect(await response.text()).toBe(createRecipeMarkdown(recipe));
+  }
+  expect((await request.get("/recipes/samples/unknown-sample/brief")).status()).toBe(404);
 });
 
 async function expectPainted(target: Locator) {
@@ -73,8 +87,23 @@ test("public preview exposes the catalog and no personal-data forms", async ({ p
   const download = page.waitForEvent("download");
   await dialog.getByRole("link", { name: "Download sample JSON" }).click();
   expect((await download).suggestedFilename()).toBe(`agentcoach-${recipe}-sample-v1.json`);
+  await expectReviewBriefDownload(dialog, page);
   await page.screenshot({ path: testInfo.outputPath("catalog-only.png") });
 });
+
+async function expectReviewBriefDownload(preview: Locator, page: Page) {
+  const originalUrl = page.url();
+  const briefLink = preview.getByRole("link", { name: "Download Markdown review brief" });
+  await expect(briefLink).toHaveAttribute("href", `/recipes/samples/${recipe}/brief`);
+  const downloaded = page.waitForEvent("download");
+  await briefLink.press("Enter");
+  const brief = await downloaded;
+  expect(brief.suggestedFilename()).toBe(`agentcoach-${recipe}-sample-v1.md`);
+  expect(await readFile((await brief.path())!, "utf8")).toBe(
+    createRecipeMarkdown(agentRecipes.find(({ slug }) => slug === recipe)!));
+  await expect(page).toHaveURL(originalUrl);
+  await expect(preview).toBeVisible();
+}
 
 test("production preview rejects intake and email credential work before reaching configured fixtures", async ({ request, baseURL }) => {
   const fixture = "http://127.0.0.1:4319";
@@ -304,6 +333,7 @@ test.describe("public first render without JavaScript", () => {
     const download = await downloaded;
     expect(download.suggestedFilename()).toBe(`agentcoach-${recipe}-sample-v1.json`);
     expect(Object.keys(JSON.parse(await readFile((await download.path())!, "utf8")).modules)).toHaveLength(8);
+    await expectReviewBriefDownload(preview, page);
 
     await preview.getByRole("link", { name: "Back to results" }).click();
     await expect(page).toHaveURL((url) => url.hash === "#recipe-results" && !url.searchParams.has("recipe"));

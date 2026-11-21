@@ -18,10 +18,15 @@ if (mode === "--catalog") {
   const { agentRecipes } = await import("../src/lib/recipes-data.ts");
   const { recipeShareImagePath } = await import("../src/lib/recipe-share-image.ts");
   for (const { slug } of agentRecipes) {
+    const samplePath = `/recipes/samples/${encodeURIComponent(slug)}`;
     targets.push({
-      path: `/recipes/samples/${encodeURIComponent(slug)}`,
+      path: samplePath,
       type: "application/json",
       disposition: `attachment; filename="agentcoach-${slug}-sample-v1.json"`,
+    }, {
+      path: `${samplePath}/brief`,
+      type: "text/markdown",
+      disposition: `attachment; filename="agentcoach-${slug}-sample-v1.md"`,
     }, { path: recipeShareImagePath(slug), type: "image/png" });
   }
 }

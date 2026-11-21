@@ -30,10 +30,12 @@ test("320px reflow preserves page text, recipe controls, and the request handoff
   expect(await dialog.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
   for (const control of [dialog.getByRole("button", { name: "Close recipe preview", exact: true }),
     dialog.getByRole("button", { name: "Copy recipe link", exact: true }),
-    dialog.getByRole("link", { name: "Download sample JSON", exact: true })]) {
+    dialog.getByRole("link", { name: "Download sample JSON", exact: true }),
+    dialog.getByRole("link", { name: "Download Markdown review brief", exact: true })]) {
     const bounds = await control.boundingBox();
     expect(bounds?.width).toBeGreaterThanOrEqual(44);
     expect(bounds?.height).toBeGreaterThanOrEqual(44);
+    expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(320);
   }
   await page.screenshot({ path: testInfo.outputPath("320-recipe-preview.png") });
   await dialog.getByRole("link", { name: "Request this workflow", exact: true }).click();
