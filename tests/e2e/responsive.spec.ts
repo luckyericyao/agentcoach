@@ -17,6 +17,13 @@ test("320px reflow preserves page text, recipe controls, and the request handoff
     }
   }
 
+  await page.goto("/recipes?q=earnings");
+  const cardDownload = page.getByRole("link", { name: "Download sample JSON for Finance Earnings Call Analyst", exact: true });
+  const bounds = await cardDownload.boundingBox();
+  expect(bounds?.width).toBeGreaterThanOrEqual(44);
+  expect(bounds?.height).toBeGreaterThanOrEqual(44);
+  expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(320);
+
   await page.goto("/recipes?recipe=biotech-bd-meeting-prep-agent");
   const dialog = page.getByRole("dialog", { name: "Biotech BD Meeting Prep Agent", exact: true });
   await expect(dialog).toBeVisible();

@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Copy, Download, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Copy, X } from "lucide-react";
 import Link from "next/link";
 import { useEarlyAccessMode } from "@/components/landing/EarlyAccessMode";
 import { getRecipeWorkedExample } from "@/lib/recipe-examples";
 import type { AgentRecipe } from "@/lib/recipes-data";
-import { recipePreviewPath, recipeSampleFilename, recipeSamplePath } from "@/lib/recipe-sample";
+import { recipePreviewPath } from "@/lib/recipe-sample";
 import { useHydrated } from "@/lib/use-hydrated";
 import { RecipeWorkedExampleSection } from "./RecipeWorkedExample";
+import { RecipeDownloadLink } from "./RecipeDownloadLink";
 
 type RecipePreviewProps = {
   recipe: AgentRecipe | null;
@@ -200,11 +201,7 @@ function RecipeSampleActions({ recipe, inline }: { recipe: AgentRecipe; inline: 
             className="grid size-11 place-items-center rounded border border-white/20 text-platinum transition hover:bg-white/10">
             <Copy aria-hidden="true" className="size-4" />
           </button> : null}
-          <a href={recipeSamplePath(recipe.slug)}
-            download={recipeSampleFilename(recipe)} aria-label="Download sample JSON" title="Download sample JSON"
-            className="grid size-11 place-items-center rounded border border-white/20 text-platinum transition hover:bg-white/10">
-            <Download aria-hidden="true" className="size-4" />
-          </a>
+          <RecipeDownloadLink recipe={recipe} />
         </div>
         <p className="text-xs leading-5 text-steel">Sample package / JSON / v1</p>
       </div>
