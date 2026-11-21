@@ -1,3 +1,5 @@
+import { setTimeout as delay } from "node:timers/promises";
+
 const [originArg, expected, mode, ...extra] = process.argv.slice(2);
 
 function readOrigin(value) {
@@ -31,20 +33,30 @@ if (mode === "--catalog") {
   }
 }
 
-for (const { path, type, disposition } of targets) {
-  let response;
+async function requestHeaders(path) {
+  const request = (timeout) => fetch(new URL(path, origin), {
+    redirect: "manual",
+    signal: AbortSignal.timeout(timeout),
+  });
   try {
-    response = await fetch(new URL(path, origin), {
-      redirect: "manual",
-      signal: AbortSignal.timeout(12_000),
-    });
-    await response.body?.cancel();
+    return await request(8_000);
   } catch {
-    console.error(`FAIL ${path}: request failed.`);
+    console.warn(`WARN ${path}: no HTTP response; retrying once.`);
+    await delay(250);
+    return request(4_000).catch(() => null);
+  }
+}
+
+for (const { path, type, disposition } of targets) {
+  const response = await requestHeaders(path);
+  if (!response) {
+    console.error(`FAIL ${path}: no HTTP response after two attempts.`);
     process.exitCode = 1;
     continue;
   }
 
+  // This command verifies headers, not the body; the browser tests check the files.
+  await response.body?.cancel().catch(() => {});
   const actual = response.headers.get("x-agentcoach-revision");
   if (response.status !== 200 || actual !== expected) {
     const reported = actual && /^[a-f0-9]{40}$/.test(actual) ? actual : "unavailable";
