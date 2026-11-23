@@ -14,7 +14,8 @@ describe("sample recipe contract", () => {
       expect(recipe.instruction.length).toBeGreaterThan(80);
       expect(recipe.workflowSteps.length).toBeGreaterThanOrEqual(5);
       expect(recipe.outputFormat.length).toBeGreaterThan(80);
-      expect(recipe.inputExamples.length).toBeGreaterThan(0);
+      expect(recipe.inputExamples[0]?.trim()).toBeTruthy();
+      expect(recipe.outputExamples[0]?.trim()).toBeTruthy();
       expect(recipe.requiredTools.length).toBeGreaterThan(0);
       expect(recipe.evaluationCriteria.length).toBeGreaterThan(0);
       expect(recipe.riskBoundary).not.toBe("");

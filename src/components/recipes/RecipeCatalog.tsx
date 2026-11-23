@@ -137,22 +137,25 @@ export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
       {filteredRecipes.length ? (
         <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {filteredRecipes.map((recipe) => (
-            <article key={recipe.slug} className="flex min-h-[28rem] flex-col rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-inner-line">
+            <article key={recipe.slug} aria-labelledby={`catalog-recipe-${recipe.slug}`}
+              className="flex min-h-[28rem] flex-col rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-inner-line">
               <div className="flex items-start justify-between gap-4">
                 <p className="text-sm font-semibold text-ion">{recipe.domain}</p>
                 <span className="shrink-0 rounded border border-white/10 bg-black/25 px-2.5 py-1 text-xs font-medium text-steel">{recipe.maturityLevel}</span>
               </div>
-              <h2 className="mt-6 text-2xl font-semibold leading-tight text-platinum">{recipe.name}</h2>
+              <h2 id={`catalog-recipe-${recipe.slug}`} className="mt-6 text-2xl font-semibold leading-tight text-platinum">{recipe.name}</h2>
               <p className="mt-4 text-sm leading-6 text-steel">{recipe.shortDescription}</p>
               <div className="mt-6 flex flex-wrap gap-2">
                 {recipeSummaryModules.map((module) => (
                   <span key={module} className="rounded border border-white/10 bg-black/25 px-2.5 py-1 text-xs font-medium text-platinum">{module}</span>
                 ))}
               </div>
-              <div className="mt-6 border-t border-white/10 pt-5">
-                <p className="text-sm font-semibold text-platinum">Use case</p>
-                <p className="mt-2 text-sm leading-6 text-steel">{recipe.useCase}</p>
-              </div>
+              <dl className="mt-6 grid grid-cols-[3.5rem_minmax(0,1fr)] items-baseline gap-x-3 gap-y-2 border-t border-white/10 pt-5 text-sm leading-6">
+                <dt className="font-medium text-platinum">Input</dt>
+                <dd className="text-steel [overflow-wrap:anywhere]">{recipe.inputExamples[0]}</dd>
+                <dt className="font-medium text-platinum">Output</dt>
+                <dd className="text-steel [overflow-wrap:anywhere]">{recipe.outputExamples[0]}</dd>
+              </dl>
               <div className="mt-auto flex flex-wrap items-center gap-2 pt-7">
                 <a href={`${recipePreviewPath(recipe.slug, filterQuery)}#recipe-preview`} aria-label={`Preview ${recipe.name}`}
                   onClick={(event) => {

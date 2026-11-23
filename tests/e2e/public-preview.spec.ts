@@ -299,6 +299,37 @@ test.describe("public first render without JavaScript", () => {
     expect(new URL(page.url()).searchParams.get("q")).toBe(query);
   });
 
+  test("catalog cards expose example inputs and outputs without JavaScript at every layout width", async ({ page }, testInfo) => {
+    for (const [width, columns] of [[320, 1], [900, 2], [1440, 3]]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto("/recipes");
+      const cards = page.getByRole("article");
+      await expect(cards).toHaveCount(agentRecipes.length);
+      expect(await cards.first().evaluate((card) =>
+        getComputedStyle(card.parentElement!).gridTemplateColumns.split(" ").length)).toBe(columns);
+
+      for (const recipe of agentRecipes) {
+        const card = page.getByRole("article", { name: recipe.name, exact: true });
+        await expect(card.locator("dt")).toHaveText(["Input", "Output"]);
+        await expect(card.locator("dd")).toHaveText([recipe.inputExamples[0], recipe.outputExamples[0]]);
+        const fits = await card.evaluate((element) => {
+          const controls = Array.from(element.querySelectorAll("a"), (link) => link.getBoundingClientRect());
+          const [preview, download] = controls;
+          const clip = element.getBoundingClientRect();
+          return element.scrollWidth <= element.clientWidth
+            && Array.from(element.querySelectorAll("h2, dt, dd"), (node) =>
+              node.scrollWidth <= node.clientWidth + 1).every(Boolean)
+            && controls.every((control) => control.width >= 44 && control.height >= 44
+              && control.left >= clip.left && control.right <= clip.right)
+            && (preview.right <= download.left || preview.bottom <= download.top);
+        });
+        expect(fits, `${recipe.name} at ${width}px`).toBe(true);
+      }
+      if (width === 320) await cards.first().screenshot({ path: testInfo.outputPath("catalog-card-320.png") });
+      if (width === 1440) await page.screenshot({ path: testInfo.outputPath("catalog-1440.png"), fullPage: true });
+    }
+  });
+
   test("catalog cards download the matching v1 sample without leaving filtered results", async ({ page }) => {
     const match = agentRecipes.find(({ slug }) => slug === "finance-earnings-call-analyst")!;
     await page.goto("/recipes?q=earnings&featured=1");
@@ -318,7 +349,7 @@ test.describe("public first render without JavaScript", () => {
   test("native recipe links open a readable sample and return to the filtered results", async ({ page }) => {
     const name = "Biotech BD Meeting Prep Agent";
     const previewLink = page.getByRole("link", { name: `Preview ${name}`, exact: true });
-    const preview = page.getByRole("article", { name, exact: true });
+    const preview = page.getByRole("article", { name, exact: true }).and(page.locator("#recipe-preview"));
 
     await page.goto("/recipes?q=meeting&industry=biotech-pharma&featured=1");
     await previewLink.press("Enter");
