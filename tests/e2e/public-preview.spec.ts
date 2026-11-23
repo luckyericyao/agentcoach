@@ -307,6 +307,7 @@ test.describe("public first render without JavaScript", () => {
       await expect(cards).toHaveCount(agentRecipes.length);
       expect(await cards.first().evaluate((card) =>
         getComputedStyle(card.parentElement!).gridTemplateColumns.split(" ").length)).toBe(columns);
+      if (width === 1440) await expect(cards.first().getByRole("heading")).toBeInViewport({ ratio: 1 });
 
       for (const recipe of agentRecipes) {
         const card = page.getByRole("article", { name: recipe.name, exact: true });
@@ -328,6 +329,11 @@ test.describe("public first render without JavaScript", () => {
       if (width === 320) await cards.first().screenshot({ path: testInfo.outputPath("catalog-card-320.png") });
       if (width === 1440) await page.screenshot({ path: testInfo.outputPath("catalog-1440.png"), fullPage: true });
     }
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/recipes");
+    await expect(page.getByRole("status")).toBeInViewport({ ratio: 1 });
+    await page.screenshot({ path: testInfo.outputPath("catalog-390.png") });
   });
 
   test("catalog cards download the matching v1 sample without leaving filtered results", async ({ page }) => {
