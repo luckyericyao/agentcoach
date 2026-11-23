@@ -1,5 +1,13 @@
 type FindingStatus = "documented" | "hypothesis" | "unknown";
 
+export const recipeFindingLabels = {
+  documented: "Documented in sample",
+  hypothesis: "Working hypothesis",
+  unknown: "Open question",
+} as const satisfies Record<FindingStatus, string>;
+
+export const recipeExampleDisclosure = "Illustrative scenario. No real company, live run, or expert verification.";
+
 export type RecipeWorkedExample = Readonly<{
   kind: "synthetic";
   title: string;

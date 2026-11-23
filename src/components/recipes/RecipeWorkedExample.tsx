@@ -1,11 +1,5 @@
 import { ChevronDown } from "lucide-react";
-import type { RecipeWorkedExample } from "@/lib/recipe-examples";
-
-const findingLabels = {
-  documented: "Documented in sample",
-  hypothesis: "Working hypothesis",
-  unknown: "Open question",
-} as const;
+import { recipeExampleDisclosure, recipeFindingLabels, type RecipeWorkedExample } from "@/lib/recipe-examples";
 
 export function RecipeWorkedExampleSection({ example }: { example: RecipeWorkedExample }) {
   return (
@@ -20,7 +14,7 @@ export function RecipeWorkedExampleSection({ example }: { example: RecipeWorkedE
       <div className="space-y-7 border-t border-white/10 py-6 text-sm leading-7 text-steel">
         <div>
           <h3 className="text-lg font-semibold text-platinum">{example.title}</h3>
-          <p className="mt-2">Illustrative scenario. No real company, live run, or expert verification.</p>
+          <p className="mt-2">{recipeExampleDisclosure}</p>
         </div>
         <section>
           <h4 className="font-semibold text-platinum">Meeting objective</h4>
@@ -48,7 +42,7 @@ export function RecipeWorkedExampleSection({ example }: { example: RecipeWorkedE
             {example.output.findings.map((finding) => (
               <li key={finding.text} className="py-3">
                 <p className="font-medium text-platinum">
-                  <span>{findingLabels[finding.status]}</span>
+                  <span>{recipeFindingLabels[finding.status]}</span>
                   {finding.sourceIds.length ? <span className="ml-3 text-ion">{finding.sourceIds.join(", ")}</span> : null}
                 </p>
                 <p className="mt-1">{finding.text}</p>

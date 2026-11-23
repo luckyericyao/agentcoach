@@ -74,11 +74,11 @@ The preview also links to a human-readable Markdown review brief at
 human-review boundaries, plus a link back to the public sample. Both formats
 use native downloads with or without JavaScript.
 
-The Biotech BD Meeting Prep sample includes an optional `workedExample` in the
-same v1 package. It matches the preview's worked example: synthetic inputs and
-dated source excerpts, a draft brief separating evidence from hypotheses and
-open questions, and a review checklist. It is hand-authored illustration, not
-a real company case, completed agent run, or professional verification.
+The Biotech BD Meeting Prep sample includes the same worked example in the
+preview, Markdown brief, and JSON v1 package (as `workedExample`). It contains
+synthetic inputs and dated source excerpts, a draft brief separating documented
+findings from hypotheses and open questions, and a review checklist. It is
+hand-authored illustration, not a real case, agent run, or professional verification.
 
 Catalog filters are stored in the URL: `q`, `industry`, `maturity`, `featured=1`,
 and `verified=1`. They survive refresh and browser back/forward navigation; the
