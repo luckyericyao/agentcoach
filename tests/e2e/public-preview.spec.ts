@@ -99,8 +99,12 @@ async function expectReviewBriefDownload(preview: Locator, page: Page) {
   await briefLink.press("Enter");
   const brief = await downloaded;
   expect(brief.suggestedFilename()).toBe(`agentcoach-${recipe}-sample-v1.md`);
-  expect(await readFile((await brief.path())!, "utf8")).toBe(
-    createRecipeMarkdown(agentRecipes.find(({ slug }) => slug === recipe)!));
+  const markdown = await readFile((await brief.path())!, "utf8");
+  expect(markdown).toContain("## Worked example (synthetic data)");
+  expect(markdown).toContain("### Partnering meeting brief");
+  expect(markdown).toContain("**Working hypothesis (S1, S2):**");
+  expect(markdown).toContain("**Open question:**");
+  expect(markdown).toBe(createRecipeMarkdown(agentRecipes.find(({ slug }) => slug === recipe)!));
   await expect(page).toHaveURL(originalUrl);
   await expect(preview).toBeVisible();
 }

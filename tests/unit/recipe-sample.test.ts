@@ -36,11 +36,12 @@ describe("portable public sample contract", () => {
 
   it.each(agentRecipes)("creates a readable review brief with the same modules for $name", (recipe) => {
     const sample = createRecipeSample(recipe);
-    const { modules } = sample;
+    const { modules, workedExample } = sample;
     const brief = createRecipeMarkdown(recipe);
     expect(brief.split("\n").filter((line) => line.startsWith("## "))).toEqual([
       "## System instruction", "## Workflow", "## Input template", "## Output format",
       "## Required tools", "## Evaluation criteria", "## Risk boundary", "## Deployment option",
+      ...(workedExample ? ["## Worked example (synthetic data)"] : []),
     ]);
     for (const line of [
       `# ${recipe.name}`, `> **Unverified sample.** ${sample.review.note}`, sample.useCase,
@@ -88,5 +89,28 @@ describe("portable public sample contract", () => {
     for (const other of agentRecipes.filter(({ slug }) => slug !== recipe.slug)) {
       expect(createRecipeSample(other)).not.toHaveProperty("workedExample");
     }
+  });
+
+  it("preserves the worked example's claims, references and handoff in the offline brief", () => {
+    const recipe = agentRecipes.find(({ slug }) => slug === "biotech-bd-meeting-prep-agent")!;
+    const example = getRecipeWorkedExample(recipe.slug)!;
+    const [, appendix] = createRecipeMarkdown(recipe).split("\n## Worked example (synthetic data)\n");
+    expect(appendix).toContain("> Illustrative scenario. No real company, live run, or expert verification.");
+    expect(appendix).toContain(`### ${example.title}`);
+    expect(appendix).toContain(example.scenario);
+    for (const { id, label, date, excerpt } of example.sources) {
+      expect(appendix).toContain(`- **${id} | ${label} (${date})**: ${excerpt}`);
+    }
+    expect(appendix).toContain(example.output.summary);
+    const statusLabels = { documented: "Documented in sample", hypothesis: "Working hypothesis", unknown: "Open question" };
+    for (const { status, sourceIds, text } of example.output.findings) {
+      const references = sourceIds.length ? ` (${sourceIds.join(", ")})` : "";
+      expect(appendix).toContain(`- **${statusLabels[status]}${references}:** ${text}`);
+    }
+    for (const { minutes, topic } of example.output.agenda) {
+      expect(appendix).toContain(`- ${minutes} min: ${topic}`);
+    }
+    expect(appendix).toContain(example.output.handoff);
+    for (const item of example.reviewChecklist) expect(appendix).toContain(`- ${item}`);
   });
 });
