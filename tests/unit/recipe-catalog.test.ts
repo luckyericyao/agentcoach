@@ -39,6 +39,20 @@ describe("recipe search and URL filters", () => {
     expect(filterRecipes(agentRecipes, { ...defaultRecipeFilters, query: "EARNINGS transcript" })).toHaveLength(1);
     expect(filterRecipes(agentRecipes, { ...defaultRecipeFilters, query: "[.*]" })).toHaveLength(0);
   });
+  it("promotes complete title matches while preserving the order of other matches", () => {
+    const filters = { ...defaultRecipeFilters, query: "workflow" };
+    expect(filterRecipes(agentRecipes, filters).map(({ slug }) => slug)).toEqual([
+      "enterprise-workflow-architect-agent",
+      "finance-earnings-call-analyst",
+      "codex-full-stack-builder-agent",
+      "healthcare-evidence-review-agent",
+      "sales-outreach-agent",
+    ]);
+    expect(filterRecipes(agentRecipes, defaultRecipeFilters)).toEqual(agentRecipes);
+    expect(filterRecipes(agentRecipes, { ...filters, featured: true }).map(({ slug }) => slug)).toEqual([
+      "finance-earnings-call-analyst", "codex-full-stack-builder-agent", "healthcare-evidence-review-agent",
+    ]);
+  });
   it.each([
     ["earnings, call", "finance-earnings-call-analyst"],
     ["full\u2011stack", "codex-full-stack-builder-agent"],

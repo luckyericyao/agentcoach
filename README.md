@@ -84,6 +84,8 @@ Catalog filters are stored in the URL: `q`, `industry`, `maturity`, `featured=1`
 and `verified=1`. They survive refresh and browser back/forward navigation; the
 server also renders filtered results before JavaScript runs. Without JavaScript,
 Show results and Reset filters navigate using ordinary GET form submissions.
+Search puts titles containing every search term first; other matches keep the
+default catalog order. Filters apply before ordering.
 The verified filter
 currently has an explicit empty state because no sample is independently verified.
 

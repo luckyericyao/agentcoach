@@ -49,15 +49,28 @@ export function filterRecipes(recipes: AgentRecipe[], filters: RecipeFilters) {
   const query = filters.query.trim();
   const terms = normalizeRecipeSearch(query).split(/\s+/).filter(Boolean);
   if (query && !terms.length) return [];
-  return recipes.filter((recipe) => {
+  const scoped = recipes.filter((recipe) => {
     if (filters.industry !== "all" && recipe.industrySlug !== filters.industry) return false;
     if (filters.maturity !== "all" && recipe.maturityLevel.toLowerCase() !== filters.maturity) return false;
     if (filters.featured && !recipe.featured) return false;
     if (filters.verified && !recipe.verified) return false;
-    const searchable = normalizeRecipeSearch([recipe.name, recipe.domain, recipe.useCase, recipe.shortDescription,
-      ...recipe.inputExamples, ...recipe.outputExamples, ...recipe.requiredTools].join(" "));
-    return terms.every((term) => searchable.includes(term));
+    return true;
   });
+  if (!terms.length) return scoped;
+
+  const titleMatches: AgentRecipe[] = [];
+  const otherMatches: AgentRecipe[] = [];
+  for (const recipe of scoped) {
+    const name = normalizeRecipeSearch(recipe.name);
+    if (terms.every((term) => name.includes(term))) {
+      titleMatches.push(recipe);
+      continue;
+    }
+    const details = normalizeRecipeSearch([recipe.domain, recipe.useCase, recipe.shortDescription,
+      ...recipe.inputExamples, ...recipe.outputExamples, ...recipe.requiredTools].join(" "));
+    if (terms.every((term) => name.includes(term) || details.includes(term))) otherMatches.push(recipe);
+  }
+  return [...titleMatches, ...otherMatches];
 }
 
 export function recipeFilterRecoveries(recipes: AgentRecipe[], filters: RecipeFilters) {

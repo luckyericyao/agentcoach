@@ -303,6 +303,19 @@ test.describe("public first render without JavaScript", () => {
     expect(new URL(page.url()).searchParams.get("q")).toBe(query);
   });
 
+  test("full title matches appear first on a shared search URL before JavaScript", async ({ page }) => {
+    await page.goto("/recipes?q=workflow");
+    const first = page.getByRole("article").first().getByRole("heading");
+    await expect(first).toHaveText("Enterprise Workflow Architect Agent");
+    await expect(page.getByRole("status")).toHaveText("5 sample recipes");
+    const search = page.getByRole("search", { name: "Recipe filters" });
+    await search.getByLabel("Featured", { exact: true }).check();
+    await search.getByRole("button", { name: "Show results", exact: true }).press("Enter");
+    await expect(first).toHaveText("Finance Earnings Call Analyst");
+    await expect(page.getByRole("status")).toHaveText("3 sample recipes");
+    expect(new URL(page.url()).searchParams.get("q")).toBe("workflow");
+  });
+
   test("catalog cards expose example inputs and outputs without JavaScript at every layout width", async ({ page }, testInfo) => {
     for (const [width, columns] of [[320, 1], [900, 2], [1440, 3]]) {
       await page.setViewportSize({ width, height: 900 });
