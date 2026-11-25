@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import { industries } from "../../src/lib/industries-data";
 import type { RecipeWorkedExample } from "../../src/lib/recipe-examples";
 import { createRecipeMarkdown } from "../../src/lib/recipe-markdown";
 import { agentRecipes } from "../../src/lib/recipes-data";
@@ -18,7 +19,11 @@ test("the release check requires the exact deployed revision", async ({ request,
   expect(matching.stdout).toContain(`PASS /recipes: HTTP 200, revision ${fixtureReleaseRevision}.`);
   const fullCatalog = check(fixtureReleaseRevision, "--catalog");
   expect(fullCatalog.status, fullCatalog.stderr).toBe(0);
-  expect(fullCatalog.stdout.split("\n").filter((line) => line.startsWith("PASS "))).toHaveLength(2 + 3 * agentRecipes.length);
+  expect(fullCatalog.stdout.split("\n").filter((line) => line.startsWith("PASS ")))
+    .toHaveLength(2 + industries.length + 3 * agentRecipes.length);
+  for (const { slug } of industries) {
+    expect(fullCatalog.stdout).toContain(`PASS /industries/${slug}: HTTP 200, revision ${fixtureReleaseRevision}.`);
+  }
   const mismatching = check("f".repeat(40));
   expect(mismatching.status).toBe(1);
   expect(mismatching.stderr).toContain("FAIL /recipes: HTTP 200");

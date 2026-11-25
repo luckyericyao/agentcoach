@@ -17,8 +17,12 @@ if (!origin || !expected || !/^[a-f0-9]{40}$/.test(expected) || (mode !== undefi
 
 const targets = [{ path: "/" }, { path: "/recipes" }];
 if (mode === "--catalog") {
+  const { industries } = await import("../src/lib/industries-data.ts");
   const { agentRecipes } = await import("../src/lib/recipes-data.ts");
   const { recipeShareImagePath } = await import("../src/lib/recipe-share-image.ts");
+  for (const { slug } of industries) {
+    targets.push({ path: `/industries/${encodeURIComponent(slug)}`, type: "text/html" });
+  }
   for (const { slug, name } of agentRecipes) {
     const samplePath = `/recipes/samples/${encodeURIComponent(slug)}`;
     targets.push({
