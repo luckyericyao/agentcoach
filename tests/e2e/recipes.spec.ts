@@ -52,6 +52,23 @@ test("catalog filters survive reload and back/forward, and reset recovers empty 
   await page.screenshot({ path: testInfo.outputPath("catalog.png"), fullPage: true });
 });
 
+test("typing a query puts full title matches first and clearing it restores the catalog order", async ({ page }) => {
+  await page.goto("/recipes");
+  const search = page.getByLabel("Search recipes", { exact: true });
+  const first = page.getByRole("article").first().getByRole("heading");
+  await expect(first).toHaveText(biotech);
+  await search.fill("workflow");
+  await expect(first).toHaveText("Enterprise Workflow Architect Agent");
+  await expect(page.getByRole("status")).toHaveText("5 sample recipes");
+  await expect(page).toHaveURL(/\/recipes\?q=workflow$/);
+  await page.getByLabel("Featured", { exact: true }).check();
+  await expect(first).toHaveText(finance);
+  await expect(page.getByRole("status")).toHaveText("3 sample recipes");
+  await page.getByRole("button", { name: "Reset filters", exact: true }).press("Enter");
+  await expect(first).toHaveText(biotech);
+  await expect(page.getByRole("region", { name: "Recipe results" })).toBeFocused();
+});
+
 test("recipe preview has all eight modules, traps keyboard focus, and restores its trigger", async ({ page }, testInfo) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
