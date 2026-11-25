@@ -35,15 +35,20 @@ test("catalog filters survive reload and back/forward, and reset recovers empty 
   await expect(page.getByLabel("Search recipes", { exact: true })).toHaveValue("earnings call");
   await page.getByLabel("Verified", { exact: true }).check();
   await expect(page.getByRole("heading", { name: "No verified recipes available yet.", exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "Clear all filters", exact: true }).click();
+  await page.getByRole("button", { name: "Clear all filters", exact: true }).press("Enter");
   await expect(page).toHaveURL(/\/recipes$/);
   await expect(page.getByRole("status")).toHaveText("6 sample recipes");
   await expect(page.locator("article")).toHaveCount(6);
+  await expect(results).toBeFocused();
+  await expect(results).toBeInViewport();
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("link", { name: `Preview ${biotech}`, exact: true })).toBeFocused();
   await page.getByLabel("Search recipes", { exact: true }).fill("no matching sample");
   await expect(page.getByRole("heading", { name: "No matching sample recipes.", exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "Reset filters", exact: true }).click();
+  await page.getByRole("button", { name: "Reset filters", exact: true }).press("Enter");
   await expect(page.getByRole("status")).toHaveText("6 sample recipes");
   await expect(page.getByRole("button", { name: "Reset filters", exact: true })).toBeDisabled();
+  await expect(results).toBeFocused();
   await page.screenshot({ path: testInfo.outputPath("catalog.png"), fullPage: true });
 });
 

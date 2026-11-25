@@ -68,6 +68,7 @@ export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
       <form id={resetForm} action="/recipes#recipe-results" method="get" onSubmit={(event) => {
         event.preventDefault();
         updateFilters(defaultRecipeFilters);
+        results.current?.focus();
       }} />
       <form action="/recipes#recipe-results" method="get" role="search" aria-label="Recipe filters"
         className="border-y border-white/10 py-5" onSubmit={(event) => {

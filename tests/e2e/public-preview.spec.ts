@@ -266,9 +266,13 @@ test.describe("public first render without JavaScript", () => {
     await search.getByLabel("Verified", { exact: true }).check();
     await search.getByRole("button", { name: "Show results", exact: true }).click();
     await expect(page.getByRole("heading", { name: "No verified recipes available yet.", exact: true })).toBeVisible();
-    await page.getByRole("button", { name: "Clear all filters", exact: true }).click();
-    await expect(page).toHaveURL((url) => url.pathname === "/recipes" && url.searchParams.size === 0);
+    await page.getByRole("button", { name: "Clear all filters", exact: true }).press("Enter");
+    await expect(page).toHaveURL((url) =>
+      url.pathname === "/recipes" && url.searchParams.size === 0 && url.hash === "#recipe-results");
     await expect(page.getByRole("status")).toHaveText("6 sample recipes");
+    await expect(page.getByRole("region", { name: "Recipe results" })).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(page.getByRole("link", { name: "Preview Biotech BD Meeting Prep Agent", exact: true })).toBeFocused();
     await expect(search.getByRole("button", { name: "Reset filters", exact: true })).toBeDisabled();
   });
 
