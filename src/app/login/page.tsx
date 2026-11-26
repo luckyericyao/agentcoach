@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { LoginForm } from "@/components/auth/LoginForm";
-import { SiteFooter } from "@/components/landing/SiteFooter";
-import { TopNavigation } from "@/components/landing/TopNavigation";
+import { SitePage } from "@/components/landing/SitePage";
 import { isEarlyAccessOpen } from "@/lib/server/early-access";
 import { isEmailConfirmationId } from "@/lib/supabase/email-confirmation";
 
@@ -23,9 +22,7 @@ export default async function LoginPage({ searchParams }: {
     ? "This login link is invalid or has expired. Request a new link below."
     : error === "unavailable" ? "Sign-in is temporarily unavailable. Please try again later." : "";
   return (
-    <main id="main-content" tabIndex={-1} className="min-h-screen overflow-hidden bg-carbon text-platinum">
-      <TopNavigation />
-
+    <SitePage>
       <section className="relative border-b border-white/10 px-5 pb-20 pt-32 sm:px-8 lg:pb-28 lg:pt-40">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_18%,rgba(127,212,255,0.11),transparent_34rem)]" />
         <div className="relative mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_0.7fr] lg:items-center">
@@ -69,7 +66,6 @@ export default async function LoginPage({ searchParams }: {
         </div>
       </section> : null}
 
-      <SiteFooter />
-    </main>
+    </SitePage>
   );
 }

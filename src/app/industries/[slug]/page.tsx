@@ -3,8 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
 import { SectionReveal } from "@/components/landing/SectionReveal";
-import { SiteFooter } from "@/components/landing/SiteFooter";
-import { TopNavigation } from "@/components/landing/TopNavigation";
+import { SitePage } from "@/components/landing/SitePage";
 import { getIndustryBySlug, industries } from "@/lib/industries-data";
 import { getRecipesByIndustrySlug, recipeSummaryModules } from "@/lib/recipes-data";
 import { getUseCasesByIndustrySlug } from "@/lib/use-cases-data";
@@ -48,9 +47,7 @@ export default async function IndustryPage({ params }: IndustryPageProps) {
   const recipes = getRecipesByIndustrySlug(industry.slug);
 
   return (
-    <main id="main-content" tabIndex={-1} className="min-h-screen overflow-hidden bg-carbon text-platinum">
-      <TopNavigation />
-
+    <SitePage>
       <section className="relative border-b border-white/10 px-5 pb-20 pt-32 sm:px-8 lg:pb-28 lg:pt-40">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(127,212,255,0.11),transparent_34rem)]" />
         <div className="relative mx-auto max-w-7xl">
@@ -269,7 +266,6 @@ export default async function IndustryPage({ params }: IndustryPageProps) {
         </div>
       </SectionReveal>
 
-      <SiteFooter />
-    </main>
+    </SitePage>
   );
 }

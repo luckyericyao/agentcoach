@@ -18,6 +18,8 @@ test("required routes and internal links render without overflow", async ({ page
     await expect(page.locator("h1")).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
     await expect(page.locator("#main-content")).toHaveCount(1);
+    await expect(page.getByRole("banner")).toHaveCount(1);
+    await expect(page.getByRole("contentinfo")).toHaveCount(1);
     if (path !== "/recipes") await expect(page.locator("form")).toHaveAttribute("method", "post");
     (await page.locator("a[href]").evaluateAll((anchors) => anchors.map((anchor) => anchor.getAttribute("href")!)))
       .filter((href) => href.startsWith("/")).forEach((href) => links.add(href));
@@ -214,6 +216,16 @@ test("invalid magic link shows a recoverable error", async ({ page }) => {
   await expect(page).toHaveURL(/\/login\?error=invalid-link$/);
   await expect(page.locator("#login-feedback").getByRole("alert")).toContainText("invalid or has expired");
   await expect(page.getByRole("button", { name: "Send Magic Link", exact: true })).toBeEnabled();
+});
+
+test("the skip link bypasses shared navigation and puts Tab inside recipe content", async ({ page }) => {
+  await page.goto("/recipes");
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("link", { name: "Skip to content", exact: true })).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("main")).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("searchbox", { name: "Search recipes" })).toBeFocused();
 });
 
 test("navigation marks the current page after a client-side route change", async ({ page }, testInfo) => {

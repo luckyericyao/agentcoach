@@ -26,7 +26,6 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body className="bg-carbon text-platinum antialiased">
-        <a href="#main-content" className="skip-link">Skip to content</a>
         <EarlyAccessMode open={isEarlyAccessOpen()}>
           <MotionProvider>{children}</MotionProvider>
         </EarlyAccessMode>

@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { RecipeCatalog } from "@/components/recipes/RecipeCatalog";
-import { SiteFooter } from "@/components/landing/SiteFooter";
-import { TopNavigation } from "@/components/landing/TopNavigation";
+import { SitePage } from "@/components/landing/SitePage";
 import { industries } from "@/lib/industries-data";
 import { agentRecipes, getRecipeBySlug } from "@/lib/recipes-data";
 import { recipePreviewPath } from "@/lib/recipe-sample";
@@ -43,9 +42,7 @@ export async function generateMetadata({ searchParams }: PageProps<"/recipes">):
 export default async function RecipesPage() {
   await connection();
   return (
-    <main id="main-content" tabIndex={-1} className="min-h-screen overflow-hidden bg-carbon text-platinum">
-      <TopNavigation />
-
+    <SitePage>
       <section className="relative border-b border-white/10 px-5 pb-8 pt-24 sm:px-8 lg:pb-14 lg:pt-32">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_72%_18%,rgba(127,212,255,0.11),transparent_34rem)]" />
         <div className="relative mx-auto max-w-7xl">
@@ -65,7 +62,6 @@ export default async function RecipesPage() {
         </div>
       </section>
 
-      <SiteFooter />
-    </main>
+    </SitePage>
   );
 }

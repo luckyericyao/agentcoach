@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { AccountPanel } from "@/components/auth/AccountPanel";
 import { SectionReveal } from "@/components/landing/SectionReveal";
-import { SiteFooter } from "@/components/landing/SiteFooter";
-import { TopNavigation } from "@/components/landing/TopNavigation";
+import { SitePage } from "@/components/landing/SitePage";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -27,9 +26,7 @@ export default async function AccountPage() {
   if (!email) redirect("/login");
 
   return (
-    <main id="main-content" tabIndex={-1} className="min-h-screen overflow-hidden bg-carbon text-platinum">
-      <TopNavigation />
-
+    <SitePage>
       <section className="relative border-b border-white/10 px-5 pb-16 pt-32 sm:px-8 lg:pb-24 lg:pt-40">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_16%,rgba(215,180,106,0.11),transparent_34rem)]" />
         <div className="relative mx-auto max-w-7xl">
@@ -49,7 +46,6 @@ export default async function AccountPage() {
         </div>
       </SectionReveal>
 
-      <SiteFooter />
-    </main>
+    </SitePage>
   );
 }
