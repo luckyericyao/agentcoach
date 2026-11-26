@@ -29,7 +29,7 @@ describe("public release revision", () => {
     const { default: config } = await import("../../next.config");
     const routes = (await config.headers!()).filter(({ headers }) =>
       headers.some(({ key }) => key === "X-AgentCoach-Revision"));
-    expect(routes).toEqual(["/", "/recipes", "/recipes/samples/:slug", "/recipes/samples/:slug/brief", "/recipes/share-image/:slug"].map((source) => ({
+    expect(routes).toEqual(["/", "/recipes", "/industries/:slug", "/recipes/samples/:slug", "/recipes/samples/:slug/brief", "/recipes/share-image/:slug"].map((source) => ({
       source, headers: [{ key: "X-AgentCoach-Revision", value: revision }],
     })));
   });

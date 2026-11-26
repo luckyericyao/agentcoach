@@ -3,6 +3,7 @@ import { once } from "node:events";
 import { createServer } from "node:http";
 import { promisify } from "node:util";
 import { expect, it } from "vitest";
+import { industries } from "@/lib/industries-data";
 import { createRecipeMarkdown } from "@/lib/recipe-markdown";
 import { createRecipeSample } from "@/lib/recipe-sample";
 import { agentRecipes } from "@/lib/recipes-data";
@@ -48,7 +49,7 @@ it.each([
   }
 });
 
-it("fails a catalog check for broken headers, wrong bodies and oversized attachments with the right revision", async () => {
+it("fails a catalog check for mismatched public pages and broken or oversized attachments", async () => {
   const revision = "a".repeat(40);
   const [biotech, finance, coding, healthcare, sales] = agentRecipes;
   const broken = `/recipes/share-image/${biotech.slug}`;
@@ -57,6 +58,9 @@ it("fails a catalog check for broken headers, wrong bodies and oversized attachm
   const wrongMarkdown = `/recipes/samples/${coding.slug}/brief`;
   const oversized = `/recipes/samples/${healthcare.slug}/brief`;
   const missingReview = `/recipes/samples/${sales.slug}`;
+  const staleIndustry = `/industries/${industries[0].slug}`;
+  const wrongIndustryType = `/industries/${industries[1].slug}`;
+  const staleRevision = "b".repeat(40);
   const methods = new Set<string>();
   const server = createServer((request, response) => {
     if (request.method) methods.add(request.method);
@@ -64,8 +68,9 @@ it("fails a catalog check for broken headers, wrong bodies and oversized attachm
     const sample = path.startsWith("/recipes/samples/");
     const brief = sample && path.endsWith("/brief");
     const image = path.startsWith("/recipes/share-image/");
-    response.setHeader("X-AgentCoach-Revision", revision);
-    response.setHeader("Content-Type", brief ? "text/markdown" : sample ? "application/json" : image && path !== broken ? "image/png" : "text/html");
+    response.setHeader("X-AgentCoach-Revision", path === staleIndustry ? staleRevision : revision);
+    const type = brief ? "text/markdown" : sample ? "application/json" : image && path !== broken ? "image/png" : "text/html";
+    response.setHeader("Content-Type", path === wrongIndustryType ? "text/plain" : type);
     if (sample) {
       const slug = path.split("/")[3];
       const extension = brief && path !== wrongFilename ? "md" : "json";
@@ -110,6 +115,12 @@ it("fails a catalog check for broken headers, wrong bodies and oversized attachm
     }
     await expect(failedCheck).rejects.toMatchObject({
       stderr: expect.stringContaining(`FAIL ${oversized}: attachment exceeds 64 KiB.`),
+    });
+    await expect(failedCheck).rejects.toMatchObject({
+      stderr: expect.stringContaining(`FAIL ${staleIndustry}: HTTP 200, expected ${revision}, revision ${staleRevision}.`),
+    });
+    await expect(failedCheck).rejects.toMatchObject({
+      stderr: expect.stringContaining(`FAIL ${wrongIndustryType}: expected Content-Type text/html.`),
     });
     expect([...methods]).toEqual(["GET"]);
   } finally {

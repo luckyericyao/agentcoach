@@ -451,10 +451,11 @@ npm run check:release -- https://agentcoach-three.vercel.app "$(git rev-parse or
 The check makes only GET requests, follows no redirects, and fails unless both
 pages return HTTP 200 with the expected full SHA. It retries once only if no HTTP
 response arrives; an unexpected status, revision, or header fails immediately.
-Add `--catalog` after the SHA to check every public JSON attachment, Markdown brief,
-and share image for the same revision and expected response headers. For JSON and
-Markdown it also checks sample identity and human-review boundaries and rejects
-attachments larger than 64 KiB. The full browser suite separately checks complete
+Add `--catalog` after the SHA to check the six public industry pages and every JSON
+attachment, Markdown brief, and share image for the same revision and expected
+response headers. For JSON and Markdown it also checks sample identity and
+human-review boundaries and rejects attachments larger than 64 KiB. The full
+browser suite separately checks complete
 attachment content and PNG decoding. A missing platform revision is reported as
 unavailable.
 This check requires no hosting changes and does not test account access or email delivery.
