@@ -254,6 +254,21 @@ test.describe("public first render without JavaScript", () => {
     await expectPainted(page.getByRole("heading", { name: "Biotech BD Meeting Prep Agent", exact: true }));
   });
 
+  test("the skip link bypasses navigation on public pages with JavaScript disabled", async ({ page }) => {
+    for (const path of ["/", "/recipes", "/industries/biotech-pharma"]) {
+      await page.goto(path);
+      const main = page.getByRole("main");
+      await expect(page.getByRole("banner"), path).toHaveCount(1);
+      await expect(page.getByRole("contentinfo"), path).toHaveCount(1);
+      await page.keyboard.press("Tab");
+      await expect(page.getByRole("link", { name: "Skip to content", exact: true }), path).toBeFocused();
+      await page.keyboard.press("Enter");
+      await expect(main, path).toBeFocused();
+      await page.keyboard.press("Tab");
+      await expect(main.locator(":focus"), path).toHaveCount(1);
+    }
+  });
+
   test("current page is identified in server-rendered navigation", async ({ page }, testInfo) => {
     const mobile = testInfo.project.name === "mobile";
     const navigation = page.getByRole("navigation", { name: mobile ? "Mobile navigation" : "Main navigation", exact: true });

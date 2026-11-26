@@ -21,17 +21,14 @@ import {
 import { OrbitalNetwork } from "./OrbitalNetwork";
 import { useEarlyAccessMode } from "./EarlyAccessMode";
 import { SectionReveal } from "./SectionReveal";
-import { SiteFooter } from "./SiteFooter";
-import { TopNavigation } from "./TopNavigation";
+import { SitePage } from "./SitePage";
 import { WaitlistForm } from "./WaitlistForm";
 
 export function LandingPage() {
   const earlyAccessOpen = useEarlyAccessMode();
   const [selectedRecipe, setSelectedRecipe] = useState<AgentRecipe | null>(null);
   return (
-    <main id="main-content" tabIndex={-1} className="min-h-screen overflow-hidden bg-carbon text-platinum">
-      <TopNavigation />
-
+    <SitePage>
       <section
         id="hero"
         className="relative flex min-h-[100svh] items-center border-b border-white/10 px-5 pt-20 sm:px-8 sm:pt-24"
@@ -533,8 +530,7 @@ export function LandingPage() {
         </SectionReveal>
       )}
 
-      <SiteFooter />
       <RecipePreview recipe={selectedRecipe} onClose={() => setSelectedRecipe(null)} />
-    </main>
+    </SitePage>
   );
 }
