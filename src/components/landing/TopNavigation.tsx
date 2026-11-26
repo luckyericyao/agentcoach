@@ -3,11 +3,13 @@
 import { useEffect, useRef } from "react";
 import { ArrowRight, Menu, X } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { navItems } from "@/lib/landing-data";
 import { useEarlyAccessMode } from "./EarlyAccessMode";
 
 export function TopNavigation() {
   const earlyAccessOpen = useEarlyAccessMode();
+  const pathname = usePathname();
   const items = navItems.filter(({ href }) => earlyAccessOpen || href !== "/login").map((item) => ({
     ...item, label: earlyAccessOpen ? item.label : item.previewLabel ?? item.label,
   }));
@@ -59,7 +61,8 @@ export function TopNavigation() {
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm text-steel transition-colors duration-200 hover:text-platinum"
+              aria-current={pathname === item.href ? "page" : undefined}
+              className="text-sm text-steel transition-colors duration-200 hover:text-platinum aria-[current=page]:text-platinum aria-[current=page]:underline aria-[current=page]:underline-offset-4"
             >
               {item.label}
             </Link>
@@ -84,7 +87,8 @@ export function TopNavigation() {
               className="absolute inset-x-0 top-full max-h-[calc(100svh-4rem)] overflow-y-auto border-t border-white/10 bg-carbon px-5 py-3 sm:px-8">
               {[{ label: "Home", href: "/" }, ...items].map((item) => (
                 <Link key={item.href} href={item.href} onClick={closeMenu}
-                  className="flex min-h-12 items-center justify-between border-b border-white/[0.06] py-3 text-sm font-medium text-platinum transition hover:text-ion">
+                  aria-current={pathname === item.href ? "page" : undefined}
+                  className="flex min-h-12 items-center justify-between border-b border-white/[0.06] py-3 text-sm font-medium text-platinum transition hover:text-ion aria-[current=page]:underline aria-[current=page]:underline-offset-4">
                   {item.label}<ArrowRight aria-hidden="true" className="size-4 text-steel" />
                 </Link>
               ))}

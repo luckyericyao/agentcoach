@@ -216,6 +216,22 @@ test("invalid magic link shows a recoverable error", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Send Magic Link", exact: true })).toBeEnabled();
 });
 
+test("navigation marks the current page after a client-side route change", async ({ page }, testInfo) => {
+  const mobile = testInfo.project.name === "mobile";
+  const navigation = page.getByRole("navigation", { name: mobile ? "Mobile navigation" : "Main navigation", exact: true });
+  const current = navigation.getByRole("link").and(page.locator('a[aria-current="page"]'));
+  const toggle = page.locator('summary[aria-label="Navigation menu"]');
+
+  await page.goto("/recipes?q=workflow");
+  if (mobile) await toggle.press("Enter");
+  await expect(current).toHaveText("Agent Recipes");
+  await expect(current).toHaveCSS("text-decoration-line", "underline");
+  await navigation.getByRole("link", { name: "Become a Client", exact: true }).click();
+  await expect(page).toHaveURL(/\/become-a-client$/);
+  if (mobile) await toggle.press("Enter");
+  await expect(current).toHaveText("Become a Client");
+});
+
 test("navigation works by keyboard on mobile", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "mobile");
   await page.goto("/");

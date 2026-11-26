@@ -254,6 +254,31 @@ test.describe("public first render without JavaScript", () => {
     await expectPainted(page.getByRole("heading", { name: "Biotech BD Meeting Prep Agent", exact: true }));
   });
 
+  test("current page is identified in server-rendered navigation", async ({ page }, testInfo) => {
+    const mobile = testInfo.project.name === "mobile";
+    const navigation = page.getByRole("navigation", { name: mobile ? "Mobile navigation" : "Main navigation", exact: true });
+    const current = navigation.getByRole("link").and(page.locator('a[aria-current="page"]'));
+    const toggle = page.locator('summary[aria-label="Navigation menu"]');
+    for (const [path, label] of [
+      ["/#channels", mobile ? "Home" : null],
+      ["/recipes?q=workflow", "Agent Recipes"],
+      ["/become-a-client", "For Clients"],
+      ["/become-a-coach", "For Coaches"],
+      ["/industries/biotech-pharma", null],
+    ] as const) {
+      await page.goto(path);
+      if (mobile) await toggle.press("Enter");
+      await expect(navigation.getByRole("link", { name: "Explore", exact: true })).not.toHaveAttribute("aria-current");
+      if (label) {
+        await expect(current).toHaveText(label);
+        await expect(current).toHaveCSS("text-decoration-line", "underline");
+      } else {
+        await expect(current).toHaveCount(0);
+      }
+      await expect(navigation.getByRole("link", { name: "Login", exact: true })).toHaveCount(0);
+    }
+  });
+
   test("native search submits catalog filters and clears empty results", async ({ page }) => {
     await page.goto("/recipes");
     const search = page.getByRole("search", { name: "Recipe filters" });
