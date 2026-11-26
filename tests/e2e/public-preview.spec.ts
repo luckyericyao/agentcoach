@@ -422,6 +422,10 @@ test.describe("public first render without JavaScript", () => {
     await page.goto("/recipes?q=meeting&industry=biotech-pharma&featured=1");
     await previewLink.press("Enter");
     await expect(page).toHaveURL((url) => url.searchParams.get("recipe") === recipe && url.hash === "#recipe-preview");
+    await expect(preview).toBeFocused();
+    await page.keyboard.press("Tab");
+    const back = preview.getByRole("link", { name: "Back to results", exact: true });
+    await expect(back).toBeFocused();
     await expect(preview.getByRole("heading", { name, exact: true })).toBeInViewport();
     await expect(preview.locator("[data-recipe-module]")).toHaveCount(8);
     await expect(preview.getByText("Human review required", { exact: true })).toBeVisible();
@@ -438,18 +442,22 @@ test.describe("public first render without JavaScript", () => {
     expect(Object.keys(JSON.parse(await readFile((await download.path())!, "utf8")).modules)).toHaveLength(8);
     await expectReviewBriefDownload(preview, page);
 
-    await preview.getByRole("link", { name: "Back to results" }).click();
+    await back.press("Enter");
     await expect(page).toHaveURL((url) => url.hash === "#recipe-results" && !url.searchParams.has("recipe"));
     expect(Object.fromEntries(new URL(page.url()).searchParams)).toEqual({
       q: "meeting", industry: "biotech-pharma", featured: "1",
     });
     await expect(page.getByRole("status")).toHaveText("1 sample recipe");
+    await expect(page.getByRole("region", { name: "Recipe results" })).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(previewLink).toBeFocused();
     await expect(preview).toHaveCount(0);
 
     for (const path of ["/", "/industries/biotech-pharma"]) {
       await page.goto(path);
       await previewLink.click();
       await expect(preview.getByRole("heading", { name, exact: true })).toBeInViewport();
+      await expect(preview).toBeFocused();
     }
     await page.goto(`/recipes?recipe=${recipe}`);
     await expect(preview).toBeVisible();
