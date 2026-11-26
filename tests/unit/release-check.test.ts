@@ -3,6 +3,8 @@ import { once } from "node:events";
 import { createServer } from "node:http";
 import { promisify } from "node:util";
 import { expect, it } from "vitest";
+import { createRecipeMarkdown } from "@/lib/recipe-markdown";
+import { createRecipeSample } from "@/lib/recipe-sample";
 import { agentRecipes } from "@/lib/recipes-data";
 
 const exec = promisify(execFile);
@@ -46,10 +48,15 @@ it.each([
   }
 });
 
-it("fails a catalog check for a broken asset even if both HTML pages serve the expected revision", async () => {
+it("fails a catalog check for broken headers, wrong bodies and oversized attachments with the right revision", async () => {
   const revision = "a".repeat(40);
-  const broken = `/recipes/share-image/${agentRecipes[0].slug}`;
-  const wrongFilename = `/recipes/samples/${agentRecipes[0].slug}/brief`;
+  const [biotech, finance, coding, healthcare, sales] = agentRecipes;
+  const broken = `/recipes/share-image/${biotech.slug}`;
+  const wrongFilename = `/recipes/samples/${biotech.slug}/brief`;
+  const wrongJson = `/recipes/samples/${finance.slug}`;
+  const wrongMarkdown = `/recipes/samples/${coding.slug}/brief`;
+  const oversized = `/recipes/samples/${healthcare.slug}/brief`;
+  const missingReview = `/recipes/samples/${sales.slug}`;
   const methods = new Set<string>();
   const server = createServer((request, response) => {
     if (request.method) methods.add(request.method);
@@ -63,6 +70,18 @@ it("fails a catalog check for a broken asset even if both HTML pages serve the e
       const slug = path.split("/")[3];
       const extension = brief && path !== wrongFilename ? "md" : "json";
       response.setHeader("Content-Disposition", `attachment; filename="agentcoach-${slug}-sample-v1.${extension}"`);
+      const recipe = agentRecipes.find((item) => item.slug === slug)!;
+      if (path === oversized) {
+        response.write(createRecipeMarkdown(recipe));
+        response.end(" ".repeat(64 * 1024));
+        return;
+      }
+      const item = createRecipeSample(path === wrongJson ? biotech : recipe);
+      const body = brief
+        ? createRecipeMarkdown(path === wrongMarkdown ? biotech : recipe)
+        : JSON.stringify(path === missingReview ? { ...item, review: undefined } : item);
+      response.end(body);
+      return;
     }
     response.end();
   });
@@ -83,6 +102,14 @@ it("fails a catalog check for a broken asset even if both HTML pages serve the e
     });
     await expect(failedCheck).rejects.toMatchObject({
       stderr: expect.stringContaining(`FAIL ${wrongFilename}: expected the catalog attachment filename.`),
+    });
+    for (const path of [wrongJson, wrongMarkdown, missingReview]) {
+      await expect(failedCheck).rejects.toMatchObject({
+        stderr: expect.stringContaining(`FAIL ${path}: attachment body does not match the public sample contract.`),
+      });
+    }
+    await expect(failedCheck).rejects.toMatchObject({
+      stderr: expect.stringContaining(`FAIL ${oversized}: attachment exceeds 64 KiB.`),
     });
     expect([...methods]).toEqual(["GET"]);
   } finally {
