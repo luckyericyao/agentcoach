@@ -49,12 +49,18 @@ test("preview history opens and closes without losing catalog state or keyboard 
   }
 });
 
-test("invalid or repeated preview slugs never open an unrelated sample", async ({ page }) => {
+test("invalid or repeated preview slugs show recovery without opening an unrelated sample", async ({ page }) => {
+  const notice = page.getByRole("region", { name: "Recipe preview unavailable", exact: true });
   for (const query of ["recipe=unknown", "recipe=", `recipe=${slug}&recipe=${slug}`]) {
     await page.goto(`/recipes?${query}`);
     await expect(page.getByRole("dialog")).toHaveCount(0);
     await expect(page.locator("article")).toHaveCount(6);
+    await expect(notice).toBeVisible();
+    await expect(notice.getByRole("link", { name: "Go to results", exact: true })).toHaveAttribute("href", "/recipes#recipe-results");
   }
+  await page.goto(`/recipes?recipe=${slug}`);
+  await expect(page.getByRole("dialog", { name, exact: true })).toBeVisible();
+  await expect(notice).toHaveCount(0);
 });
 
 test("homepage and catalog copy a recipe-only link and download a complete public sample", async ({ page, context }, testInfo) => {
