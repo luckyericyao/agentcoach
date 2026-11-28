@@ -31,6 +31,7 @@ export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
     setFilters(readRecipeFilters(searchParams, recipes));
   }
   const selectedRecipe = readRecipeSelection(searchParams, recipes);
+  const unavailablePreview = searchParams.has("recipe") && selectedRecipe === null;
   const search = useRef<HTMLInputElement>(null);
   const results = useRef<HTMLDivElement>(null);
   const maturityLevels = Array.from(new Set(recipes.map((recipe) => recipe.maturityLevel)));
@@ -65,6 +66,19 @@ export function RecipeCatalog({ industries, recipes }: RecipeCatalogProps) {
 
   return (
     <div>
+      {unavailablePreview ? (
+        <section aria-labelledby="unavailable-recipe-title"
+          className="mb-6 flex flex-col items-start gap-3 border-l-2 border-ember/50 bg-white/[0.04] px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 id="unavailable-recipe-title" className="text-sm font-semibold text-platinum">Recipe preview unavailable</h2>
+            <p className="mt-1 text-sm leading-6 text-steel">This link does not identify a published sample.</p>
+          </div>
+          <a href={`${resultsPath}#recipe-results`}
+            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded border border-white/20 px-3 text-sm font-semibold text-platinum transition hover:bg-white/10">
+            Go to results<ArrowDown aria-hidden="true" className="size-4" />
+          </a>
+        </section>
+      ) : null}
       <form id={resetForm} action="/recipes#recipe-results" method="get" onSubmit={(event) => {
         event.preventDefault();
         updateFilters(defaultRecipeFilters);

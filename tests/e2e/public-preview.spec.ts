@@ -414,6 +414,22 @@ test.describe("public first render without JavaScript", () => {
     await expect(page.locator("[data-recipe-module]")).toHaveCount(0);
   });
 
+  test("an unavailable preview returns to filtered results without JavaScript", async ({ page }) => {
+    await page.goto("/recipes?q=earnings&featured=1&recipe=retired-sample");
+    const notice = page.getByRole("region", { name: "Recipe preview unavailable", exact: true });
+    await expect(notice).toBeVisible();
+    await expect(notice).not.toContainText("retired-sample");
+    await expect(page.locator("#recipe-preview")).toHaveCount(0);
+    const link = notice.getByRole("link", { name: "Go to results", exact: true });
+    await expect(link).toHaveAttribute("href", "/recipes?q=earnings&featured=1#recipe-results");
+    await link.press("Enter");
+    await expect(page).toHaveURL((url) => url.hash === "#recipe-results" && !url.searchParams.has("recipe"));
+    expect(Object.fromEntries(new URL(page.url()).searchParams)).toEqual({ q: "earnings", featured: "1" });
+    await expect(page.getByRole("region", { name: "Recipe results", exact: true })).toBeFocused();
+    await expect(page.getByRole("status")).toHaveText("1 sample recipe");
+    await expect(notice).toHaveCount(0);
+  });
+
   test("native recipe links open a readable sample and return to the filtered results", async ({ page }) => {
     const name = "Biotech BD Meeting Prep Agent";
     const previewLink = page.getByRole("link", { name: `Preview ${name}`, exact: true });
