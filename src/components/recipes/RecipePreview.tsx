@@ -49,6 +49,7 @@ export function RecipePreview({ recipe, onClose, returnToResults }: RecipePrevie
   return (
     <Preview
       id={inline ? "recipe-preview" : undefined}
+      tabIndex={inline ? -1 : undefined}
       ref={inline ? undefined : dialog}
       aria-labelledby={titleId}
       aria-describedby={descriptionId}
@@ -75,7 +76,7 @@ export function RecipePreview({ recipe, onClose, returnToResults }: RecipePrevie
           event.clientY < bounds.top || event.clientY > bounds.bottom) requestClose();
       }}
       className={inline
-        ? "mt-7 max-w-4xl scroll-mt-24 rounded-lg border border-white/20 bg-ink text-platinum"
+        ? "mt-7 max-w-4xl scroll-mt-24 rounded-lg border border-white/20 bg-ink text-platinum focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ion"
         : "recipe-preview m-auto max-h-[calc(100svh_-_2rem)] w-[calc(100%_-_2rem)] max-w-4xl overflow-y-auto rounded-lg border border-white/20 bg-ink p-0 text-platinum shadow-2xl"}
     >
       {recipe ? (

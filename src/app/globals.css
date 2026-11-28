@@ -19,6 +19,11 @@ html {
   scrollbar-gutter: stable;
 }
 
+/* Native recipe links must bring the focused section into view before the next Tab. */
+html:has(#recipe-preview:target, #recipe-results:target) {
+  scroll-behavior: auto;
+}
+
 body:has(dialog[open]) {
   overflow: hidden;
 }
